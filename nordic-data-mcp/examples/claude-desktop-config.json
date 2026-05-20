@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "nordic-data": {
+      "command": "npx",
+      "args": ["-y", "nordic-data-mcp"],
+      "env": {
+        "NORDIC_API_KEY": "YOUR_KEY_HERE"
+      }
+    }
+  }
+}
