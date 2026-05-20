@@ -1,6 +1,6 @@
 {
   "name": "nordic-data-mcp",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "MCP server exposing Nordic Data API — company, VAT, sanctions, KYB and address data across 14 EU countries to AI agents",
   "type": "module",
   "bin": {
