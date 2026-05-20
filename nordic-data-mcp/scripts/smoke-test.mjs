@@ -96,21 +96,22 @@ try {
     );
   }
 
-  // 3. tools/call lookup_company dk 61056416 → Carlsberg
+  // 3. tools/call lookup_company no 923609016 → Equinor (NO chosen because
+  //    DK upstream has occasional outages; NO is the most stable upstream).
   const call = await request("tools/call", {
     name: "lookup_company",
-    arguments: { country: "dk", id: "61056416" },
+    arguments: { country: "no", id: "923609016" },
   });
   if (call.isError) {
     throw new Error("tools/call returned isError: " + JSON.stringify(call));
   }
   const text = call.content?.[0]?.text ?? "";
-  if (!/CARLSBERG/i.test(text)) {
+  if (!/EQUINOR/i.test(text)) {
     throw new Error(
-      "expected CARLSBERG in response, got: " + text.slice(0, 200),
+      "expected EQUINOR in response, got: " + text.slice(0, 200),
     );
   }
-  console.log("tools/call lookup_company ok — Carlsberg found");
+  console.log("tools/call lookup_company ok — Equinor found");
 
   // 4. tools/call validate_vat DK 25052943 (Carlsberg's VAT)
   const vat = await request("tools/call", {

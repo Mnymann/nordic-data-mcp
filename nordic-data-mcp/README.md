@@ -163,6 +163,25 @@ To wire your local checkout into Claude Desktop instead of `npx`:
 
 ---
 
+## Failover between two API hosts
+
+If you run the Nordic Data API on more than one platform (e.g. Railway primary + Render fallback), point the MCP server at both with two env vars:
+
+```bash
+NORDIC_API_PRIMARY=https://your-railway-host.example
+NORDIC_API_FALLBACK=https://your-render-host.example
+```
+
+Behavior:
+- Every request tries `NORDIC_API_PRIMARY` first.
+- If primary returns a network error, a 5xx, or 429, the request is retried **once** against `NORDIC_API_FALLBACK`.
+- If both fail, a `503 all_hosts_unavailable` is surfaced to the AI agent.
+- Failover events are logged to **stderr** (never stdout — stdout is reserved for the MCP protocol over stdio).
+
+If only `NORDIC_API_BASE_URL` is set (or nothing at all), the server runs in single-host mode against `https://api.addonnordic.dk`. The two modes are mutually exclusive — if `NORDIC_API_PRIMARY` is set, `NORDIC_API_BASE_URL` is ignored.
+
+---
+
 ## Remote MCP (Streamable HTTP)
 
 For hosted MCP — e.g. Railway, Fly, Anthropic remote connectors — run the HTTP entrypoint:
