@@ -1,0 +1,87 @@
+> npm run build
+
+
+> nordic-data-mcp@1.0.0 build
+> tsc
+
+npm warn publish npm auto-corrected some errors in your package.json when publishing.  Please run "npm pkg fix" to address these errors.
+npm warn publish errors corrected:
+npm warn publish "bin[nordic-data-mcp]" script name dist/index.js was invalid and removed
+npm notice
+npm notice 📦  nordic-data-mcp@1.0.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 5.1kB README.md
+npm notice 65B dist/http.d.ts
+npm notice 102B dist/http.d.ts.map
+npm notice 3.4kB dist/http.js
+npm notice 3.3kB dist/http.js.map
+npm notice 66B dist/index.d.ts
+npm notice 104B dist/index.d.ts.map
+npm notice 1.6kB dist/index.js
+npm notice 1.7kB dist/index.js.map
+npm notice 197B dist/lib/apiClient.d.ts
+npm notice 315B dist/lib/apiClient.d.ts.map
+npm notice 4.7kB dist/lib/apiClient.js
+npm notice 3.8kB dist/lib/apiClient.js.map
+npm notice 901B dist/lib/countries.d.ts
+npm notice 346B dist/lib/countries.d.ts.map
+npm notice 919B dist/lib/countries.js
+npm notice 656B dist/lib/countries.js.map
+npm notice 552B dist/lib/errors.d.ts
+npm notice 481B dist/lib/errors.d.ts.map
+npm notice 1.6kB dist/lib/errors.js
+npm notice 1.4kB dist/lib/errors.js.map
+npm notice 144B dist/tools/autocompleteAddress.d.ts
+npm notice 224B dist/tools/autocompleteAddress.d.ts.map
+npm notice 1.2kB dist/tools/autocompleteAddress.js
+npm notice 939B dist/tools/autocompleteAddress.js.map
+npm notice 136B dist/tools/companyEnriched.d.ts
+npm notice 214B dist/tools/companyEnriched.d.ts.map
+npm notice 1.1kB dist/tools/companyEnriched.js
+npm notice 858B dist/tools/companyEnriched.js.map
+npm notice 593B dist/tools/index.d.ts
+npm notice 594B dist/tools/index.d.ts.map
+npm notice 665B dist/tools/index.js
+npm notice 620B dist/tools/index.js.map
+npm notice 120B dist/tools/kybFull.d.ts
+npm notice 198B dist/tools/kybFull.d.ts.map
+npm notice 1.2kB dist/tools/kybFull.js
+npm notice 840B dist/tools/kybFull.js.map
+npm notice 132B dist/tools/lookupCompany.d.ts
+npm notice 210B dist/tools/lookupCompany.d.ts.map
+npm notice 1.5kB dist/tools/lookupCompany.js
+npm notice 854B dist/tools/lookupCompany.js.map
+npm notice 124B dist/tools/lookupLei.d.ts
+npm notice 204B dist/tools/lookupLei.d.ts.map
+npm notice 2.6kB dist/tools/lookupLei.js
+npm notice 2.2kB dist/tools/lookupLei.js.map
+npm notice 136B dist/tools/screenSanctions.d.ts
+npm notice 215B dist/tools/screenSanctions.d.ts.map
+npm notice 1.2kB dist/tools/screenSanctions.js
+npm notice 1.0kB dist/tools/screenSanctions.js.map
+npm notice 128B dist/tools/validateVat.d.ts
+npm notice 207B dist/tools/validateVat.d.ts.map
+npm notice 1.1kB dist/tools/validateVat.js
+npm notice 844B dist/tools/validateVat.js.map
+npm notice 259B dist/types.d.ts
+npm notice 379B dist/types.d.ts.map
+npm notice 44B dist/types.js
+npm notice 102B dist/types.js.map
+npm notice 1.6kB package.json
+npm notice Tarball Details
+npm notice name: nordic-data-mcp
+npm notice version: 1.0.0
+npm notice filename: nordic-data-mcp-1.0.0.tgz
+npm notice package size: 16.9 kB
+npm notice unpacked size: 56.8 kB
+npm notice shasum: 5997c44d80b84779d21ecd21abdb8d0ca740fb46
+npm notice integrity: sha512-JQUoJaHUpKnzu[...]CB/alAyIBaPug==
+npm notice total files: 59
+npm notice
+npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+npm error code E403
+npm error 403 403 Forbidden - PUT https://registry.npmjs.org/nordic-data-mcp - Two-factor authentication or granular access token with bypass 2fa enabled is required to publish packages.
+npm error 403 In most cases, you or one of your dependencies are requesting a package version that is forbidden by your security policy, or on a server you do not have access to.
+npm error A complete log of this run can be found in: /Users/martinnymann/.npm/_logs/2026-05-20T15_23_17_732Z-debug-0.log
+martinnymann@MacBookPro nordic-data-mcp % 

@@ -4,9 +4,9 @@
   "description": "MCP server exposing Nordic Data API — company, VAT, sanctions, KYB and address data across 14 EU countries to AI agents",
   "type": "module",
   "bin": {
-    "nordic-data-mcp": "./dist/index.js"
+    "nordic-data-mcp": "dist/index.js"
   },
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "files": [
     "dist",
     "README.md",
