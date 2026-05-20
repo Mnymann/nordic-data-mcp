@@ -139,7 +139,7 @@ For `validate_vat`, country codes are **uppercase** and cover the broader EU plu
 Requires Node.js 20+.
 
 ```bash
-git clone https://github.com/addonnordic/nordic-data-mcp.git
+git clone https://github.com/Mnymann/nordic-data-mcp.git
 cd nordic-data-mcp
 npm install
 cp .env.example .env   # then edit NORDIC_API_KEY
@@ -200,7 +200,7 @@ Endpoints:
 
 ## Contributing
 
-Issues and PRs welcome at [github.com/addonnordic/nordic-data-mcp](https://github.com/addonnordic/nordic-data-mcp).
+Issues and PRs welcome at [github.com/Mnymann/nordic-data-mcp](https://github.com/Mnymann/nordic-data-mcp).
 
 Please **do not** include API keys, request bodies, or response payloads in bug reports.
 
