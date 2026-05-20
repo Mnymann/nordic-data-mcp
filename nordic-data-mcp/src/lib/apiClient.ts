@@ -35,7 +35,7 @@ if (!API_KEY) {
   );
 }
 
-const USER_AGENT = "nordic-data-mcp/1.1.0";
+const USER_AGENT = "nordic-data-mcp/1.2.0";
 
 interface RawErrorBody {
   error?: string;
@@ -66,10 +66,15 @@ async function parseError(res: Response): Promise<NordicApiError> {
   });
 }
 
-function isRetryable(status: number): boolean {
-  // 5xx server errors and 429 rate limit → retry on next host.
-  // 4xx (other than 429) is a client error; failover won't help.
-  return status >= 500 || status === 429;
+function isRetryable(status: number, mirrorMode: boolean): boolean {
+  // Always retry: 5xx server errors and 429 rate limit.
+  if (status >= 500 || status === 429) return true;
+  // Mirror mode (multiple hosts configured as mirrors of the same service):
+  // also retry on 404. Mirrors should agree on existence; if they disagree,
+  // one is stale (e.g. mid-deploy). Costs one extra call on genuine misses,
+  // but eliminates "404 on stale mirror" false negatives.
+  if (mirrorMode && status === 404) return true;
+  return false;
 }
 
 interface FetchOptions {
@@ -82,6 +87,7 @@ async function callWithFailover<T>(
   opts: FetchOptions,
 ): Promise<T> {
   let lastError: unknown;
+  const mirrorMode = HOSTS.length > 1;
 
   for (let i = 0; i < HOSTS.length; i++) {
     const host = HOSTS[i]!;
@@ -102,7 +108,7 @@ async function callWithFailover<T>(
 
       if (!res.ok) {
         const err = await parseError(res);
-        if (isRetryable(res.status) && i < HOSTS.length - 1) {
+        if (isRetryable(res.status, mirrorMode) && i < HOSTS.length - 1) {
           // stderr only — stdout is reserved for the MCP stdio protocol.
           // Host URL is intentionally not logged (internal infrastructure).
           console.error(

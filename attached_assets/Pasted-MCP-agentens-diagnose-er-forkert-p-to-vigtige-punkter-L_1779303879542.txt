@@ -1,0 +1,24 @@
+MCP-agentens diagnose er forkert på to vigtige punkter. Lad mig korrigere:
+
+Det er IKKE env vars eller cache på Railway
+Den foreslår at tjekke DATAFORDELER_USERNAME/PASSWORD på Railway, eller redeploy for at rydde cache. Det er det forkerte spor:
+
+Env vars: Hvis nøglerne manglede, ville vores adapter logge no_datafordeler_api_key og vi ville se 503, ikke 404. Plus: jeg har lige kørt opslaget med præcis samme nøgle her i dev og fået fuldt svar.
+Cache: Vores company-cache TTL er kun 24 timer, og 404'er caches ikke som "negativ cache". Det ville heller ikke forklare hvorfor Render (samme codebase) virker.
+Den ægte årsag (som jeg fortalte dig før): Railway kører kode fra før commit e2ee998. Det commit ændrede GraphQL-feltet fra det gamle virksomhed (som Datafordeler har fjernet) til det nye CVR_Virksomhed. Render har den nye kode, Railway har den gamle. Begge kører "samme" repo, men Render auto-deployer fra GitHub og Railway gør ikke lige nu fordi Railways hobby-builds er sat på pause (status-siden du sendte mig). En "Redeploy" knap i Railway vil bare lægge den i den samme køen-er-pauset-kø.
+
+Og MCP'ens failover-logik er IKKE rigtig her
+Agenten argumenterer principielt: "404 betyder ikke-fundet, derfor ingen failover." Det er korrekt for én datakilde. Men du har sat en arkitektur op hvor Railway og Render er to spejle af samme service — pr. definition skal de give samme svar. I den situation er der to gyldige design:
+
+Failover også på 404 mellem spejle. Koster ét ekstra opslag på tomme svar, men eliminerer præcis det her scenario hvor spejle er i utakt.
+Foretræk det spejl der senest er deployet. Tjek /api/health eller en /api/version-endpoint og send trafikken mod den der har nyeste commit.
+Indtil det er fixet, har du den hurtige løsning: flyt MCP'ens env var.
+
+Hvad du skal skrive tilbage til MCP-agenten
+Diagnosen er forkert. Det er ikke env vars eller cache. Railway kører gammel kode (før commit e2ee998 i Nordic-Data-API). Den nye GraphQL-query er deployet på Render men ikke på Railway, fordi Railway har sat hobby-deploys på pause i dag pga. GCP-outage backlog. Redeploy-knappen virker derfor ikke lige nu.
+
+Skift NORDIC_API_URL (eller hvad MCP-serverens base-URL-env hedder) fra https://api.addonnordic.dk til https://nordic-data-api-1.onrender.com og restart MCP-serveren. Så virker alle opslag indtil Railway er ovre puklen — så skifter vi tilbage.
+
+Bagefter: opdatér failover-logikken til også at falde over på 404 når begge URL'er er konfigureret som mirrors (ikke som primær+specialiseret backup). Det her vil ske igen.
+
+Vil du have at jeg formulerer beskeden anderledes, eller skal jeg lade det stå?
