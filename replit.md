@@ -14,8 +14,9 @@ All commands are run from `nordic-data-mcp/` and use `npm`, not `pnpm`. The pack
 - `npm run dev:http` — run Streamable HTTP MCP server in watch mode (for remote hosting)
 - `npm run typecheck` — type-check without emitting
 - `node scripts/smoke-test.mjs` — end-to-end test: initialize → tools/list → tools/call (requires `NORDIC_API_KEY`)
-- Required env: `NORDIC_API_KEY` (get one at https://addonnordic.dk)
-- Optional env: `NORDIC_API_BASE_URL` (default `https://api.addonnordic.dk`), `PORT` (HTTP transport only, default 3000)
+- Required env: `NORDIC_API_KEY` (get one at https://addonnordic.com)
+- Internal-only env (NOT documented to end users — failover is automatic and invisible): `NORDIC_API_PRIMARY`, `NORDIC_API_FALLBACK`, `NORDIC_API_BASE_URL` for overriding the baked-in Railway + Render defaults. Only set these if you're rotating infrastructure.
+- Optional env: `PORT` (HTTP transport only, default 3000)
 
 ## Stack
 

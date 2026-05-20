@@ -1,23 +1,28 @@
 import { NordicApiError } from "./errors.js";
 
 /**
- * Resolves the list of API hosts to try in order. Supports:
- *   - NORDIC_API_PRIMARY + NORDIC_API_FALLBACK (failover mode)
- *   - NORDIC_API_BASE_URL (single host, legacy / default)
- * If primary is set without fallback, runs with just primary.
- * If nothing is set, defaults to https://api.addonnordic.dk.
+ * Default hosts (built-in, mirrored deployments of the Nordic Data API).
+ * End users do not configure these — failover is automatic and invisible.
+ *
+ * Internal-only env vars can override for our own testing / infra rotation:
+ *   NORDIC_API_PRIMARY, NORDIC_API_FALLBACK, NORDIC_API_BASE_URL
+ * These are NOT documented in the public README on purpose.
  */
+const DEFAULT_PRIMARY = "https://nordic-data-api-production-b59e.up.railway.app";
+const DEFAULT_FALLBACK = "https://nordic-data-api-1.onrender.com";
+
 function resolveHosts(): string[] {
-  const primary = process.env.NORDIC_API_PRIMARY?.trim();
-  const fallback = process.env.NORDIC_API_FALLBACK?.trim();
+  const primary = process.env.NORDIC_API_PRIMARY?.trim() || DEFAULT_PRIMARY;
+  const fallback = process.env.NORDIC_API_FALLBACK?.trim() || DEFAULT_FALLBACK;
   const legacy = process.env.NORDIC_API_BASE_URL?.trim();
 
-  const hosts: string[] = [];
-  if (primary) hosts.push(primary);
-  if (fallback && fallback !== primary) hosts.push(fallback);
-  if (hosts.length === 0) {
-    hosts.push(legacy ?? "https://api.addonnordic.dk");
+  // If a single base URL is explicitly set, honor it (single-host mode).
+  if (legacy && !process.env.NORDIC_API_PRIMARY) {
+    return [legacy.replace(/\/$/, "")];
   }
+
+  const hosts = [primary];
+  if (fallback && fallback !== primary) hosts.push(fallback);
   return hosts.map((h) => h.replace(/\/$/, ""));
 }
 
@@ -26,7 +31,7 @@ const API_KEY = process.env.NORDIC_API_KEY;
 
 if (!API_KEY) {
   throw new Error(
-    "NORDIC_API_KEY environment variable is required. Get a key at https://addonnordic.dk",
+    "NORDIC_API_KEY environment variable is required. Get a key at https://addonnordic.com",
   );
 }
 
@@ -40,10 +45,7 @@ interface RawErrorBody {
   [key: string]: unknown;
 }
 
-async function parseError(
-  res: Response,
-  host: string,
-): Promise<NordicApiError> {
+async function parseError(res: Response): Promise<NordicApiError> {
   const body = (await res.json().catch(() => ({}))) as RawErrorBody;
   const code = body.error ?? `http_${res.status}`;
   const message =
@@ -52,18 +54,21 @@ async function parseError(
     body.error ??
     res.statusText ??
     `HTTP ${res.status}`;
+  // Never default `source` to our internal host URL — that would leak
+  // infrastructure to MCP clients. Only forward upstream's own `source`
+  // hint (e.g. "cvr.dk", "vies"), which describes the data origin.
   return new NordicApiError({
     status: res.status,
     code,
     message,
-    source: body.source ?? host,
+    source: body.source,
     details: body,
   });
 }
 
 function isRetryable(status: number): boolean {
   // 5xx server errors and 429 rate limit → retry on next host.
-  // 4xx (other than 429) is a client error and won't be fixed by failover.
+  // 4xx (other than 429) is a client error; failover won't help.
   return status >= 500 || status === 429;
 }
 
@@ -96,11 +101,12 @@ async function callWithFailover<T>(
       });
 
       if (!res.ok) {
-        const err = await parseError(res, host);
+        const err = await parseError(res);
         if (isRetryable(res.status) && i < HOSTS.length - 1) {
-          // stderr is safe — stdout is reserved for the MCP stdio protocol.
+          // stderr only — stdout is reserved for the MCP stdio protocol.
+          // Host URL is intentionally not logged (internal infrastructure).
           console.error(
-            `[nordic-data-mcp] ${host} returned ${res.status} for ${opts.method} ${path} — failing over to next host`,
+            `[nordic-data-mcp] upstream returned ${res.status} — retrying`,
           );
           lastError = err;
           continue;
@@ -109,40 +115,32 @@ async function callWithFailover<T>(
       }
 
       if (isFallback) {
-        console.error(
-          `[nordic-data-mcp] fallback host ${host} succeeded for ${opts.method} ${path}`,
-        );
+        console.error(`[nordic-data-mcp] served from fallback upstream`);
       }
       return (await res.json()) as T;
     } catch (err) {
-      // fetch() throws on network errors (DNS, connection refused, timeout).
-      // NordicApiError was already thrown above and we hit this only if it
-      // was thrown above with no more hosts to try.
       if (err instanceof NordicApiError) throw err;
-
       const message = err instanceof Error ? err.message : String(err);
       if (i < HOSTS.length - 1) {
         console.error(
-          `[nordic-data-mcp] network error on ${host} for ${opts.method} ${path}: ${message} — failing over to next host`,
+          `[nordic-data-mcp] network error: ${message} — retrying`,
         );
         lastError = err;
         continue;
       }
       throw new NordicApiError({
         status: 503,
-        code: "all_hosts_unavailable",
-        message: `All Nordic Data API hosts failed. Last error: ${message}`,
-        source: host,
+        code: "service_unavailable",
+        message: `Nordic Data API is currently unreachable. Last error: ${message}`,
       });
     }
   }
 
-  // Defensive — loop should always either return or throw.
   throw lastError ??
     new NordicApiError({
       status: 503,
-      code: "all_hosts_unavailable",
-      message: "All Nordic Data API hosts failed.",
+      code: "service_unavailable",
+      message: "Nordic Data API is currently unreachable.",
     });
 }
 
@@ -155,8 +153,4 @@ export async function apiPost<T = unknown>(
   body: unknown,
 ): Promise<T> {
   return callWithFailover<T>(path, { method: "POST", body });
-}
-
-export function getHosts(): readonly string[] {
-  return HOSTS;
 }

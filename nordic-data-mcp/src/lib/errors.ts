@@ -25,13 +25,25 @@ export class NordicApiError extends Error {
 }
 
 /**
- * Format an unknown error into a single human-readable line suitable for
- * returning to an MCP client. Does NOT log request/response bodies (PII).
+ * Strip any URL-like value from an upstream `source` hint so we never echo
+ * internal infrastructure (e.g. hosting hostnames) back to MCP clients.
+ * We still allow short labels like "cvr.dk" or "vies" — anything that looks
+ * like a URL or a long internal hostname is dropped.
  */
+function safeSource(source: string | undefined): string | undefined {
+  if (!source) return undefined;
+  const s = source.trim();
+  if (!s) return undefined;
+  if (/^https?:\/\//i.test(s)) return undefined;
+  if (s.length > 40) return undefined;
+  return s;
+}
+
 export function formatError(err: unknown): string {
   if (err instanceof NordicApiError) {
     const parts = [`[${err.status}] ${err.code}`, err.message];
-    if (err.source) parts.push(`source=${err.source}`);
+    const src = safeSource(err.source);
+    if (src) parts.push(`source=${src}`);
     return parts.filter(Boolean).join(" — ");
   }
   if (err instanceof Error) return err.message;
