@@ -208,4 +208,4 @@ Please **do not** include API keys, request bodies, or response payloads in bug 
 
 ## License
 
-MIT © [Addon Nordic ApS](https://addonnordic.dk)
+MIT © [AddonNordic ApS](https://addonnordic.dk)
