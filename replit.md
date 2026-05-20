@@ -1,6 +1,6 @@
 # Nordic Data MCP Server
 
-A Model Context Protocol (MCP) server that exposes the Nordic Data API (company, VAT, sanctions, KYB, address, LEI data across 14 EU countries) to AI agents like Claude, Cursor, Claude Code, and ChatGPT.
+A Model Context Protocol (MCP) server that exposes the Nordic Data API (company, VAT, sanctions, KYB, address, LEI data across 12 EU countries) to AI agents like Claude, Cursor, Claude Code, and ChatGPT. NL and BE are intentionally excluded from company-data tools — they live in a separate `benelux-data-mcp` package (commercial split: NL KvK costs money per lookup).
 
 The MCP server itself is in **`nordic-data-mcp/`** — a standalone NPM package, separate from the pnpm workspace. The rest of the workspace (`artifacts/api-server`, `lib/*`, `artifacts/mockup-sandbox`) is template scaffolding and is not used by this project.
 
@@ -33,7 +33,7 @@ All commands are run from `nordic-data-mcp/` and use `npm`, not `pnpm`. The pack
 - `nordic-data-mcp/src/tools/` — one file per MCP tool (7 tools total)
 - `nordic-data-mcp/src/tools/index.ts` — single source of truth for the tool registry
 - `nordic-data-mcp/src/lib/apiClient.ts` — thin `fetch` wrapper with `X-API-Key` header and typed errors
-- `nordic-data-mcp/src/lib/countries.ts` — supported country lists (14 lowercase for company tools, broader uppercase set for VAT)
+- `nordic-data-mcp/src/lib/countries.ts` — supported country lists (12 lowercase for company tools — NL/BE excluded for Benelux split, broader uppercase set for VAT)
 - `nordic-data-mcp/src/lib/errors.ts` — `NordicApiError` + `formatError`
 - `nordic-data-mcp/examples/` — ready-to-paste config files for Claude Desktop, Cursor, Claude Code
 
@@ -50,15 +50,15 @@ All commands are run from `nordic-data-mcp/` and use `npm`, not `pnpm`. The pack
 
 7 MCP tools exposed to AI agents:
 
-1. `lookup_company` — basic company data from official registries (14 countries)
+1. `lookup_company` — basic company data from official registries (12 countries)
 2. `validate_vat` — VIES (EU) + HMRC (GB) VAT validation
 3. `screen_sanctions` — bulk screen up to 1000 names against UN/EU/OFAC/PEP (OpenSanctions)
 4. `kyb_full` — master KYB report (identity + persons + financials + LEI + VAT + sanctions + adverse media + risk score)
-5. `autocomplete_address` — authoritative address autocomplete per country (DAWA, Kartverket, BAN, PDOK, MML, Nominatim)
+5. `autocomplete_address` — authoritative address autocomplete per country (DAWA, Kartverket, BAN, MML, Nominatim)
 6. `lookup_lei` — GLEIF forward + reverse + parent/children
 7. `company_enriched` — registry + geocoded address + industry stats + Wikidata
 
-Countries (lowercase, company tools): `dk no se fi nl be ie uk fr de cz pl lv ee`.
+Countries (lowercase, company tools): `dk no se fi ie uk fr de cz pl lv ee` (12). NL/BE go to `benelux-data-mcp`.
 
 ## User preferences
 
@@ -66,7 +66,7 @@ _None recorded yet._
 
 ## Gotchas
 
-- **Use `GB`, not `UK`, for `validate_vat`** — HMRC requires the GB code. The 14 company-data countries use `uk` (lowercase) but VAT uses uppercase + `GB`.
+- **Use `GB`, not `UK`, for `validate_vat`** — HMRC requires the GB code. The 12 company-data countries use `uk` (lowercase) but VAT uses uppercase + `GB`.
 - **Don't use `console.log` in `src/index.ts`** — stdout is the MCP transport. Use `console.error` (which goes to stderr).
 - **The package is NOT part of the pnpm workspace.** Don't add `nordic-data-mcp` to `pnpm-workspace.yaml`. Use npm inside the folder.
 - **`npm install` in `nordic-data-mcp/`** — running it from the repo root will trigger the workspace `preinstall` hook that rejects npm.

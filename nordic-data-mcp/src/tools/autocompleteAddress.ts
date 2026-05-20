@@ -19,7 +19,7 @@ const inputSchema = z.object({
 export const autocompleteAddress: McpTool = {
   name: "autocomplete_address",
   description:
-    "Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), PDOK Locatieserver (NL), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates.",
+    "Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   handler: async (args) => {

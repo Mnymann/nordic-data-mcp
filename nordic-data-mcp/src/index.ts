@@ -9,7 +9,7 @@ import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "0.1.0" },
+  { name: "nordic-data-mcp", version: "1.1.0" },
   { capabilities: { tools: {} } },
 );
 

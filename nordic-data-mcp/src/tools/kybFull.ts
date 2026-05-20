@@ -19,7 +19,7 @@ const inputSchema = z.object({
 export const kybFull: McpTool = {
   name: "kyb_full",
   description:
-    "Full Know-Your-Business master report for a company across 14 EU countries. Aggregates: identity, registered address (geocoded), key persons & directors, financial statements, official filings, LEI + corporate ownership, VAT registration, sanctions + PEP screening, adverse media (GDELT 2.0), and a composite risk score. Single call. Cached 6h; may take 5-15s on cold cache.",
+    "Full Know-Your-Business master report for a company across 12 EU countries. Aggregates: identity, registered address (geocoded), key persons & directors, financial statements, official filings, LEI + corporate ownership, VAT registration, sanctions + PEP screening, adverse media (GDELT 2.0), and a composite risk score. Single call. Cached 6h; may take 5-15s on cold cache.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   handler: async (args) => {

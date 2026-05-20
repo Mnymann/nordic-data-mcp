@@ -3,13 +3,15 @@
 [![npm version](https://img.shields.io/npm/v/nordic-data-mcp.svg)](https://www.npmjs.com/package/nordic-data-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives AI agents (Claude, Cursor, Claude Code, ChatGPT, Copilot, etc.) direct access to **official European business data** across **14 EU countries**.
+A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives AI agents (Claude, Cursor, Claude Code, ChatGPT, Copilot, etc.) direct access to **official European business data** across **12 EU countries**.
 
 Look up companies, validate VAT numbers, run KYB reports, screen against sanctions lists, autocomplete addresses, and resolve LEI ownership — all from inside your AI assistant.
 
 ```
-DK · NO · SE · FI · NL · BE · IE · UK · FR · DE · CZ · PL · LV · EE
+DK · NO · SE · FI · IE · UK · FR · DE · CZ · PL · LV · EE
 ```
+
+> Looking for **Benelux** (NL, BE, LU)? Use the separate `benelux-data-mcp` package.
 
 ---
 
@@ -69,11 +71,11 @@ claude mcp add nordic-data --env NORDIC_API_KEY=YOUR_KEY_HERE -- npx -y nordic-d
 
 | Tool | What it does |
 |---|---|
-| `lookup_company` | Basic company data from official registries (CVR, Brønnøysund, Bolagsverket, KVK, Companies House, etc.) |
+| `lookup_company` | Basic company data from official registries (CVR, Brønnøysund, Bolagsverket, Companies House, INSEE, etc.) |
 | `validate_vat` | Validate a VAT number against VIES (EU) or HMRC (GB) |
 | `screen_sanctions` | Bulk screen up to 1000 names against UN/EU/OFAC/PEP lists (OpenSanctions, 768K+ entries) |
 | `kyb_full` | Master Know-Your-Business report — identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score |
-| `autocomplete_address` | Address autocomplete via DAWA (DK), Kartverket (NO), BAN (FR), PDOK (NL), MML (FI), Nominatim (others) |
+| `autocomplete_address` | Address autocomplete via DAWA (DK), Kartverket (NO), BAN (FR), MML (FI), Nominatim (others) |
 | `lookup_lei` | GLEIF Legal Entity Identifier lookup — forward, reverse, and parent/children relationships |
 | `company_enriched` | Company data + geocoded address + industry stats + Wikidata (website, employees, CEO, ticker, logo) |
 
@@ -104,8 +106,6 @@ claude mcp add nordic-data --env NORDIC_API_KEY=YOUR_KEY_HERE -- npx -y nordic-d
 | NO | Organisasjonsnummer | 9 digits |
 | SE | Organisationsnummer | 10 digits (with or without dash) |
 | FI | Y-tunnus | `NNNNNNN-D` (7 digits + check digit) |
-| NL | KVK | 8 digits |
-| BE | Enterprise number | 10 digits |
 | IE | CRO number | 1–7 digits |
 | UK | Companies House | 8 chars (digits, or prefix like `SC`, `NI`, `OC`) |
 | FR | SIREN | 9 digits |
