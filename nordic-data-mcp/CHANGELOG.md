@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] — 2026-05-21
+
+### Fixed
+- **`mcpName` casing corrected** to `io.github.Mnymann/nordic-data` (capital `M`). The MCP registry verifies the GitHub namespace case-sensitively against the authenticated user, and the GitHub username is `Mnymann`. Required for successful submission to `registry.modelcontextprotocol.io`.
+
 ## [1.2.1] — 2026-05-20
 
 ### Added

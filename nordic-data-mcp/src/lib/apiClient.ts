@@ -35,7 +35,7 @@ if (!API_KEY) {
   );
 }
 
-const USER_AGENT = "nordic-data-mcp/1.2.1";
+const USER_AGENT = "nordic-data-mcp/1.2.2";
 
 interface RawErrorBody {
   error?: string;
