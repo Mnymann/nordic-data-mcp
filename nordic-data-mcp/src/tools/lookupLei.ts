@@ -53,6 +53,7 @@ export const lookupLei: McpTool = {
     "Look up a Legal Entity Identifier (LEI) via GLEIF — the global standard for entity identification. Returns legal name, registered address, status, parent + ultimate parent relationships, and child entities (subsidiaries). Also supports reverse lookup from a national company number to LEI.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async (args) => {
     const parsed = inputSchema.parse(args);
     if (parsed.mode === "reverse") {

@@ -9,7 +9,7 @@ import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.2.0" },
+  { name: "nordic-data-mcp", version: "1.2.1" },
   { capabilities: { tools: {} } },
 );
 
@@ -18,6 +18,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     name: t.name,
     description: t.description,
     inputSchema: t.jsonSchema,
+    ...(t.annotations ? { annotations: t.annotations } : {}),
   })),
 }));
 

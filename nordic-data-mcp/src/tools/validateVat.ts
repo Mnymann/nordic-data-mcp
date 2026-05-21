@@ -24,6 +24,7 @@ export const validateVat: McpTool = {
     "Validate a VAT registration number against the official EU VIES service (or HMRC for GB). Returns validity status, registered name, and registered address.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  annotations: { readOnlyHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, vat_number } = inputSchema.parse(args);
     return apiGet(

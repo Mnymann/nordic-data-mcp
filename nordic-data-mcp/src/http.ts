@@ -18,7 +18,7 @@ import { formatError } from "./lib/errors.js";
 
 function buildServer(): Server {
   const server = new Server(
-    { name: "nordic-data-mcp", version: "1.2.0" },
+    { name: "nordic-data-mcp", version: "1.2.1" },
     { capabilities: { tools: {} } },
   );
 
@@ -27,6 +27,7 @@ function buildServer(): Server {
       name: t.name,
       description: t.description,
       inputSchema: t.jsonSchema,
+      ...(t.annotations ? { annotations: t.annotations } : {}),
     })),
   }));
 
@@ -61,7 +62,7 @@ app.use(express.json({ limit: "4mb" }));
 
 // Health endpoint — does not require an MCP session.
 app.get("/healthz", (_req, res) => {
-  res.json({ status: "ok", service: "nordic-data-mcp", version: "1.2.0" });
+  res.json({ status: "ok", service: "nordic-data-mcp", version: "1.2.1" });
 });
 
 // Sessions are keyed by Mcp-Session-Id header.

@@ -1,6 +1,6 @@
 {
   "name": "nordic-data-mcp",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "MCP server exposing Nordic Data API — company, VAT, sanctions, KYB and address data across 12 EU countries to AI agents",
   "type": "module",
   "bin": {
@@ -46,6 +46,7 @@
     "url": "https://github.com/Mnymann/nordic-data-mcp/issues"
   },
   "author": "AddonNordic ApS <contact@addonnordic.dk>",
+  "mcpName": "io.github.addonnordic/nordic-data",
   "keywords": [
     "mcp",
     "model-context-protocol",
