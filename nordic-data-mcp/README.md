@@ -65,6 +65,24 @@ In Cursor settings → MCP → Add new server, or edit `~/.cursor/mcp.json`:
 claude mcp add nordic-data --env NORDIC_API_KEY=YOUR_KEY_HERE -- npx -y nordic-data-mcp
 ```
 
+### 5. Add to ChatGPT (Pro, Business, or Enterprise)
+
+ChatGPT supports remote MCP servers as **custom connectors**. No API key needed from you — the hosted server handles upstream authentication.
+
+1. ChatGPT → **Settings** → **Connectors** → **Add custom connector**
+2. URL: `https://nordic-data-mcp-production.up.railway.app/mcp`
+3. Done — all 7 tools are available immediately.
+
+> Custom connectors require a ChatGPT Pro, Business, Team, or Enterprise plan.
+
+### 6. Add to Claude.ai (web)
+
+Same hosted endpoint, no local install:
+
+1. Claude.ai → **Settings** → **Connectors** → **Add custom connector**
+2. URL: `https://nordic-data-mcp-production.up.railway.app/mcp`
+3. Done.
+
 ---
 
 ## Available tools
