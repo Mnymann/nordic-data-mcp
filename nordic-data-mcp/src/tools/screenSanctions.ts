@@ -33,7 +33,7 @@ export const screenSanctions: McpTool = {
     "Screen one or more names against UN, EU, OFAC and PEP sanctions lists (768K+ entries via OpenSanctions). Returns match scores with source attribution.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
-  annotations: { readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Screen Sanctions and PEP Lists", readOnlyHint: true, openWorldHint: true },
   handler: async (args) => {
     const parsed = inputSchema.parse(args);
     return apiPost("/api/sanctions/screen", parsed);

@@ -20,7 +20,7 @@ export const companyEnriched: McpTool = {
     "Enriched company data: basic registry data + DAWA-validated address with lat/lng + industry statistics (DST for DK, SSB for NO, etc.) + Wikidata enrichment (website, employees, CEO, ticker, logo, Wikipedia URL). One call, multiple sources.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
-  annotations: { readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Enriched Company Profile", readOnlyHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, id } = inputSchema.parse(args);
     return apiGet(

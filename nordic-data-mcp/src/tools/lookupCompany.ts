@@ -22,7 +22,7 @@ export const lookupCompany: McpTool = {
     "Look up basic company data (name, address, status, industry, VAT registration, founding date) from official European business registries. Supports 12 countries: DK (CVR), NO (Brønnøysund), SE (Bolagsverket), FI (YTJ/PRH), IE (CRO), UK (Companies House), FR (INSEE Sirene), DE (Handelsregister), CZ (ARES), PL (KAS+KRS), LV (Uzņēmumu reģistrs), EE (Ariregister). Note: Benelux (NL, BE, LU) is not covered — use benelux-data-mcp for those.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
-  annotations: { readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Look Up Company", readOnlyHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, id } = inputSchema.parse(args);
     return apiGet(`/api/company/${country}/${encodeURIComponent(id)}`);
