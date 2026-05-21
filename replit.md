@@ -12,6 +12,7 @@ All commands are run from `nordic-data-mcp/` and use `npm`, not `pnpm`. The pack
 - `npm run build` — compile TypeScript → `dist/`
 - `npm run dev` — run stdio MCP server in watch mode
 - `npm run dev:http` — run Streamable HTTP MCP server in watch mode (for remote hosting)
+- `npm run start:http` — production HTTP server (used by Railway via `railway.toml`)
 - `npm run typecheck` — type-check without emitting
 - `node scripts/smoke-test.mjs` — end-to-end test: initialize → tools/list → tools/call (requires `NORDIC_API_KEY`)
 - Required env: `NORDIC_API_KEY` (get one at https://addonnordic.com)

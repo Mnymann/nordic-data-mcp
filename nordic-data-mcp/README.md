@@ -131,6 +131,28 @@ That's it. The MCP server connects to the hosted Nordic Data API for you.
 
 ---
 
+## Self-hosting (remote HTTP transport)
+
+For remote MCP hosting (e.g. Anthropic Connectors, Smithery, web-based clients), deploy the bundled Streamable HTTP transport:
+
+```bash
+npm install
+npm run build
+NORDIC_API_KEY=sk_... npm run start:http   # listens on :$PORT (default 3000)
+```
+
+Endpoints:
+- `GET /healthz` — health check (returns version + status)
+- `ALL /mcp` — MCP Streamable HTTP endpoint (session-based via `Mcp-Session-Id` header)
+
+A `railway.toml` is included for one-click deploy on [Railway](https://railway.app):
+1. New Project → Deploy from GitHub repo → select `Mnymann/nordic-data-mcp`
+2. Set **Root Directory** to `nordic-data-mcp`
+3. Add env var `NORDIC_API_KEY`
+4. Railway auto-detects the config, builds, and exposes a public HTTPS URL
+
+---
+
 ## Design notes
 
 - **Thin adapter.** No business logic, no caching, no transformations. Each tool maps 1:1 to a Nordic Data API endpoint.
