@@ -1,0 +1,103 @@
+martinnymann@MacBookPro nordic-data-mcp % cd ~/nordic-data-mcp/nordic-data-mcp
+git pull
+npm run build
+npm publish
+remote: Enumerating objects: 38, done.
+remote: Counting objects: 100% (38/38), done.
+remote: Compressing objects: 100% (9/9), done.
+remote: Total 27 (delta 18), reused 27 (delta 18), pack-reused 0 (from 0)
+Unpacking objects: 100% (27/27), 6.36 KiB | 166.00 KiB/s, done.
+From https://github.com/Mnymann/nordic-data-mcp
+   91e4325..ec1bf11  main       -> origin/main
+Updating 91e4325..ec1bf11
+error: Your local changes to the following files would be overwritten by merge:
+	nordic-data-mcp/server.json
+Please commit your changes or stash them before you merge.
+Aborting
+
+> nordic-data-mcp@1.2.1 build
+> tsc
+
+
+> nordic-data-mcp@1.2.1 prepublishOnly
+> npm run build
+
+
+> nordic-data-mcp@1.2.1 build
+> tsc
+
+npm notice
+npm notice 📦  nordic-data-mcp@1.2.1
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 5.1kB README.md
+npm notice 65B dist/http.d.ts
+npm notice 102B dist/http.d.ts.map
+npm notice 3.4kB dist/http.js
+npm notice 3.4kB dist/http.js.map
+npm notice 66B dist/index.d.ts
+npm notice 104B dist/index.d.ts.map
+npm notice 1.7kB dist/index.js
+npm notice 1.8kB dist/index.js.map
+npm notice 197B dist/lib/apiClient.d.ts
+npm notice 315B dist/lib/apiClient.d.ts.map
+npm notice 5.1kB dist/lib/apiClient.js
+npm notice 4.0kB dist/lib/apiClient.js.map
+npm notice 1.0kB dist/lib/countries.d.ts
+npm notice 348B dist/lib/countries.d.ts.map
+npm notice 1.0kB dist/lib/countries.js
+npm notice 638B dist/lib/countries.js.map
+npm notice 552B dist/lib/errors.d.ts
+npm notice 481B dist/lib/errors.d.ts.map
+npm notice 1.6kB dist/lib/errors.js
+npm notice 1.4kB dist/lib/errors.js.map
+npm notice 144B dist/tools/autocompleteAddress.d.ts
+npm notice 224B dist/tools/autocompleteAddress.d.ts.map
+npm notice 1.2kB dist/tools/autocompleteAddress.js
+npm notice 1.0kB dist/tools/autocompleteAddress.js.map
+npm notice 136B dist/tools/companyEnriched.d.ts
+npm notice 214B dist/tools/companyEnriched.d.ts.map
+npm notice 1.1kB dist/tools/companyEnriched.js
+npm notice 919B dist/tools/companyEnriched.js.map
+npm notice 593B dist/tools/index.d.ts
+npm notice 594B dist/tools/index.d.ts.map
+npm notice 665B dist/tools/index.js
+npm notice 620B dist/tools/index.js.map
+npm notice 120B dist/tools/kybFull.d.ts
+npm notice 198B dist/tools/kybFull.d.ts.map
+npm notice 1.3kB dist/tools/kybFull.js
+npm notice 901B dist/tools/kybFull.js.map
+npm notice 132B dist/tools/lookupCompany.d.ts
+npm notice 210B dist/tools/lookupCompany.d.ts.map
+npm notice 1.6kB dist/tools/lookupCompany.js
+npm notice 915B dist/tools/lookupCompany.js.map
+npm notice 124B dist/tools/lookupLei.d.ts
+npm notice 204B dist/tools/lookupLei.d.ts.map
+npm notice 2.6kB dist/tools/lookupLei.js
+npm notice 2.2kB dist/tools/lookupLei.js.map
+npm notice 136B dist/tools/screenSanctions.d.ts
+npm notice 215B dist/tools/screenSanctions.d.ts.map
+npm notice 1.2kB dist/tools/screenSanctions.js
+npm notice 1.1kB dist/tools/screenSanctions.js.map
+npm notice 128B dist/tools/validateVat.d.ts
+npm notice 207B dist/tools/validateVat.d.ts.map
+npm notice 1.2kB dist/tools/validateVat.js
+npm notice 905B dist/tools/validateVat.js.map
+npm notice 475B dist/types.d.ts
+npm notice 595B dist/types.d.ts.map
+npm notice 44B dist/types.js
+npm notice 102B dist/types.js.map
+npm notice 1.6kB package.json
+npm notice Tarball Details
+npm notice name: nordic-data-mcp
+npm notice version: 1.2.1
+npm notice filename: nordic-data-mcp-1.2.1.tgz
+npm notice package size: 17.5 kB
+npm notice unpacked size: 59.3 kB
+npm notice shasum: 2e3db1140cebf55e6a4257fb8d6d49424d9118e6
+npm notice integrity: sha512-JHQWuIxoACqGo[...]LV7/U5ISBPNKA==
+npm notice total files: 59
+npm notice
+npm error You cannot publish over the previously published versions: 1.2.1.
+npm error A complete log of this run can be found in: /Users/martinnymann/.npm/_logs/2026-05-21T07_12_43_681Z-debug-0.log
+martinnymann@MacBookPro nordic-data-mcp % 
