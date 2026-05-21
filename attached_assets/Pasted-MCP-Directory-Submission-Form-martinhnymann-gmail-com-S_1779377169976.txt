@@ -1,0 +1,46 @@
+MCP Directory Submission Form
+martinhnymann@gmail.com Switch accounts
+ 
+Not shared
+ 
+* Indicates required question
+Test Account Access
+Test credentials are necessary if your server requires authentication. Each MCP server is individually reviewed for safety, quality, and policy compliance. It's important that you provide all instructions needed to easily connect to the server. Incomplete or missing test credentials will block review of your server. 
+Testing Account Credentials
+*
+If your integration is gated by auth, please provide standard testing credentials, with sample data, so Anthropic can verify the integration's functionality and compliance with policies. 
+
+You can use client credentials (if supported) or a custom email (as long as 2FA is not required). If an accessible email is required for a test account (e.g., for Google OAuth or 2FA), use mcp-review@anthropic.com.
+Test Account Server URL (if different from main server URL)
+This may be useful if the server is in beta or otherwise if testing involves a separate URL.
+Test Account Setup Instructions
+We need to be able to quickly and simply connect to the server and test its features. Review teams may not be familiar with your service. Please provide test accounts with ready-to-go example data, or extremely clear guidance on how to set up and use the account. If Claude cannot figure out how to set up and access your MCP server, then there will be delays to review.
+Test Data Availability
+Test account includes sample data
+All tools can be tested with provided data
+Server Technical Details
+These questions will help with automated review of the server, and will be used when listing the server in the directory.
+List of tools in your MCP Server 
+*
+Comma-separated list of all tools that are available as part of your MCP server. A human-readable name for each tool is required. 
+
+Format: tool_name (human-readable name)
+Tool Titles & Annotations
+*
+All servers must specify accurate tool titles & annotations (readOnlyHint, etc.) See here for documentation.
+I've specified user-friendly titles for all tools in my server
+I've specified accurate tool annotations for all tools in my server
+List of resources in your MCP Server 
+Comma-separated list of all resources that are available as part of your MCP server. A human-readable name for each resource is required. 
+
+Format: resource_name (human-readable name)
+List of prompts in your MCP Server 
+Comma-separated list of all prompts that are available as part of your MCP server. A human-readable name for each prompt is required. 
+
+Format: prompt_name (human-readable name)
+Page 3 of 6
+Never submit passwords through Google Forms.
+This form was created inside Anthropic. - Contact form owner
+Does this form look suspicious? Report
+
+Google Forms
