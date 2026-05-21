@@ -1,0 +1,42 @@
+MCP Directory Submission Form
+martinhnymann@gmail.com Switch accounts
+ 
+Not shared
+ 
+* Indicates required question
+Submission Requirements Checklist
+Please confirm that your integration complies with all guidelines listed here, and that you've reviewed and agree to the MCP Directory Terms. Let's double check that everything is correct for your server before you submit. Anything missing from this list will delay review.
+Policy Compliance
+*
+I have reviewed and agree to the Software Directory Policy.
+My server does NOT enable cross-service automation
+My server does NOT transfer money, cryptocurrency, or execute financial transactions
+My MCP server is live, published, and ready to accept production traffic.
+I work for the company that owns or controls the API endpoint(s) that my server connects to.
+Technical Requirements
+*
+OAuth 2.0 is fully implemented for ALL tools requiring authentication
+All tools include proper safety annotations (readOnlyHint, destructiveHint)
+Server is accessible via HTTPS (not HTTP)
+CORS is properly configured for browser-based authentication
+Claude.ai and Claude Code IP addresses are allowlisted (if applicable)
+I have tested this works with Claude.ai on the latest build
+Documentation Requirements
+*
+Complete server documentation is published and publicly accessible
+Documentation includes setup instructions, tool descriptions, and troubleshooting guide
+Company privacy policy is published and accessible
+Terms of service are published and accessible
+Testing Requirements
+*
+Test account with sample data is ready (if relevant)
+Test credentials are valid for at least 30 days (if relevant)
+All server tools are functional and tested in the surfaces in which they’ll be available (claude.ai, Claude Code, etc)
+Additional Information
+Any other details you'd like to share, or feedback you would like to give about this form.
+Page 6 of 6
+Never submit passwords through Google Forms.
+This form was created inside Anthropic. - Contact form owner
+Does this form look suspicious? Report
+
+Google Forms
