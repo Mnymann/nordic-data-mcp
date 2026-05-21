@@ -1,0 +1,400 @@
+nordic-financial-mcp
+nordic-financial-mcp
+kontakt-qy0g/nordic-financial-mcp
+•
+last deployed 16 days ago
+
+Overview
+
+Performance
+
+Usage
+
+Integrate
+Semantic search across 1+ million vectors across Nordic financial data for AI agents. Covers company filings (annual and quarterly reports), exchange announcements, and press releases from Norway, Sweden, Denmark and Finland — plus macroeconomic data including interest rates, GDP, CPI, housing prices, credit growth, commodity prices (shipping, salmon, oil), energy prices (ENTSO-E day-ahead spot prices for all Nordic bidding zones), and FX rates. Hybrid dense+sparse retrieval with cross-encoder reranking. Updated nightly.
+
+View less
+
+Tools
+7
+
+Prompts
+3
+ping
+read-only
+Connectivity check that confirms the Nordic MCP server process is responding.
+
+Use this at the start of a session to verify the server is reachable before
+making other calls. Do not use as a proxy for database health — the server can
+respond while the Qdrant vector database is temporarily unavailable. To confirm
+data availability, call search_filings directly.
+
+Returns:
+A greeting string: "Hello {name}! Nordic MCP server is running."
+
+get_company_info
+read-only
+Look up a company in the official business registry for Norway, Denmark or Finland.
+
+Use this to retrieve authoritative registration data (legal name, status, address)
+for a known organisation number. Do not use for Sweden (SE) — use search_filings
+with country='SE' instead, as Bolagsverket integration is not yet available.
+Do not use to discover tickers or ISIN codes — use search_filings for that.
+
+Args:
+identifier: Organisation/business/CVR number. Format varies by country:
+NO: 9-digit organisation number, e.g. 923609016 (Equinor)
+DK: 8-digit CVR number, e.g. 22756214 (Maersk)
+FI: Business ID with hyphen, e.g. 0112038-9 (Nokia)
+country: Two-letter country code: 'NO' (default), 'DK', or 'FI'.
+
+Returns:
+Dict with company name, status and registered business address.
+Returns {'error': '<message>'} if the company is not found, the identifier
+format is invalid, or the upstream registry API is unavailable.
+
+search_filings
+read-only
+Search the Nordic financial database for company filings, press releases
+and macroeconomic summaries.
+
+Use this as the primary tool for any question about Nordic listed companies,
+markets or macro conditions. Do not use to retrieve a full document — results
+are chunked text excerpts; use parse_pdf_to_text for the full original document.
+Do not use for Swedish company registration data — use get_company_info instead.
+
+The database contains ~1 million vectors across four Nordic markets (NO/SE/DK/FI).
+
+COMPANY FILINGS
+Annual reports (XBRL/ESEF) and quarterly reports from ~1 500 listed companies
+across Oslo Børs, Nasdaq Stockholm, Nasdaq Helsinki, Nasdaq Copenhagen and
+First North markets. Covers 2020–present. Strong coverage for NO and SE;
+growing coverage for DK and FI.
+
+EXCHANGE ANNOUNCEMENTS & PRESS RELEASES
+Regulatory filings, exchange announcements and press releases from listed
+companies in NO, SE, DK and FI. Covers 2020–present.
+
+MACROECONOMIC SUMMARIES
+Quarterly macro summaries covering key indicators per country:
+Norway (NO): policy rate, FX rates, CPI, house prices, credit growth,
+electricity price, salmon price, GDP components
+Sweden (SE): policy rate, house price index, household credit
+Denmark (DK): policy rate, house price index, household loans,
+electricity price
+Finland (FI): house price index, household debt-to-income ratio,
+electricity price
+Use report_type='macro_summary' and country='NO'/'SE'/'DK'/'FI' to filter.
+Use fiscal_year and a quarter reference in your query, e.g.
+"Norwegian housing market Q1 2024".
+
+Args:
+query: What you are looking for, e.g. 'net interest margin outlook',
+'salmon price Q3', 'dividend policy', 'fleet utilization',
+'Norwegian housing market 2024 Q1',
+'Swedish policy rate inflation 2023'
+ticker: Optional — filter by company ticker, e.g. 'SALM', 'EQNR', 'NDA'
+fiscal_year: Optional — filter by year, e.g. 2024
+report_type: Optional — one of:
+'annual_report' – Nordic XBRL/ESEF annual reports
+'quarterly_report' – Quarterly/interim reports
+'press_release' – Exchange announcements and press releases
+'macro_summary' – Quarterly macroeconomic summaries
+sector: Optional — filter by sector:
+'seafood' – seafood companies
+'energy' – energy / oil & gas
+'shipping' – shipping companies
+country: Optional — filter by country code: 'NO', 'SE', 'DK' or 'FI'
+limit: Number of results after reranking (default 5, max 20)
+
+Returns:
+List of relevant text excerpts with metadata, reranked by relevance.
+Each result includes rerank_score, hybrid_score, vector_score, company,
+ticker, country, fiscal_year, report_type, period, filing_date and the
+full text chunk. Returns an empty list if no relevant results are found
+or if the Qdrant database is temporarily unreachable.
+
+parse_pdf_to_text
+read-only
+Download a PDF from a URL and extract all text content, page by page.
+
+Use this to read the full text of a specific document — for example, an annual
+report PDF linked from a search_filings result. Best combined with search_filings:
+use search_filings to locate the document, then parse_pdf_to_text for the full text.
+Do not use for PDFs that are already well-represented in the database — search_filings
+is faster and returns pre-ranked, relevant excerpts.
+Not suitable for scanned (image-only) PDFs without embedded text; those pages
+will be returned as "(no extractable text)".
+
+Args:
+pdf_url: Direct HTTPS URL to the PDF file, e.g. https://example.com/report.pdf.
+Must be publicly accessible; authentication-protected URLs will fail.
+
+Returns:
+All text from the PDF with "--- Page N ---" separators between pages.
+Returns an error string if the download fails, the URL does not point to a
+valid PDF, or the document exceeds the 60-second download timeout.
+
+get_current_power_price
+read-only
+Fetch today's hourly day-ahead electricity spot prices for a Nordic bidding zone.
+
+Use this for current and near-term (today/tomorrow) price queries. Do not use
+for historical price analysis — use search_filings with report_type='macro_summary'
+and a date reference in the query for that purpose.
+Tomorrow's prices are published by NordPool around 13:00 CET; requests before
+that time will return "not yet available" for the tomorrow field.
+
+All zones return prices in EUR/kWh (NordPool day-ahead, native currency).
+Norwegian zones (NO1–NO5) use hvakosterstrommen.no; all other zones use ENTSO-E.
+
+Args:
+zone: Bidding zone code. Options:
+NO1 (East/Oslo), NO2 (Southwest), NO3 (Central/Trondheim),
+NO4 (North), NO5 (West/Bergen),
+SE1–SE4, DK1, DK2, FI.
+include_tomorrow: Set to True to also fetch tomorrow's hourly prices if
+already published (default False).
+
+Returns:
+Dict containing zone, date, current_hour_utc, current price, and a 'today'
+summary with min/max/avg and the full hourly list. Includes a 'tomorrow'
+key if include_tomorrow=True. Returns {'error': '<message>'} if price data
+is unavailable for the requested zone or date.
+
+due_diligence_report
+read-only
+Run multiple targeted searches and return results grouped by section for due diligence.
+
+The agent defines all sections and queries — this tool does not decide what is
+relevant. Before calling, reason about which topics and data sources matter for
+this specific company: financial metrics, risk factors, sector-specific macro
+drivers (e.g. freight rates for shipping, power prices for aluminium smelters),
+recent press releases, peer context, etc. Formulate one query per section.
+
+Each query is run independently as a full hybrid search (dense + sparse + rerank).
+
+IMPORTANT — use 'ticker' on company-specific sections to avoid false positives.
+Without a ticker filter, documents that merely mention the company (e.g. as a
+customer or competitor) can rank above actual filings from that company. Omit
+'ticker' only for sections where cross-company results are intentional, such as
+sector macro context or peer comparisons.
+
+Args:
+company: Company name, used for metadata only (not a filter).
+sections: Up to 8 sections. Example:
+[
+{"name": "financials", "query": "Equinor revenue EBITDA operating profit 2024", "ticker": "EQNR"},
+{"name": "risk", "query": "Equinor climate regulatory risk stranded assets", "ticker": "EQNR"},
+{"name": "macro", "query": "Brent crude oil price energy sector Norway 2024", "limit": 3},
+{"name": "news", "query": "Equinor press release dividend acquisition 2024", "ticker": "EQNR"}
+]
+
+Returns:
+Dict with 'company', 'generated_at', and 'sections' — one entry per requested
+section with its name and results (same format as search_filings).
+Sections with no results return an empty list.
+
+analyze_company
+read-only
+AI-powered company analysis using semantic search over Nordic financial data.
+
+Orchestrates multiple searches internally and returns a synthesized narrative
+answer with source citations. Covers annual reports, quarterly reports, press
+releases and macroeconomic context for Nordic listed companies.
+
+Use this when you want a synthesized answer rather than raw search chunks.
+For raw data access, use search_filings or due_diligence_report instead.
+
+Args:
+company: Company name or ticker
+question: What you want to know about the company
+model: 'haiku' (default) or 'sonnet'
+
+MCP URL
+
+https://nordic-financial-mcp--kontakt-qy0g.run.tools
+Install
+MCP
+CLI
+Search clients
+Claude Code
+Claude Code
+Codex
+Codex
+Cursor
+Cursor
+Claude
+Claude
+OpenCode
+OpenCode
+Antigravity
+Antigravity
+VS Code
+VS Code
+Cherry Studio
+Cherry Studio
+LM Studio
+LM Studio
+Gemini CLI
+Gemini CLI
+Roo Code
+Roo Code
+ChatWise
+ChatWise
+Windsurf
+Windsurf
+Amazon Q
+Amazon Q
+Dust
+Dust
+LibreChat
+LibreChat
+Zed
+Zed
+Cline
+Cline
+Kiro
+Kiro
+ChatGPT
+ChatGPT
+Goose
+Goose
+Poke
+Poke
+Trae
+Trae
+VS Code Insiders
+VS Code Insiders
+Raycast
+Raycast
+Witsy
+Witsy
+BoltAI
+BoltAI
+Augment
+Augment
+Highlight
+Highlight
+Qordinate
+Qordinate
+OpenClaw
+OpenClaw
+AgentOne
+AgentOne
+Repository
+github.com/aidatanordic/nordic_financial_mcp
+Homepage
+aidatanorge.no
+Published
+Apr 22, 2026
+Weekly Tool Calls
+1,235
+Performance
+Tool
+Calls
+parse_pdf_to_text
+541
+search_filings
+521
+get_company_info
+51
+ping
+50
+get_current_power_price
+40
+analyze_company
+23
+company_research
+21
+Total
+1,247
+Uptime (30d)
+98.8%
+Latency (30d)
+631ms p50
+May 9
+May 10
+May 11
+May 13
+May 14
+May 15
+May 16
+May 18
+May 19
+May 21
+0ms
+650ms
+1.3s
+1.9s
+2.6s
+Usage
+Top Clients
+1
+Smithery
+Smithery
+98
+Total
+98
+Daily Sessions
+Apr 22
+May 5
+May 6
+May 12
+May 15
+May 18
+May 19
+May 20
+May 21
+0
+15
+30
+45
+60
+Integrate
+Integrate this server via REST, the MCP SDK, or the AI SDK. Smithery handles OAuth, token refresh, and session management for you.
+
+Create API key
+Manage Connections
+CLI
+cURL
+AI SDK
+TypeScript
+Preview
+1. Install Smithery CLI
+
+
+npm install -g smithery
+2. Create a namespace
+
+
+smithery namespace create {your-namespace}
+3. Use this server
+
+
+# Add this server
+smithery mcp add kontakt-qy0g/nordic-financial-mcp
+
+# List available tools
+smithery tool list {connection}
+
+# Call a tool
+smithery tool call {connection} {tool_name} '{"key": "value"}'
+Smithery Logo
+Accelerating the Agent Economy
+
+Resources
+Documentation
+Privacy Policy
+System Status
+Company
+Pricing
+About
+Blog
+Connect
+© 2026 Smithery. All rights reserved.
+
+
+
+
+0
