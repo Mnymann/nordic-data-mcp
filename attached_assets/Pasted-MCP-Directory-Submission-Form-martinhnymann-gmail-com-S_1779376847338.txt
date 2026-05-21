@@ -1,0 +1,143 @@
+MCP Directory Submission Form
+martinhnymann@gmail.com Switch accounts
+ 
+Not shared
+ 
+Draft saved
+* Indicates required question
+Submission Details
+This page will ask for details about your MCP server and information needed to list the server on the directory. The following pages will also ask for:
+Test credentials (to allow reviewers to test pre-configured accounts through MCP).
+Icons, favicons, and screenshots of the server in use.
+(Optional) SKILL.md files to associate with your MCP.
+Company Information
+This is to help us contact you to expedite the review process. We will have server reviewers directly reach out to the primary contact. This also helps us verify the authenticity of submissions. 
+Company/Organization Name
+*
+AddonNordic ApS
+Company/Organization URL
+*
+https://addonnordic.dk/
+Primary Contact Name
+*
+Martin Nymann
+Primary Contact Email
+*
+contact@addonnordic.dk
+Primary Contact Role
+Founder
+Anthropic Point of Contact (if known)
+Server Details
+MCP Server Name
+*
+As you'd like it to appear in the Directory. Do not include "MCP" or "Server" in the name
+Nordic Data
+MCP Server URL
+*
+Is your MCP Server URL a universal URL or do you allow users to create custom MCP URLs? 
+Universal URL
+Custom MCP URLs
+MCP Server URL
+*
+If your MCP Server has a universal URL, please provide it below.
+
+If you instead generate custom URLs for each user, please make a note of this, provide the URL at which users can get their custom URL instead, and specify a ReGex that can be used to identify a URL as belonging to your server
+Tagline (max 55 characters)
+*
+Distill the description above into a short blurb. It will appear as a subtitle below your server name. (55 characters max, including spaces). See example:
+Captionless Image
+MCP Server Description 
+*
+50-100 words describing what your server does and its key capabilities. This description will live in-app. See example:
+Captionless Image
+Use Cases + Examples
+*
+Please provide at least three use cases with example prompts showing the value of your connector. 
+Captionless Image
+Connection requirements
+*
+Please specify any set up requirements that users need to know before connecting to your MCP server (e.g., requires a free or premium account, admin or developer seat, geographic availability, custom instance URL). 
+
+If none apply, state "No special requirements."
+
+Read/Write Capabilities
+*
+Please check the option below that best describes your server's capabilities
+Read Only
+Write Only
+Read + Write
+Is this an "MCP App" (has interactive UI elements)
+*
+For more information of MCP Apps, you can read the specification here and the Claude documentation here.
+Yes
+No
+Third-party Connections and Web Access
+*
+Select all that apply to your MCP server
+Web access: Fetches information from the open web (e.g., web scraping, search engines, or browsing arbitrary URLs, not just connecting to a specific API)
+Third-party AI model integration: Sends data to or receives data from a generative AI model other than Claude
+Third-party data retrieval: Connects to external services that themselves retrieve data from other sources (e.g., workflow automation platforms or other services that aggregate or relay data from multiple third-party sources)
+Third-party data modification: Can connect to external services that themselves create, update, or delete data in other sources (e.g., workflow automation platforms or other services that write to multiple third-party sources)
+N/A
+Data Handling
+Server only accesses data explicitly requested by user
+No data is stored beyond session requirements
+Data transmission is encrypted (HTTPS/TLS)
+GDPR compliant (if applicable)
+Does this integration allow users to access, view, or share their own personal health data (e.g., medical records, lab results, health metrics)?
+*
+Yes
+No
+Other:
+Categories
+Business & Productivity
+Communication
+Data & Analytics
+Development tools
+Financial Services
+Consumer Health
+Health & Life Sciences
+Media & Entertainment
+Commerce & Shopping
+Other:
+Does this MCP serve sponsored content or advertisements?
+*
+No, there is no sponsored content or advertisements
+Yes, there are banner ads or other paid visual elements
+Yes, the returned content or ranking of returned content is impacted by sponsorship or ad placement
+Other:
+Authentication Details
+How users connect to your MCP in Claude
+Authentication Type
+*
+No auth needed
+OAuth 2.0 (required for servers/tools needing auth)
+Custom URL (not supported)
+Auth Client
+Static OAuth Client
+Dynamic OAuth Client (e.g., DCR, CIMD)
+Static Client ID (if applicable)
+Static Client Secret (if applicable)
+Transport Support
+*
+Claude.ai, Claude Code, and API all support both SSE & Streamable HTTP, but recommend that your server supports Streamable HTTP as we may deprecate SSE support later this year.
+Streamable HTTP
+SSE
+Documentation & Support
+It's important users can effectively use your MCP server, and reach out to developers when things go wrong. Please provide documentation of the server's use, and a recommended support channel.  
+MCP Server Documentation Link
+*
+This is an externally facing link that will be shown to users. It should enable them to understand what your MCP does and how to set it up,  debug issues, or self serve support as needed by the end user. You can choose what format this takes (docs, blog, support center, etc.).
+Privacy Policy
+*
+Please provide a link to a clear, accessible privacy policy explaining data collection, usage, and retention. This will be displayed with your Directory listing.
+Data Processing Agreement URL (if applicable)
+Support Channel
+*
+Please provide a link or email where users of your integration can contact you for support (e.g. email, GitHub issues, help center, docs site, etc.). This will be displayed with your Directory listing.
+Page 2 of 6
+Never submit passwords through Google Forms.
+This form was created inside Anthropic. - Contact form owner
+Does this form look suspicious? Report
+
+Google Forms
