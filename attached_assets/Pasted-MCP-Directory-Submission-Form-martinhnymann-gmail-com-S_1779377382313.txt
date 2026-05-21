@@ -1,0 +1,43 @@
+MCP Directory Submission Form
+martinhnymann@gmail.com Switch accounts
+ 
+Not shared
+ 
+* Indicates required question
+Launch Readiness & Listing Media Materials
+You're almost done, we just want to know your MCP server is ready for launch, and we can work as fast as possible to get it into the directory.  We also need specific materials to show on the listing.
+Timeline - Server GA Date
+If your server is not currently in GA, please provide the date of your planned GA. Please note that we can only include servers in our Directory that are in GA.
+Date
+Confirm testing is complete & your server works as intended in:
+*
+Note: Claude Code and Cowork compatibility is not required
+Claude.ai (web)
+Claude Desktop
+Claude Code
+Cowork
+Server Logo
+*
+Please provide a square logo (1:1 aspect ratio) in SVG format. 
+
+By submitting this form, you're acknowledging that Anthropic will display this logo as part of your server's Directory listing. You can either list it as a URL (preferred, Google Drive link is okay).
+Server Logo URL
+*
+Please verify that https://www.google.com/s2/favicons?domain=<YOUR_DOMAIN>&sz=64 points to the logo that you want displayed for your connector.  (e.g. https://www.google.com/s2/favicons?domain=claude.ai&sz=64)
+
+This Google favicon link is where we fetch the logo displayed for tool calls and the directory from. If it isn't the correct logo, be sure to update the favicon on the site for your MCP URL
+I have verified that the favicon is correct
+Promotional Images of MCP Server
+Upload of screenshots of the output from your MCP or MCP App on Claude.ai, or promotion marketing material generated for demonstrating your MCP server. You can look on the claude.com/connector website for examples. These screens may or may not be used on this website or in other promotional content. Three to five screenshots is ideal. Videos are welcome, although they may not be used.
+
+In-app carousel screenshots for interactive MCP Apps can be any size or aspect ratio, but we prefer at least 1000px width, and each should come with a paired prompt (provided separately). These images should be cropped directly to just the app response itself. All carousel screenshots should be PNG format.
+
+Please share a link to a drive, dropbox, box, or other filestore.
+Link to Promotional Materials
+If you would like to link directly to a source of promotional materials designed for listing in the directory (e.g., a Google Drive link), you can share it here. If you have matching prompts for the promotional images, share them here.
+Page 4 of 6
+Never submit passwords through Google Forms.
+This form was created inside Anthropic. - Contact form owner
+Does this form look suspicious? Report
+
+Google Forms
