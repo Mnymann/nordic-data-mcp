@@ -1,0 +1,51 @@
+Kort fra mig — det meste af planen er sund, men der er to ting jeg kan rydde af vejen lige nu fra min side.
+
+1. Privacy + ToS er allerede dækket
+Du gav dem allerede til CRO i din underskrevne aftale:
+
+https://addonnordic.dk/privacy
+https://addonnordic.dk/terms
+Brug samme URL'er i Anthropic-ansøgningen. Det punkt er ikke en blocker — MCP-agenten vidste det bare ikke.
+
+2. Option A er rigtig, men 10.000/dag er for stramt
+MCP-agentens analyse er korrekt: start med delt nøgle, opgrader til OAuth senere. Men 10.000/dag-loftet jeg satte i går er kalkuleret til den nuværende, lille MCP-trafik. Hvis Anthropic optager din connector i deres directory, kan trafikken gå fra 0 til 1.000+ kald/dag på én dag. Hvis 100 Claude-brugere prøver din connector samtidigt, deler de 10.000 — det er kun 100 kald per bruger inden der ryger 429-fejl.
+
+Det vil give dårligt førsteindtryk. Jeg foreslår at bumpe det op til 100.000/dag med det samme — det er gratis for dig (du betaler kun for de kald der faktisk sker hos upstream-leverandørerne), og det giver Anthropic-brugerne luft til at teste uden at ramme et kunstigt loft.
+
+Hvis trafikken eksploderer mod 100k/dag i flere uger i træk, så ved du at det er tid til Option B (OAuth + per-bruger nøgler). Indtil da er højere loft den billigste forsikring.
+
+Skal jeg bumpe det nu? Det er ét kald — under et minut.
+
+3. Option B er større end MCP-agenten estimerer
+Bare så du har det rigtige tidsestimat hvis det bliver aktuelt om 3-6 måneder:
+
+MCP-agenten skriver "1-2 uger arbejde". Det forudsætter at du allerede har bruger-konti, login, dashboard hvor brugere kan se deres nøgle. Du har ingen af de tre dele endnu. Realistisk estimat fra mit kodebase-perspektiv:
+
+Bruger-tabel, login (Clerk eller Replit Auth) — 2-3 dage
+Self-service nøgle-udstedelse via dashboard — 2-3 dage
+OAuth 2.1 endpoints (authorize + token + refresh) for MCP-flow — 4-5 dage
+Per-bruger billing/usage tracking — 3-4 dage
+Test + docs — 2-3 dage
+Realistisk: 3-4 uger fuldtid, ikke 1-2 uger. Vigtigt at vide når du sætter forventninger til dig selv.
+
+Hvad jeg foreslår nu
+Sig "ja" til at jeg bumper kvota til 100k/dag
+Submit ansøgningen i morgen (lukker computeren nu — du har haft en kæmpe dag)
+Tag stilling til OAuth-vejen først når du faktisk har trafikken til at retfærdiggøre det
+Skal jeg bumpe kvota nu?
+
+
+Checkpoint made
+just now
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
+Nordic Data API - Replit
