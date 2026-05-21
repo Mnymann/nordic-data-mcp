@@ -1,0 +1,27 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.mnymann/nordic-data",
+  "description": "Nordic Data — European B2B data for AI agents. Company lookup, full KYB reports, sanctions/PEP screening, VAT validation, LEI lookup, and address autocomplete across 12 EU countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE). GDPR-compliant. Sources: CVR, Brønnøysund, Bolagsverket, YTJ, CRO, Companies House, INSEE, Handelsregister, ARES, KAS/KRS, Uzņēmumu reģistrs, Ariregister, VIES, HMRC, OpenSanctions, GLEIF.",
+  "repository": {
+    "url": "https://github.com/Mnymann/nordic-data-mcp",
+    "source": "github"
+  },
+  "version": "1.2.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "nordic-data-mcp",
+      "version": "1.2.1",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        {
+          "name": "NORDIC_API_KEY",
+          "description": "Your Nordic Data API key — get one at https://addonnordic.com",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+Rapporten er solid, men du er solo-founder. Du skal ikke gøre alt — du skal gøre det rigtige nu.
+Her er de 4 handlinger med højest ROI / lavest indsats:
+
+Prioriteret rækkefølge
+#HandlingIndsatsROIHvem1Submit til Official MCP Registry30 minMeget højDu — i dag2llms.txt på addonnordic.com20 minHøjLovable3Anonym gratis test-tier (20 kald/IP)1-2 timerEkstremDin backend-udvikler4Anthropic Connectors Directory ansøgning1 timeHøjDu — denne uge
+
+Hvad du springer over nu
+Alt andet i rapporten er måned 2-3 arbejde — awesome-lister, YouTube, nyhedsbreve, n8n. Det er rigtigt, men det er ikke i dag.
+
+Én handling nu
+MCP Registry submission — det er det eneste der kræver dig personligt i dag og som ikke kan delegeres.
+Kør dette i terminal:
+bashnpx mcp-publisher publish \
+  --name "io.github.addonnordic/nordic-data" \
+  --url https://github.com/Mnymann/nordic-data-mcp
+Vil du have step-by-step guide til registry-submission?You said: martinnymann@MacBookPro nordic-data-mcp % npx mcp-publisher publish \martinnymann@MacBookPro nordic-data-mcp % npx mcp-publisher publish \
+  --name "io.github.addonnordic/nordic-data" \
+  --url https://github.com/Mnymann/nordic-data-mcp
+npm error code E404
+npm error 404 Not Found - GET https://registry.npmjs.org/mcp-publisher - Not found
+npm error 404
+npm error 404  The requested resource 'mcp-publisher@*' could not be found or you do not have permission to access it.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: /Users/martinnymann/.npm/_logs/2026-05-21T06_55_32_547Z-debug-0.log
+martinnymann@MacBookPro nordic-data-mcp %Show more8:56 AMClaude responded: mcp-publisher eksisterer ikke som NPM-pakke.mcp-publisher eksisterer ikke som NPM-pakke. Rapporten havde forkerte oplysninger.
+Det officielle registry bruger en anden process. Lad mig tjekke den korrekte fremgangsmåde.Identified incorrect installation method, sought proper source-based approachIdentified incorrect installation method, sought proper source-based approachmcp-publisher er ikke en NPM-pakke — den bygges fra GitHub. Her er den korrekte fremgangsmåde:
+
+Korrekt registry submission — step for step
+1. Hent den rigtige CLI:
+bashgit clone https://github.com/modelcontextprotocol/registry
+cd registry
+make publisher
+2. Gå til dit nordic-data-mcp projekt og opret server.json:
+bashcd ~/nordic-data-mcp/nordic-data-mcp
+./path/to/mcp-publisher init
+3. Rediger den genererede server.json — klar til paste:
+json{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.mnymann/nordic-data",
+  "description": "Nordic and Northern European B2B data for AI agents. Company lookup, KYB, sanctions screening, VAT validation and address autocomplete across DK/NO/SE/FI. GDPR-compliant.",
+  "repository": {
+    "url": "https://github.com/Mnymann/nordic-data-mcp",
+    "source": "github"
+  },
+  "version": "1.2.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "nordic-data-mcp",
+      "version": "1.2.1",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        {
+          "description": "Your Nordic Data API key — get one at addonnordic.com",
+          "isRequired": true,
+          "format": "string",
+          "isSecret": true,
+          "name": "NORDIC_API_KEY"
+        }
+      ]
+    }
+  ]
+}
+4. Login og publish:
+bash./mcp-publisher login github
+./mcp-publisher publish
+Login åbner en browser med GitHub OAuth — godkend og fortsæt.
+
+Start med trin 1 og rapportér hvad du får.Sonnet 4.6 AdaptiveClaude is AI and can make mistakes. Please double-check cited sources.Project contentNordic App FactoryCreated by youproject instructions.md169 linesmdapp-pipeline.md602 linesmdNordic API Dashboard.md485 linesmd
