@@ -1,0 +1,77 @@
+Lad mig lave alle tre. Først tjekker jeg den eksisterende test-fil og schema.
+
+
+2 actions
+Ingen admin-tests eksisterer endnu. Jeg laver alle tre ændringer nu — uden at skrive nye tests (matcher eksisterende mønster; admin smoke-testes mod prod).
+
+
+10 actions
+TS-fejlene er pre-eksisterende (rå tsc ignorerer projektets tsconfig.json med esModuleInterop). Tests passerer — så ændringerne er gode. Lad mig verificere med projektets eget build-script og smoke-teste lokalt.
+
+
+2 actions
+Projekt-typecheck rent for de ændrede filer. Smoke-test lokalt og commit.
+
+
+11 actions
+Alle tre virker som ventet — commit og afslut.
+
+Færdig — alle tre forbedringer er live på Railway efter næste deploy.
+
+Lokal smoke-test (alle grønne):
+
+Test	Resultat
+GET /admin/tiers	✅ {free:100, starter:1000, pro:10000, scale:50000, enterprise:200000}
+GET /admin/keys/ukendt	✅ 404 not_found
+POST /admin/keys (ny tenant, tier=pro)	✅ 201, already_existed:false, api_key:"ndk_...", quota=10000
+POST /admin/keys (samme tenant igen)	✅ 200, already_existed:true, api_key:null — dubletter umulige
+GET /admin/keys/:tenant whoami	✅ tier=pro, quota=10000, used_today=0
+Det Lovable nu skal gøre i Paddle-webhooken:
+
+const resp = await fetch("https://api.addonnordic.dk/admin/keys", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-Api-Key": process.env.NORDIC_INTERNAL_API_KEY,
+  },
+  body: JSON.stringify({
+    tenant_name: `customer_${userId}`,
+    tier: paddleTierName,   // "starter" | "pro" | "scale" osv.
+  }),
+});
+const data = await resp.json();
+if (data.already_existed) {
+  // Paddle webhook retry — gør ingenting, nøgle er allerede i Supabase
+  return;
+}
+// Første call — gem nøgle i Supabase
+await supabase.from("api_keys").insert({
+  user_id: userId,
+  key: data.api_key,    // ndk_xxx... — formatet vores backend forstår
+  tier: data.tier,
+  daily_quota: data.daily_quota,
+});
+
+Bonus for Lovable-dashboardet: GET /admin/keys/customer_{userId} returnerer live used_today og remaining_today — så I kan vise kunden en "Du har brugt 1.247 af 10.000 kald i dag"-progressbar uden at bygge jeres egen tæller.
+
+Deploy: push til Railway, vent ~30 sek på at det nye unique-index oprettes (tenantStore: initialised i loggen bekræfter), og så er I klar til første betalende kunde.
+
+Sig til når Lovable har implementeret det — så kan vi køre én ende-til-ende smoke-test med en Paddle-sandbox-betaling.
+
+
+Checkpoint made
+just now
+
+Worked for 2 minutes
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
+Nordic Data API - Replit
