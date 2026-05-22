@@ -1,0 +1,85 @@
+Nu kan jeg svare præcist — og der er et problem du skal have fikset før første betalende kunde, ellers virker deres nøgle ikke.
+
+Det grundlæggende problem: to systemer der ikke taler sammen
+Du har to helt separate "key-verdener" lige nu:
+
+Sted	Hvem ejer den	Key-format	Hvor gemmes den
+Lovable + Supabase	Lovable-projektet	nrd_live_<48 hex>	Supabase-tabellen api_keys
+Vores Railway API (api.addonnordic.dk)	Os	ndk_<base64url>	Vores egen Postgres-tabel api_clients
+Vores API kender kun to slags nøgler:
+
+INTERNAL_API_KEY (env-var — den du bruger selv)
+Nøgler i vores api_clients-tabel (oprettet via POST /admin/keys)
+Når en kunde i dag betaler via Paddle, får en nrd_live_...-nøgle fra Supabase, og prøver at kalde api.addonnordic.dk/api/... — så får de 401 unauthorized. Hver gang. Lovables flow genererer en nøgle i Supabase, men den nøgle eksisterer ikke i vores backend.
+
+Den rigtige løsning: Lovable-webhook → vores /admin/keys
+I stedet for at Supabase laver sin egen nrd_live_...-nøgle, skal Paddle-webhooken kalde vores API for at få en rigtig nøgle. Vi har allerede endpointet klar.
+
+Det Lovable skal ændre i webhooken (src/routes/api/public/payments/webhook.ts):
+
+Erstat dette:
+
+await supabase.rpc("generate_api_key", { _user_id: userId })
+
+Med dette:
+
+const resp = await fetch("https://api.addonnordic.dk/admin/keys", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-Api-Key": process.env.NORDIC_INTERNAL_API_KEY,  // sættes som secret i Lovable
+  },
+  body: JSON.stringify({
+    tenant_name: `customer_${userId}`,   // eller email/firma — bare unikt
+    tier: "starter",
+    daily_quota: 1000,                    // matcher det de har købt
+  }),
+});
+const { api_key } = await resp.json();    // formatet: ndk_xxxxxxx...
+// Gem api_key i Supabase api_keys-tabellen som før, så dashboardet kan vise den
+await supabase.from("api_keys").insert({
+  user_id: userId,
+  key: api_key,
+  created_at: new Date().toISOString(),
+});
+
+Hvad du skal gøre på din side:
+
+I Lovable-projektet, tilføj NORDIC_INTERNAL_API_KEY som secret med samme værdi som vores Railway INTERNAL_API_KEY
+Eventuelt sæt daily_quota ud fra Paddle-tier (starter=1000, pro=10000 osv. — sig til hvis du vil have hjælp til mapping)
+Hvad kunden så oplever:
+
+Betaler → Paddle webhook fires
+Lovable kalder vores /admin/keys → får ndk_... nøgle på <1 sek
+Gemmer i Supabase → dashboard viser nøglen
+Kunden kopierer ndk_... → bruger den mod api.addonnordic.dk → virker øjeblikkeligt med deres daglige kvote
+Om de to andre ting Lovable og MCP-agenten nævnte
+Polling/race condition: Ja, gør det — råd er korrekt. Webhook → DB → dashboard har altid 2-5 sek delay.
+
+Hash vs plaintext: Vi gør allerede det rigtige på vores side — vi hasher med SHA-256 og kan ikke vise nøglen igen (se tenantStore.ts). Det betyder at hvis kunden mister nøglen, skal Lovable lave en "regenerér nøgle"-knap der kalder DELETE /admin/keys/:tenant + POST /admin/keys igen. Værd at have klar fra dag ét.
+
+Vil du have at jeg gør noget aktivt?
+Tre ting jeg kan gøre for dig herfra — sig til hvilke:
+
+Tilføje et tenant_name valideringscheck så Lovable ikke ved et uheld kan oprette dubletter for samme bruger (idempotency). Nyttigt fordi Paddle sender webhooks 2-3 gange ved netværksfejl.
+Lave en simpel "verify"-endpoint (GET /admin/keys/:tenant/whoami) som Lovable kan bruge til at tjekke om en nøgle stadig er aktiv før den vises i dashboardet.
+Tilføje tier→daily_quota mapping så Lovable bare sender tier: "pro" uden at skulle kende kvoten.
+Eller har du brug for jeg formulerer beskeden til Lovable-agenten først?
+
+
+Checkpoint made
+just now
+
+Worked for 1 minute
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
+Nordic Data API - Replit
