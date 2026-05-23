@@ -30,7 +30,7 @@ function resolveHosts(): string[] {
 const HOSTS = resolveHosts();
 const DEFAULT_API_KEY = process.env.NORDIC_API_KEY;
 
-const USER_AGENT = "nordic-data-mcp/1.3.1";
+const USER_AGENT = "nordic-data-mcp/1.3.2";
 
 /**
  * Per-request API key override. Used by the authenticated HTTP endpoint

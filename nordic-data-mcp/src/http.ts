@@ -29,7 +29,7 @@ import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
 import { runWithApiKey, isStrictApiKeyScopeActive } from "./lib/apiClient.js";
 
-const VERSION = "1.3.1";
+const VERSION = "1.3.2";
 
 function buildServer(): Server {
   const server = new Server(
@@ -155,9 +155,14 @@ function sendAuthError(
   message: string,
 ): void {
   if (res.headersSent) return;
-  if (status === 401) {
-    res.setHeader("WWW-Authenticate", 'Bearer realm="nordic-data-mcp"');
-  }
+  // NOTE: We intentionally do NOT send a `WWW-Authenticate: Bearer …` header
+  // on 401. The MCP spec (2025-06-18+) tells compliant clients to interpret
+  // that header as an OAuth 2.1 challenge and begin discovery at
+  // `/.well-known/oauth-protected-resource`. We use static API-key auth, not
+  // OAuth, so advertising a Bearer realm causes the Smithery gateway (and any
+  // other spec-compliant client) to hang in an OAuth sign-in popup waiting for
+  // endpoints we will never expose. Plain 401 + JSON-RPC error is the correct
+  // signal for "your key is missing or wrong — fix it and retry".
   res.status(status).json({
     jsonrpc: "2.0",
     error: {

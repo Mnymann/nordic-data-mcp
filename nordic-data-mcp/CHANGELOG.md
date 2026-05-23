@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] — 2026-05-23
+
+### Fixed
+- **Removed `WWW-Authenticate: Bearer realm="nordic-data-mcp"` header from `/mcp/auth` 401 responses.** Per the MCP authorization spec (revision 2025-06-18 and later), a spec-compliant client receiving that header interprets it as an OAuth 2.1 challenge and begins discovery at `/.well-known/oauth-protected-resource`, expecting authorization-server metadata, dynamic client registration, and a browser-based PKCE flow. We use static API-key auth, not OAuth — so advertising a Bearer realm caused the Smithery.ai gateway to hang on an empty "Waiting for Sign In" popup it could never satisfy. A plain 401 with the existing JSON-RPC error body is the correct signal for "your key is missing or malformed — fix it and retry". Required for the Smithery.ai scan/listing flow to complete.
+
 ## [1.3.1] — 2026-05-23
 
 ### Changed
