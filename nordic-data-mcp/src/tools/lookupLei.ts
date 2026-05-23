@@ -53,6 +53,35 @@ export const lookupLei: McpTool = {
     "Look up a Legal Entity Identifier (LEI) via GLEIF — the global standard for entity identification. Returns legal name, registered address, status, parent + ultimate parent relationships, and child entities (subsidiaries). Also supports reverse lookup from a national company number to LEI.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  outputSchema: {
+    type: "object",
+    additionalProperties: true,
+    properties: {
+      lei: { type: "string", description: "20-character ISO 17442 identifier." },
+      legal_name: { type: "string" },
+      status: { type: "string", description: "ISSUED / LAPSED / RETIRED / etc." },
+      registration: {
+        type: "object",
+        additionalProperties: true,
+        description: "GLEIF registration metadata (initial date, last update, status).",
+      },
+      legal_address: { type: "object", additionalProperties: true },
+      headquarters_address: { type: "object", additionalProperties: true },
+      relationships: {
+        type: "object",
+        additionalProperties: true,
+        description: "Only present when include_relationships=true.",
+        properties: {
+          parent: { type: "object", additionalProperties: true, description: "Direct parent LEI record or null." },
+          children: {
+            type: "array",
+            items: { type: "object", additionalProperties: true },
+            description: "Known subsidiary LEI records.",
+          },
+        },
+      },
+    },
+  },
   annotations: { title: "Look Up LEI", readOnlyHint: true, openWorldHint: true },
   handler: async (args) => {
     const parsed = inputSchema.parse(args);

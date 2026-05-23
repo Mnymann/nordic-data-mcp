@@ -40,6 +40,26 @@ startCommand:
           token so usage is tracked against your account.
         pattern: "^ndk_[A-Za-z0-9_-]{16,}$"
         minLength: 20
+      defaultCountry:
+        type: string
+        title: "Default country (optional)"
+        description: >
+          ISO 3166-1 alpha-2 country code (lowercase) to assume when a tool
+          call omits the `country` argument. Leave empty to require the
+          country on every call (recommended for most users). Useful when you
+          mostly work in a single market — e.g. set "dk" to skip repeating
+          it on every lookup.
+        enum: ["dk", "no", "se", "fi", "ie", "uk", "fr", "de", "cz", "pl", "lv", "ee"]
+      verboseErrors:
+        type: boolean
+        title: "Verbose errors (optional)"
+        description: >
+          When true, include upstream HTTP status and request-id details in
+          error messages returned to the agent. Helpful when debugging
+          integrations; leave off in production.
+        default: false
 
 exampleConfig:
   apiKey: "ndk_replace_with_your_actual_key_from_addonnordic_dashboard"
+  defaultCountry: "dk"
+  verboseErrors: false

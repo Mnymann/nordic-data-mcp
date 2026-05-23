@@ -14,7 +14,7 @@ import { ensureApiKeyConfigured } from "./lib/apiClient.js";
 ensureApiKeyConfigured();
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.3.4" },
+  { name: "nordic-data-mcp", version: "1.3.5" },
   { capabilities: { tools: {} } },
 );
 
@@ -23,6 +23,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     name: t.name,
     description: t.description,
     inputSchema: t.jsonSchema,
+    ...(t.outputSchema ? { outputSchema: t.outputSchema } : {}),
     ...(t.annotations ? { annotations: t.annotations } : {}),
   })),
 }));

@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.5] — 2026-05-23
+
+### Added
+- **`outputSchema` for all 7 tools.** Each tool now ships a JSON Schema describing the structured response (`lookup_company` → company object with `name`/`address`/`status`/...; `screen_sanctions` → `results[].matches[]` with score and datasets; `kyb_full` → composite identity/persons/financials/lei/vat/sanctions/risk_score; etc.). Surfaced via `tools/list` to MCP clients and registries so agents and tooling (Smithery quality score, MCP Inspector) understand the response shape without a sample call. Schemas use `additionalProperties: true` because the upstream Nordic Data API may add fields without notice.
+
 ## [1.3.4] — 2026-05-23
 
 ### Fixed

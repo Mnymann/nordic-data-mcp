@@ -29,7 +29,7 @@ import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
 import { runWithApiKey, isStrictApiKeyScopeActive } from "./lib/apiClient.js";
 
-const VERSION = "1.3.4";
+const VERSION = "1.3.5";
 
 function buildServer(): Server {
   const server = new Server(
@@ -42,6 +42,7 @@ function buildServer(): Server {
       name: t.name,
       description: t.description,
       inputSchema: t.jsonSchema,
+      ...(t.outputSchema ? { outputSchema: t.outputSchema } : {}),
       ...(t.annotations ? { annotations: t.annotations } : {}),
     })),
   }));

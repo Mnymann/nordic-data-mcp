@@ -22,6 +22,31 @@ export const autocompleteAddress: McpTool = {
     "Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  outputSchema: {
+    type: "object",
+    additionalProperties: true,
+    properties: {
+      suggestions: {
+        type: "array",
+        description: "Ranked address candidates, best match first.",
+        items: {
+          type: "object",
+          additionalProperties: true,
+          properties: {
+            text: { type: "string", description: "Formatted address suitable for display." },
+            street: { type: "string" },
+            house_number: { type: "string" },
+            postcode: { type: "string" },
+            city: { type: "string" },
+            country: { type: "string", description: "ISO 3166-1 alpha-2 code." },
+            lat: { type: "number", description: "Latitude (WGS-84)." },
+            lon: { type: "number", description: "Longitude (WGS-84)." },
+            source: { type: "string", description: "DAWA / Kartverket / BAN / MML / Nominatim." },
+          },
+        },
+      },
+    },
+  },
   annotations: { title: "Autocomplete Address", readOnlyHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, query } = inputSchema.parse(args);
