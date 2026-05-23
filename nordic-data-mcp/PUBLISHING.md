@@ -12,11 +12,27 @@ This file exists because the publish process has six failure modes that we keep 
 
 ## Repo layout reminder
 
-Martin's Mac has the repo at `/Users/martinnymann/nordic-data-mcp/` and the **package itself is at the same path** — `package.json`, `src/`, `dist/`, etc. all live directly in that folder. There is no nested package subfolder.
+The GitHub repo `Mnymann/nordic-data-mcp` has a **nested layout**:
 
-There may be a second folder `/Users/martinnymann/nordic-data-mcp/nordic-data-mcp/` left over from an earlier clone. **Ignore the inner one** — use only the outer path.
+- **Repo root** contains `replit.md`, `attached_assets/`, `smithery.yaml`, `pnpm-workspace.yaml`, and the `nordic-data-mcp/` package subfolder.
+- **Package root** is the inner `nordic-data-mcp/` subfolder — it contains `package.json`, `src/`, `dist/`, `CHANGELOG.md`, `PUBLISHING.md`, `scripts/`, etc.
 
-Inside Replit, the same package lives at `nordic-data-mcp/` relative to the workspace root.
+On Martin's Mac:
+- Repo root: `/Users/martinnymann/nordic-data-mcp/`
+- Package root: `/Users/martinnymann/nordic-data-mcp/nordic-data-mcp/`
+
+Inside Replit:
+- Workspace root = repo root
+- Package: `nordic-data-mcp/` relative to workspace root
+
+**Files that MUST live in repo root (not the package subfolder):**
+- `smithery.yaml` — Smithery.ai scans repo root only
+
+**Files that MUST live in the package subfolder:**
+- Everything published to npm (`package.json`, `src/`, `dist/`, `README.md`, `CHANGELOG.md`)
+- `PUBLISHING.md`, `scripts/smoke-test-http.sh` (kept next to the package they describe)
+
+When telling Martin to `cd`, be explicit about which level. For `npm` commands: `cd /Users/martinnymann/nordic-data-mcp/nordic-data-mcp/`. For `git` commands: either level works (git finds `.git` upward).
 
 ## Release flow
 

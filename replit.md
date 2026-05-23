@@ -75,7 +75,7 @@ Countries (lowercase, company tools): `dk no se fi ie uk fr de cz pl lv ee` (12)
 
 - **Danish, nocoder-friendly.** Martin is a non-developer. Walk through commands step-by-step in Danish. No jargon unless explained.
 - **One command per turn when on Mac.** zsh on macOS does NOT treat `#` as a comment in interactive mode — pasting `cmd # explanation` causes "too many arguments". Never embed comments in commands. Never chain `&&` across more than 2-3 short commands. Send commands one at a time and wait for output.
-- **Always verify Martin's working directory** before instructing further `cd` / `git` / `npm` commands. The publishing repo is at `/Users/martinnymann/nordic-data-mcp/` (NOT the inner `nordic-data-mcp/nordic-data-mcp/` which is a stale clone).
+- **Always verify Martin's working directory** before instructing further `cd` / `git` / `npm` commands. The repo has a nested layout: repo root is `/Users/martinnymann/nordic-data-mcp/`, and the actual package (with `package.json`, `src/`, `dist/`) lives in the inner `/Users/martinnymann/nordic-data-mcp/nordic-data-mcp/`. For `npm` commands always cd into the inner folder; for `git` commands either level works. `smithery.yaml` is an exception — it must sit in the repo root because Smithery.ai only scans the root.
 - **NPM token expires roughly every 30 days.** Expect `npm publish` to fail with `E404 / no permission` after a long gap and prompt for `npm login`.
 
 ## Gotchas
