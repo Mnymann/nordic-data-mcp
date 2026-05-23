@@ -6,12 +6,12 @@
     "url": "https://github.com/Mnymann/nordic-data-mcp",
     "source": "github"
   },
-  "version": "1.4.0",
+  "version": "1.4.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "nordic-data-mcp",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "transport": { "type": "stdio" },
       "environmentVariables": [
         {

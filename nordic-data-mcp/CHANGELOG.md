@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] — 2026-05-23
+
+### Changed
+- Version bump only — synchronizes the official MCP Registry (`registry.modelcontextprotocol.io`) entry to the current shipped version. No functional changes from 1.4.0. The previous registry entry was stuck at 1.2.2 because earlier releases were published only to NPM.
+
 ## [1.4.0] — 2026-05-23
 
 ### Added
