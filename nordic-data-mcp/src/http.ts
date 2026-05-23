@@ -28,8 +28,14 @@ import {
 import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
 import { runWithApiKey, isStrictApiKeyScopeActive } from "./lib/apiClient.js";
+import {
+  runWithRequestOptions,
+  parseVerboseFlag,
+  type RequestOptions,
+} from "./lib/requestContext.js";
+import { dispatchToolCall } from "./lib/dispatcher.js";
 
-const VERSION = "1.3.5";
+const VERSION = "1.3.6";
 
 function buildServer(): Server {
   const server = new Server(
@@ -47,28 +53,9 @@ function buildServer(): Server {
     })),
   }));
 
-  server.setRequestHandler(CallToolRequestSchema, async (request) => {
-    const tool = tools.find((t) => t.name === request.params.name);
-    if (!tool) {
-      return {
-        content: [
-          { type: "text", text: `Error: Unknown tool: ${request.params.name}` },
-        ],
-        isError: true,
-      };
-    }
-    try {
-      const result = await tool.handler(request.params.arguments ?? {});
-      return {
-        content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
-      };
-    } catch (err) {
-      return {
-        content: [{ type: "text", text: `Error: ${formatError(err)}` }],
-        isError: true,
-      };
-    }
-  });
+  server.setRequestHandler(CallToolRequestSchema, async (request) =>
+    dispatchToolCall(request.params.name, request.params.arguments),
+  );
 
   return server;
 }
@@ -119,7 +106,9 @@ const publicTransports = new Map<string, StreamableHTTPServerTransport>();
 
 app.all("/mcp", async (req: Request, res: Response) => {
   try {
-    await handleMcpRequest(req, res, publicTransports);
+    await runWithRequestOptions(parseRequestOptions(req), () =>
+      handleMcpRequest(req, res, publicTransports),
+    );
   } catch (err) {
     console.error("MCP request failed:", formatError(err));
     if (!res.headersSent) {
@@ -194,6 +183,31 @@ const UNAUTH_METHODS = new Set([
   "prompts/list",
 ]);
 
+/**
+ * Extract per-request behavior overrides from headers and query params.
+ * Smithery's HTTP gateway forwards user-supplied config fields as either
+ * headers (e.g. `x-default-country: dk`) or query params (`?defaultCountry=dk`),
+ * depending on field type. We accept both for robustness.
+ */
+function parseRequestOptions(req: Request): RequestOptions {
+  const countryRaw =
+    req.header("x-default-country") ??
+    (typeof req.query.defaultCountry === "string"
+      ? req.query.defaultCountry
+      : undefined);
+  const verboseRaw =
+    req.header("x-verbose-errors") ??
+    (typeof req.query.verboseErrors === "string"
+      ? req.query.verboseErrors
+      : undefined);
+
+  const country = countryRaw?.toString().trim().toLowerCase() || undefined;
+  return {
+    defaultCountry: country,
+    verboseErrors: parseVerboseFlag(verboseRaw),
+  };
+}
+
 function isDiscoveryProbe(req: Request): boolean {
   const body = req.body;
   if (!body || typeof body !== "object" || Array.isArray(body)) return false;
@@ -202,11 +216,15 @@ function isDiscoveryProbe(req: Request): boolean {
 }
 
 app.all("/mcp/auth", async (req: Request, res: Response) => {
+  const requestOptions = parseRequestOptions(req);
+
   // Discovery path: initialize / ping / notifications. No auth required,
   // no upstream calls, no per-request API key needed.
   if (isDiscoveryProbe(req)) {
     try {
-      await handleMcpRequest(req, res, authTransports);
+      await runWithRequestOptions(requestOptions, () =>
+        handleMcpRequest(req, res, authTransports),
+      );
     } catch (err) {
       console.error("MCP /auth discovery probe failed:", formatError(err));
       if (!res.headersSent) {
@@ -246,7 +264,9 @@ app.all("/mcp/auth", async (req: Request, res: Response) => {
             "Internal error: authenticated API key scope was lost before request dispatch",
           );
         }
-        await handleMcpRequest(req, res, authTransports);
+        await runWithRequestOptions(requestOptions, () =>
+          handleMcpRequest(req, res, authTransports),
+        );
       },
       { strict: true },
     );

@@ -1,0 +1,220 @@
+Smithery.ai listing — gratis MCP-marketplace. Findes der andre relevante MCP-marketplaces for b2b og b2c mcp løsninger med CVR, firma og lignende oplysninger?
+
+Når du kigger efter MCP-marketplaces (Model Context Protocol) med fokus på B2B/B2C, virksomhedsoplysninger, CVR/organisationsnumre og lignende stamdata, bevæger du dig ind i et marked, der lige nu deler sig skarpt i to: de åbne open-source registre og de lukkede, proprietære enterprise-platforme.
+
+Lige nu findes der ikke én central, offentlig "virksomhedsfunderet" MCP-markedsplads, der direkte validerer udbydere med officielle CVR- eller selskabsoplysninger på samme måde, som du kender det fra klassiske B2B-indkøbsportaler. Det skyldes, at MCP-økosystemet stadig er præget af teknisk open-source infrastruktur.
+
+De mest relevante markedspladser og registre, du bør kende til – og hvordan du navigerer i dem i en B2B/B2C-kontekst – fordeler sig således:
+
+De primære MCP-registre
+Udover Smithery.ai er der to andre store, åbne platforme, hvor udviklere og virksomheder lister deres MCP-servere:
+
+Glama.ai (Glama MCP Registry): Den pt. stærkeste konkurrent til Smithery. Selvom det er et åbent indeks, bruges det i stigende grad af kommercielle aktører til at udstille integrations-værktøjer. Det har en renere struktur i forhold til kategorisering af kommercielle API-værktøjer.
+
+Anthropic's Officielle Enterprise-katalog (via GitHub): Anthropic vedligeholder selv en liste over godkendte og stabile MCP-servere (såsom Slack, GitHub, Postgres, Google Drive). Dette er det tætteste, man kommer på en "Enterprise-godkendt" basisliste, da serverne her er kvalitetstestet i forhold til sikkerhed og stabilitet.
+
+Hvorfor CVR/firmaoplysninger mangler i de åbne registre
+Åbne platforme som Smithery, Glama og det uofficielle MCP.so validerer typisk kun udbydere op imod deres GitHub-profiler eller pakkesystemer (f.eks. npm/Docker-registre). De indsamler ikke selskabsdata (som CVR eller momsnumre), fordi selve protokollen (MCP) kører lokalt hos brugeren via stdio eller SSE (Server-Sent Events).
+
+Når en virksomhed bygger en B2B MCP-løsning – eksempelvis en integration, der trækker officielle firmadata, regnskaber eller kreditvurderinger (som fx Erhvervsstyrelsens data via virk.dk/CVR API'et) – hostes og distribueres den typisk på én af to måder:
+
+1. Interne Enterprise-registre (B2B)
+Store virksomheder bygger deres egne lukkede gateways eller bruger kommende platforme (som f.eks. Skilldex eller skræddersyede Supabase-løsninger) internt bag firewallen. Her kobles serverne op på virksomhedens eksisterende API-nøgler og leverandøraftaler, hvor CVR- og selskabsvalideringen ligger i selve den underliggende API-aftale, ikke i MCP-indekset.
+
+2. Kommercielle API-wrappers
+Hvis du leder efter MCP-løsninger, der specifikt leverer firma- og CVR-oplysninger til dine agenter, kigger man typisk efter MCP-servere, der ombygger eksisterende B2B dataprovider-API'er. Eksempler i de globale registre tæller integrationer til:
+
+HubSpot / Salesforce MCP (til kundedata og virksomhedshistorik)
+
+Stripe MCP (til B2B/B2C fakturering og firmaprofiler)
+
+Generiske Crunchbase/Clearbit MCP-servere til firmastamdata.
+
+Vær opmærksom på sikkerheden (Supply Chain):
+Nyere forskning i MCP-økosystemet advarer mod "Namespace Typosquatting" og "Rug Pull"-angreb i åbne registre. Fordi platforme som Smithery ikke verificerer den juridiske person bag en uploadet server, bør du i en B2B-kontekst altid auditere kildekoden eller selv hoste din MCP-server (f.eks. via jeres eget Docker-image eller på Railway/Vercel) i stedet for at trække uverificerede community-pakker direkte ind i produktionsmiljøer.
+
+Vil du have et eksempel på, hvordan man bygger og hoster en sikker, privat MCP-server til egne B2B-data?
+
+Yes
+
+Det her er min løsning kom med et opdateret svar: Nordic Data API
+
+
+
+Northern European business data, straight into your code.
+
+Install the nordic-data-mcp NPM package, grab your NORDIC_API_KEY here, and let AI agents query company registers, KYB, sanctions and VAT data across DK, NO, SE, FI and 10+ EU countries in seconds.
+
+Create account
+
+See pricing
+
+Up and running in 30 seconds
+
+
+
+# Install the package
+
+npx -y nordic-data-mcp
+
+
+
+# Set your key (get it on this site)
+
+export NORDIC_API_KEY=nrd_live_...
+
+Your NORDIC_API_KEY is generated automatically when you create an account on this site.
+
+Pricing
+
+Simple monthly billing. Cancel anytime.
+
+Starter
+
+99 DKK
+
+/mo
+
+500 lookups/day
+
+
+
+
+
+500 API lookups/day
+
+
+
+Email support
+
+
+
+Access to all endpoints
+
+Choose Starter
+
+Business
+
+499 DKK
+
+/mo
+
+5,000 lookups/day
+
+
+
+
+
+5,000 API lookups/day
+
+
+
+Priority support
+
+
+
+Access to all endpoints
+
+Choose Business
+
+Scale
+
+1.999 DKK
+
+/mo
+
+50,000 lookups/day
+
+
+
+
+
+50,000 API lookups/day
+
+
+
+Priority support + SLA
+
+
+
+Access to all endpoints
+
+Choose Scale
+
+Enterprise
+
+Contact us
+
+Custom volume
+
+
+
+
+
+Unlimited volume
+
+
+
+Custom SLA
+
+
+
+Dedicated contact
+
+Get in touch
+
+© 2026 AddonNordic ApS (CVR 46495985) · Solvangen 15, 9210 Aalborg SØ · contact@addonnordic.dk
+
+Terms
+
+Privacy
+
+Refund Policy
+
+Cookies
+
+Tillykke med lanceringen! Det ændrer fuldstændig præmissen for dit spørgsmål. Du sidder nu ikke som indkøber af B2B-data, men som udbyder (AddonNordic ApS) af en helt central, kommerciel B2B/B2C MCP-løsning (nordic-data-mcp), der dækker CVR, KYB, moms og sanktionslister på tværs af Norden og EU.
+
+Når du skal markedsføre en betalt, abonnementsbaseret B2B MCP-løsning (med CVR-validering i bunden), skal du ramme de steder, hvor udviklere og virksomheder leder efter pålidelige, produktionsklare værktøjer frem for gratis hobby-scripts.
+
+Her er den opdaterede oversigt over de mest relevante MCP-marketplaces, registre og distributionskanaler for din specifikke løsning:
+
+De 3 vigtigste MCP-registre til kommerciel distribution
+Da nordic-data-mcp er en NPM-pakke, der kræver en API-nøgle (NORDIC_API_KEY), skal du kigge mod de platforme, der understøtter kommercielle "API-wrapper"-servere:
+
+1. Glama MCP Registry (Glama.ai)
+Hvorfor: Det er pt. den mest professionelle og veldesignede konkurrent til Smithery. Glama bruges i stigende grad af enterprise-udviklere, og de har en klar struktur til kommercielle værktøjer.
+
+Strategi: Her skal du loade din server ind og markere den tydeligt som et kommercielt værktøj, der kræver API-nøgle. Beskriv specifikt de nordiske lande (DK, NO, SE, FI), da mange globale udviklere leder febrilsk efter valide europæiske firmadata.
+
+2. Anthropic’s Officielle MCP Liste (GitHub)
+Hvorfor: Anthropic (skaberne af Claude) vedligeholder deres eget officielle repository over stabile MCP-servere. Det er her, de tunge enterprise-kunder kigger, når de skal bygge interne agenter.
+
+Strategi: Du kan indsende et Pull Request (PR) til Anthropics officielle liste. Da din løsning løser et reelt B2B-problem (validering, compliance, KYB), som de amerikanske standardværktøjer er elendige til i Europa, har du en god case for at blive optaget som en "pålidelig tredjeparts-udbyder".
+
+3. Open-source registre (Smithery.ai & MCP.so)
+Hvorfor: Selvom Smithery er gratis og community-drevet, fungerer det som det primære "SEO-indeks" for MCP lige nu.
+
+Strategi: Behold din listing på Smithery, men optimer din README-tekst, så det står krystalklar, at man installerer pakken via npx -y nordic-data-mcp, men skal hente sin API-nøgle hos AddonNordic ApS. Brug din listing her som en tragt (funnel) til at drive trafik mod dit betalte arkitektur-site.
+
+De oversete (og vigtigste) B2B distributionskanaler
+Fordi du sælger B2B-data til AI-agenter, er de traditionelle "MCP-marketplaces" faktisk kun halvdelen af sandheden. Udviklere leder ofte efter løsninger direkte i de økosystemer, de bygger i:
+
+1. AI Framework integrations-kataloger
+Udviklere bygger sjældent i et vakuum; de bruger frameworks. Du bør få nordic-data-mcp listet direkte i integrationsoversigterne for:
+
+LangChain / LangGraph Integrations: LangChain har deres eget økosystem af officielle datakilder.
+
+LlamaIndex Værktøjskasse (LlamaHub): Det centrale sted for agenter, der skal lave RAG (Retrieval-Augmented Generation) eller dataopslag.
+
+Vercel AI SDK: Da mange bygger B2B SaaS i Next.js/Vercel-stakken, er det oplagt at lave en officiel guide eller pakke-integration her.
+
+2. Cursor & Windsurf Communities
+De absolut største aftagere af MCP-servere lige nu er udviklere, der bruger AI-kodningsværktøjer som Cursor eller Windsurf. De leder konstant efter MCP-servere på de respektive fora og subreddits:
+
+Cursor Forum (forum.cursor.com)
+
+r/cursor og r/LocalLLaMA på Reddit
+
+Strategi: Lav en kort post: "Need Nordic/EU company data for your Cursor AI agents? I built a 30-second MCP server for DK, NO, SE, FI." Det konverterer ekstremt højt i de målgrupper lige nu.
+

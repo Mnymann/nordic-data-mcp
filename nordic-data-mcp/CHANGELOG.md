@@ -4,6 +4,16 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.6] — 2026-05-23
+
+### Added
+- **`defaultCountry` per-request option** is now actually honored. When the Smithery gateway (or any HTTP caller) sends `x-default-country: dk` or `?defaultCountry=dk`, and the agent invokes `lookup_company` / `kyb_full` / `autocomplete_address` / `company_enriched` / `lookup_lei` without a `country` argument, the dispatcher injects the default before Zod validation. `validate_vat` is intentionally exempt (it uses a different country list).
+- **`verboseErrors` per-request option** is now actually honored. When set via `x-verbose-errors: true` or `?verboseErrors=true`, tool errors include an additional structured JSON block with `status`, `code`, upstream `source`, and parsed error `details` — useful for CI integrations and debugger UIs.
+- For stdio mode (Claude Desktop, Cursor, Claude Code) the same options are read from env vars `NORDIC_DEFAULT_COUNTRY` and `NORDIC_VERBOSE_ERRORS`.
+
+### Changed
+- Refactored the `CallTool` dispatcher into a shared `dispatchToolCall` helper (`src/lib/dispatcher.ts`) used by both the stdio (`src/index.ts`) and HTTP (`src/http.ts`) entrypoints. Eliminates the previous duplication and is where per-request country injection and verbose-error formatting live.
+
 ## [1.3.5] — 2026-05-23
 
 ### Added

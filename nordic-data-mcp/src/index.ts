@@ -6,15 +6,17 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { tools } from "./tools/index.js";
-import { formatError } from "./lib/errors.js";
 import { ensureApiKeyConfigured } from "./lib/apiClient.js";
+import { dispatchToolCall } from "./lib/dispatcher.js";
 
 // stdio mode cannot rely on per-request key overrides — fail fast at startup
 // if the operator has not configured NORDIC_API_KEY.
+// Per-request behavior options (NORDIC_DEFAULT_COUNTRY, NORDIC_VERBOSE_ERRORS)
+// are read by `dispatchToolCall` via `getRequestOptions()` and need no init.
 ensureApiKeyConfigured();
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.3.5" },
+  { name: "nordic-data-mcp", version: "1.3.6" },
   { capabilities: { tools: {} } },
 );
 
@@ -28,28 +30,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
   })),
 }));
 
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const tool = tools.find((t) => t.name === request.params.name);
-  if (!tool) {
-    return {
-      content: [
-        { type: "text", text: `Error: Unknown tool: ${request.params.name}` },
-      ],
-      isError: true,
-    };
-  }
-  try {
-    const result = await tool.handler(request.params.arguments ?? {});
-    return {
-      content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
-    };
-  } catch (err) {
-    return {
-      content: [{ type: "text", text: `Error: ${formatError(err)}` }],
-      isError: true,
-    };
-  }
-});
+server.setRequestHandler(CallToolRequestSchema, async (request) =>
+  dispatchToolCall(request.params.name, request.params.arguments),
+);
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
