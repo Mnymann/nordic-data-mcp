@@ -14,7 +14,7 @@ import { ensureApiKeyConfigured } from "./lib/apiClient.js";
 ensureApiKeyConfigured();
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.3.3" },
+  { name: "nordic-data-mcp", version: "1.3.4" },
   { capabilities: { tools: {} } },
 );
 

@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] — 2026-05-23
+
+### Fixed
+- **`/mcp/auth` now also allows unauthenticated `tools/list`, `resources/list`, and `prompts/list`** so MCP registry scanners (Smithery, MCP Inspector, etc.) can populate the listing's tool-card preview before a user installs the server. These methods return only static metadata — tool names, descriptions, input JSON Schemas — and trigger zero upstream Nordic Data API calls. All paying operations live in `tools/call`, which continues to require a valid `ndk_...` key. Without this fix, Smithery's scan completed the initial handshake (added in 1.3.3) but then failed on `tools/list` with 401, leaving the listing with no tool cards and an "Authorization required" warning.
+
 ## [1.3.3] — 2026-05-23
 
 ### Fixed

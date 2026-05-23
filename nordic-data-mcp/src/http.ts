@@ -29,7 +29,7 @@ import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
 import { runWithApiKey, isStrictApiKeyScopeActive } from "./lib/apiClient.js";
 
-const VERSION = "1.3.3";
+const VERSION = "1.3.4";
 
 function buildServer(): Server {
   const server = new Server(
@@ -175,17 +175,22 @@ function sendAuthError(
 }
 
 // Methods that are safe to serve without auth. These only reveal static
-// server identity / capabilities and never call upstream Nordic Data API.
-// Allowing them unauth'd lets MCP discovery clients (Smithery's gateway
-// scanner, MCP Inspector, etc.) probe `/mcp/auth` to learn the server is
-// alive BEFORE the end-user has been prompted for an API key. Without
-// this, Smithery's pre-flight initialize gets a 401 and concludes the
-// server requires OAuth, hanging the user in a sign-in popup that can
-// never complete.
+// server identity and tool/resource/prompt metadata (names, descriptions,
+// input schemas) and never call upstream Nordic Data API. Allowing them
+// unauth'd lets MCP discovery clients (Smithery's gateway scanner, MCP
+// Inspector, registry crawlers, the Claude/ChatGPT connector pre-flight)
+// learn what the server offers BEFORE the end-user has been prompted for
+// an API key. Without this, Smithery's scan fails on `tools/list` with
+// 401 and the listing has no tool cards — which is the whole reason
+// people would install the server. The actual paying calls are all in
+// `tools/call`, which still requires a valid `ndk_...` key.
 const UNAUTH_METHODS = new Set([
   "initialize",
   "notifications/initialized",
   "ping",
+  "tools/list",
+  "resources/list",
+  "prompts/list",
 ]);
 
 function isDiscoveryProbe(req: Request): boolean {
