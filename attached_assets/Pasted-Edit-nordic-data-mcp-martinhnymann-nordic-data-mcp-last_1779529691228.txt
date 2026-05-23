@@ -1,0 +1,164 @@
+Edit
+nordic-data-mcp
+martinhnymann/nordic-data-mcp
+•
+last deployed 2 minutes ago
+
+Overview
+
+Performance
+
+Usage
+
+Integrate
+
+Observability
+
+Logs
+
+Releases
+
+Settings
+No description
+
+Tools
+7
+lookup_company
+read-only
+Look up basic company data (name, address, status, industry, VAT registration, founding date) from official European business registries. Supports 12 countries: DK (CVR), NO (Brønnøysund), SE (Bolagsverket), FI (YTJ/PRH), IE (CRO), UK (Companies House), FR (INSEE Sirene), DE (Handelsregister), CZ (ARES), PL (KAS+KRS), LV (Uzņēmumu reģistrs), EE (Ariregister). Note: Benelux (NL, BE, LU) is not covered — use benelux-data-mcp for those.
+
+validate_vat
+read-only
+Validate a VAT registration number against the official EU VIES service (or HMRC for GB). Returns validity status, registered name, and registered address.
+
+screen_sanctions
+read-only
+Screen one or more names against UN, EU, OFAC and PEP sanctions lists (768K+ entries via OpenSanctions). Returns match scores with source attribution.
+
+kyb_full
+read-only
+Full Know-Your-Business master report for a company across 12 EU countries. Aggregates: identity, registered address (geocoded), key persons & directors, financial statements, official filings, LEI + corporate ownership, VAT registration, sanctions + PEP screening, adverse media (GDELT 2.0), and a composite risk score. Single call. Cached 6h; may take 5-15s on cold cache.
+
+autocomplete_address
+read-only
+Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates.
+
+lookup_lei
+read-only
+Look up a Legal Entity Identifier (LEI) via GLEIF — the global standard for entity identification. Returns legal name, registered address, status, parent + ultimate parent relationships, and child entities (subsidiaries). Also supports reverse lookup from a national company number to LEI.
+
+company_enriched
+read-only
+Enriched company data: basic registry data + DAWA-validated address with lat/lng + industry statistics (DST for DK, SSB for NO, etc.) + Wikidata enrichment (website, employees, CEO, ticker, logo, Wikipedia URL). One call, multiple sources.
+
+MCP URL
+
+https://nordic-data-mcp--martinhnymann.run.tools
+Install
+MCP
+CLI
+Search clients
+Claude Code
+Claude Code
+Codex
+Codex
+Cursor
+Cursor
+Claude
+Claude
+OpenCode
+OpenCode
+Antigravity
+Antigravity
+VS Code
+VS Code
+Cherry Studio
+Cherry Studio
+LM Studio
+LM Studio
+Gemini CLI
+Gemini CLI
+Roo Code
+Roo Code
+ChatWise
+ChatWise
+Windsurf
+Windsurf
+Amazon Q
+Amazon Q
+Dust
+Dust
+LibreChat
+LibreChat
+Zed
+Zed
+Cline
+Cline
+Kiro
+Kiro
+ChatGPT
+ChatGPT
+Goose
+Goose
+Poke
+Poke
+Trae
+Trae
+VS Code Insiders
+VS Code Insiders
+Raycast
+Raycast
+Witsy
+Witsy
+BoltAI
+BoltAI
+Augment
+Augment
+Highlight
+Highlight
+Qordinate
+Qordinate
+OpenClaw
+OpenClaw
+AgentOne
+AgentOne
+Published
+May 23, 2026
+Performance
+Usage
+Integrate
+Integrate this server via REST, the MCP SDK, or the AI SDK. Smithery handles OAuth, token refresh, and session management for you.
+
+Create API key
+Manage Connections
+Configuration for martinhnymann/nordic-data-mcp
+Required parameters
+
+apiKey
+header
+Your personal API key from addonnordic.com. Starts with "ndk_". Free tier gives 100 lookups/day.
+
+CLI
+cURL
+AI SDK
+TypeScript
+Preview
+1. Install Smithery CLI
+
+
+npm install -g smithery
+2. Create a namespace
+
+
+smithery namespace create {your-namespace}
+3. Use this server
+
+
+# Add this server
+smithery mcp add martinhnymann/nordic-data-mcp --headers '{"apiKey":"your-apiKey"}'
+
+# List available tools
+smithery tool list {connection}
+
+# Call a tool
+smithery tool call {connection} {tool_name} '{"key": "value"}'
