@@ -1,0 +1,33 @@
+martinnymann@Martins-MacBook-Pro nordic-data-mcp % git pull
+remote: Enumerating objects: 36, done.
+remote: Counting objects: 100% (36/36), done.
+remote: Compressing objects: 100% (11/11), done.
+remote: Total 25 (delta 14), reused 25 (delta 14), pack-reused 0 (from 0)
+Unpacking objects: 100% (25/25), 15.21 KiB | 420.00 KiB/s, done.
+From https://github.com/Mnymann/nordic-data-mcp
+   a58a06c..4593fc6  main       -> origin/main
+Updating a58a06c..4593fc6
+error: Your local changes to the following files would be overwritten by merge:
+	nordic-data-mcp/package.json
+Please commit your changes or stash them before you merge.
+Aborting
+martinnymann@Martins-MacBook-Pro nordic-data-mcp % git stash && git pull
+Saved working directory and index state WIP on main: a58a06c Add instructions for connecting to ChatGPT and Claude.ai
+Updating a58a06c..4593fc6
+Fast-forward
+ .replit                                            |   8 +
+ ...kal-sige-ja-Her-er-hvorfor-ko_1779523587294.txt |  37 +++++
+ ...-nye-tier-v-rdier-er-live-p-R_1779523340589.txt |  47 ++++++
+ ...t-tjekker-jeg-den-eksisterend_1779456633832.txt |  77 ++++++++++
+ ...g-der-er-et-problem-du-skal-h_1779456417241.txt |  85 +++++++++++
+ nordic-data-mcp/CHANGELOG.md                       |  13 ++
+ nordic-data-mcp/package.json                       |   2 +-
+ nordic-data-mcp/src/http.ts                        | 166 ++++++++++++++++++---
+ nordic-data-mcp/src/index.ts                       |   7 +-
+ nordic-data-mcp/src/lib/apiClient.ts               | 130 +++++++++++++++-
+ 10 files changed, 539 insertions(+), 33 deletions(-)
+ create mode 100644 attached_assets/Pasted-Hans-plan-er-solid-og-du-skal-sige-ja-Her-er-hvorfor-ko_1779523587294.txt
+ create mode 100644 attached_assets/Pasted-Lad-mig-f-rst-tjekke-om-de-nye-tier-v-rdier-er-live-p-R_1779523340589.txt
+ create mode 100644 attached_assets/Pasted-Lad-mig-lave-alle-tre-F-rst-tjekker-jeg-den-eksisterend_1779456633832.txt
+ create mode 100644 attached_assets/Pasted-Nu-kan-jeg-svare-pr-cist-og-der-er-et-problem-du-skal-h_1779456417241.txt
+martinnymann@Martins-MacBook-Pro nordic-data-mcp % 
