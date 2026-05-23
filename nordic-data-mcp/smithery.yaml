@@ -1,0 +1,34 @@
+# Smithery.ai registry configuration for nordic-data-mcp.
+#
+# This server is hosted by us (AddonNordic ApS) on Railway — Smithery
+# does NOT need to deploy it. The registry just routes users to our
+# authenticated endpoint and collects their API key via the standard
+# config UI.
+#
+# Public URL (Bearer-auth, billed per tenant):
+#   https://nordic-data-mcp-production.up.railway.app/mcp/auth
+#
+# Public URL (no-auth, for Anthropic Connectors Directory review only —
+# not advertised in Smithery):
+#   https://nordic-data-mcp-production.up.railway.app/mcp
+
+startCommand:
+  type: http
+  configSchema:
+    type: object
+    required:
+      - apiKey
+    properties:
+      apiKey:
+        type: string
+        title: "Nordic Data API key"
+        description: >
+          Your personal API key. Get one at https://addonnordic.com — free
+          tier (100 lookups/day) up to Enterprise (200,000/day). The key
+          starts with "ndk_" and is forwarded to our backend as a Bearer
+          token so usage is tracked against your account.
+        pattern: "^ndk_[A-Za-z0-9_-]{16,}$"
+        minLength: 20
+
+exampleConfig:
+  apiKey: "ndk_replace_with_your_actual_key_from_addonnordic_dashboard"
