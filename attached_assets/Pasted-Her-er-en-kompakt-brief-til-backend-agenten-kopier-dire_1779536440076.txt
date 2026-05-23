@@ -1,0 +1,86 @@
+Her er en kompakt brief til backend-agenten (kopier direkte):
+
+📦 Brief til backend-agenten
+KONTEKST
+========
+Nordic Data API — TypeScript/Express monorepo, hostet på Railway,
+domæne api.addonnordic.dk, alle routes under /api, kræver X-Api-Key.
+HVAD ER ÆNDRET I DENNE SESSION (commit fe728b0c)
+================================================
+1. artifacts/api-server/src/lib/tenantStore.ts
+   - Tilføjet ny tier "compliance" til TIER_PRESETS:
+       compliance: 10_000   (mellem business: 5_000 og scale: 50_000)
+   - Opdateret docstring med pris (999 DKK/md)
+   - Ingen schema-ændring nødvendig (api_clients.tier er TEXT)
+   - resolveTierName / resolveQuotaForTier / createTenant virker
+     automatisk med "compliance" som input.
+2. artifacts/api-server/src/routes/screening.ts
+   - Paralleliseret identity + UBO fetch i /screening/full
+   - Brugt AbortController så 400/404 stadig early-returner uden at
+     vente på UBO (regression-fix efter code review)
+   - fetchUbo() tager nu en optional AbortSignal param
+3. COMPLIANCE.md (ny fil i repo-rod)
+   - Dansk marketing/docs side, ingen runtime-betydning
+DEPLOY-CHECKLIST
+================
+[ ] git pull
+[ ] pnpm install            (intet nyt — kun for at være sikker)
+[ ] pnpm --filter @workspace/api-server run build
+[ ] Railway auto-deploy fra main, eller manuelt push
+[ ] Verificer på prod:
+      curl -H "X-Api-Key: $KEY" \
+        https://api.addonnordic.dk/api/screening/full/dk/22756214
+      → forvent: HTTP 200, X-Cache: MISS på 1. kald, HIT på 2.,
+        verdict felt sat ("clear" | "review" | "high_risk")
+[ ] Verificer 404 early-return (regression test):
+      curl -w "%{time_total}\n" -H "X-Api-Key: $KEY" \
+        https://api.addonnordic.dk/api/screening/full/dk/99999999
+      → forvent: HTTP 404 på <2s (ikke 20s+)
+NYT TIER — AKTIVERINGSFLOW
+==========================
+Ingen action på backend ud over deploy. Når Lovable sender
+{ tier: "compliance" } til POST /api/admin/tenants efter Paddle-køb,
+opretter backend automatisk en api_client med daily_quota=10000.
+INGEN ENV-ÆNDRINGER
+===================
+Ingen nye env vars. Ingen nye dependencies. Ingen DB-migration.
+PRÆ-EKSISTERENDE TS-FEJL
+========================
+TSC viser fejl i adverse.ts, euGrid.ts, holidays.ts, kyc.ts,
+nlProperty.ts, persons.ts, plKrs.ts, plProperty.ts. De er
+PRÆ-EKSISTERENDE og urelaterede til denne session. Ignorér.
+Min ændring tilføjer ingen nye TS-fejl.
+TESTS
+=====
+pnpm --filter @workspace/api-server exec vitest run
+→ 17 passed | 1 skipped (uændret)
+KENDTE FAKTA OM PROD
+====================
+- 26.677 sanktionerede entiteter indexeret (UN: 1002, EU FSF: 5900,
+  OFAC: 19.775, PEPs: lazy-load)
+- OpenSanctions Pro nøgle er aktiv (verificeret med Putin-match)
+- MCP-server live på nordic-data-mcp-production.up.railway.app/mcp
+  og /mcp/auth — eksponerer 7 tools inkl. screen_sanctions, validate_vat
+NÆSTE SKRIDT EFTER DEPLOY
+=========================
+1. Verificer /screening/full performance på prod (forvent ~3s cold)
+2. Når Martin opretter Paddle "Compliance Pro" produkt,
+   tilføj Paddle Price ID → "compliance" mapping i Lovable webhook
+3. Lovable opdaterer pricing-side med ny tier
+
+Et kort råd: hvis backend-agenten kun skal deploye og verificere (ikke bygge nyt), kan du nøjes med de to deploy-bullets + de to curl-verifikationer. Resten er nice-to-have kontekst.
+
+Hvis det er en task-agent du vil sætte i gang med ny implementering (fx Paddle-webhook-tilføjelsen eller andet), så fortæl mig præcis hvilken opgave så skriver jeg en skarpere brief.
+
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
+Nordic Data API - Replit
