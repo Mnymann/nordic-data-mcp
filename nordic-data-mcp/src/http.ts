@@ -29,7 +29,7 @@ import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
 import { runWithApiKey, isStrictApiKeyScopeActive } from "./lib/apiClient.js";
 
-const VERSION = "1.3.0";
+const VERSION = "1.3.1";
 
 function buildServer(): Server {
   const server = new Server(
@@ -134,11 +134,17 @@ app.all("/mcp", async (req: Request, res: Response) => {
 const authTransports = new Map<string, StreamableHTTPServerTransport>();
 
 function extractBearerToken(req: Request): string | null {
+  // Accept two formats so we work with all MCP gateways:
+  //   1. "Authorization: Bearer ndk_..."  (RFC 6750 — Claude.ai, ChatGPT, our docs)
+  //   2. "Authorization: ndk_..."         (Smithery.ai gateway — no Bearer prefix)
+  // The format check below still ensures only well-formed ndk_ tokens are
+  // forwarded upstream, so accepting the raw form does not weaken auth.
   const header = req.header("authorization");
   if (!header) return null;
-  const match = /^Bearer\s+(.+)$/i.exec(header.trim());
-  if (!match) return null;
-  const token = match[1]!.trim();
+  const trimmed = header.trim();
+  if (trimmed.length === 0) return null;
+  const bearerMatch = /^Bearer\s+(.+)$/i.exec(trimmed);
+  const token = (bearerMatch ? bearerMatch[1]! : trimmed).trim();
   return token.length > 0 ? token : null;
 }
 
@@ -170,7 +176,7 @@ function requireBearer(req: Request, res: Response, next: NextFunction): void {
       res,
       401,
       "missing_authorization",
-      'Missing "Authorization: Bearer <your-ndk-key>" header. Get a key at https://addonnordic.com/dashboard',
+      'Missing "Authorization" header. Use "Authorization: Bearer <your-ndk-key>" or send the key directly. Get a key at https://addonnordic.com/dashboard',
     );
     return;
   }

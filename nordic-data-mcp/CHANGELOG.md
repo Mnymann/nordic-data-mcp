@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] — 2026-05-23
+
+### Changed
+- **`/mcp/auth` now accepts the API key in two header formats:** the canonical `Authorization: Bearer ndk_...` (used by Claude.ai, ChatGPT, our documentation) and the raw `Authorization: ndk_...` (sent by the Smithery.ai gateway, which does not support per-parameter value templates). The strict `ndk_[A-Za-z0-9_-]{16,}` format check is unchanged, so this widens transport compatibility without weakening authentication. Required for the Smithery.ai listing — their UI lets a server author choose `header` or `query`, but does not expose a "prefix" / "value template" field, so any registered header is sent with the raw user-supplied value.
+
 ## [1.3.0] — 2026-05-22
 
 ### Added
