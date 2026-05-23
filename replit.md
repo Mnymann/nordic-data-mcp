@@ -4,6 +4,16 @@ A Model Context Protocol (MCP) server that exposes the Nordic Data API (company,
 
 The MCP server itself is in **`nordic-data-mcp/`** — a standalone NPM package, separate from the pnpm workspace. The rest of the workspace (`artifacts/api-server`, `lib/*`, `artifacts/mockup-sandbox`) is template scaffolding and is not used by this project.
 
+## Releasing a new version
+
+**Authoritative checklist: `nordic-data-mcp/PUBLISHING.md`** — read it before bumping any version. It documents the 6 failure modes we keep hitting (zsh-comment-in-cd, missing GitHub push, expired npm token, etc.) and the exact command sequence to avoid them.
+
+Per release the agent must:
+1. Bump version in **four places**: `package.json`, `VERSION` in `src/http.ts`, Server constructor in `src/index.ts`, `USER_AGENT` in `src/lib/apiClient.ts`.
+2. Add a CHANGELOG entry.
+3. Run `npm run typecheck && npm run build && NORDIC_API_KEY=… scripts/smoke-test-http.sh`.
+4. Commit, then **explicitly tell Martin to push from Replit** (the agent has no GitHub credentials in this environment) before he runs the publish flow on his Mac.
+
 ## Run & Operate (nordic-data-mcp)
 
 All commands are run from `nordic-data-mcp/` and use `npm`, not `pnpm`. The package is intentionally standalone so it can be published to NPM as-is.
@@ -63,7 +73,10 @@ Countries (lowercase, company tools): `dk no se fi ie uk fr de cz pl lv ee` (12)
 
 ## User preferences
 
-_None recorded yet._
+- **Danish, nocoder-friendly.** Martin is a non-developer. Walk through commands step-by-step in Danish. No jargon unless explained.
+- **One command per turn when on Mac.** zsh on macOS does NOT treat `#` as a comment in interactive mode — pasting `cmd # explanation` causes "too many arguments". Never embed comments in commands. Never chain `&&` across more than 2-3 short commands. Send commands one at a time and wait for output.
+- **Always verify Martin's working directory** before instructing further `cd` / `git` / `npm` commands. The publishing repo is at `/Users/martinnymann/nordic-data-mcp/` (NOT the inner `nordic-data-mcp/nordic-data-mcp/` which is a stale clone).
+- **NPM token expires roughly every 30 days.** Expect `npm publish` to fail with `E404 / no permission` after a long gap and prompt for `npm login`.
 
 ## Gotchas
 
