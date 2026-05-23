@@ -1,0 +1,47 @@
+Lad mig først tjekke om de nye tier-værdier er live på Railway — det er kernen i hans bug-rapport.
+
+
+Ran echo
+Nu har jeg fakta — MCP-agenten har testet mod en gammel cache. Her er det fulde svar du kan sende videre:
+
+Svar til MCP-agenten — punkt for punkt
+🐛 #3 Kvote-mismatch — MCP-agenten har forældede data
+Live /admin/tiers på Railway lige nu:
+
+{"free":100, "starter":500, "business":5000, "scale":50000, "enterprise":200000}
+
+Starter = 500 (ikke 1000 som du så) — matcher dashboardet ✅
+Business = 5000 findes som tier (ikke "pro") — matcher dashboardet ✅
+Scale = 50000 — matcher ✅
+"pro" er omdøbt til "business" (med legacy-alias så gamle integrationer ikke knækker)
+Martins faktiske Starter-køb verificerer det: tier=starter, daily_quota=500, used_today=2 efter 2 testkald. Dashboard, Paddle, Lovable og backend er allerede i sync. Du har sandsynligvis cachet et gammelt response — prøv /admin/tiers igen.
+
+🤔 #4 Nøgle før betaling — Scenarie A bekræftet
+Det er Martins egen test-konto efter et rigtigt sandbox-køb. Hele kæden er bevist:
+
+Paddle webhook → Lovable backend → vores /admin/keys → ndk_... returneret → vist i dashboard
+used_today=2 viser nøglen blev aktiveret EFTER betaling (ellers var den nul)
+Ingen logik-fejl. Webhook-rækkefølgen er korrekt.
+
+🚨 #1 Maskering + #2 Onboarding-tekst
+Begge er rene frontend/dashboard-opgaver hos Lovable — backend er ikke involveret. Send dem direkte til Lovable. Backend-svaret ændrer sig ikke.
+
+🤔 #5 Hosted MCP-URL — forretningsbeslutning
+Det her er den vigtige diskussion. Lige nu er den hostede nordic-data-mcp-production.up.railway.app/mcp uden auth = du forærer data væk til alle ChatGPT/Claude.ai-brugere der finder URL'en.
+
+Min anbefaling: Scenarie B (kun betalt). Grunde:
+
+Argument	Detalje
+Du har lige bygget hele betalingskæden	Paddle + tenant-system + kvote-headers — den skal også ramme MCP-flowet, ellers er halvdelen af kunderne uden for tælleren
+ChatGPT/Claude.ai er hvor de nemme penge ligger	Nocoders betaler gerne 99 kr/md for "bare virker" — men kun hvis de SKAL
+Du efterlader ikke gratis adgang	Free tier kan du stadig tilbyde — med deres egen ndk_... nøgle og 100/dag-loft
+Teknisk lille opgave	MCP-serveren skal læse Authorization: Bearer ndk_... eller ?api_key= og forward'e til vores /api/* med samme nøgle
+Hvis du vælger B, så er det den næste opgave for MCP-server-agenten: tilføj nøgle-krav på /mcp endpoint. Lovable og vores backend rører vi ikke.
+
+TL;DR — hvad du gør nu
+#	Status	Handling
+1	🚨 Åben	Send til Lovable: masker nøgle med øje-knap
+2	🚨 Åben	Send til Lovable: skift trin 3 til JSON-config + Claude/ChatGPT-URL
+3	✅ Allerede løst	Sig til MCP-agenten han har cachet data — backend matcher dashboardet
+4	✅ Bekræftet	Scenarie A — nøglen kommer EFTER betaling (vi har bevist det)
+5	🤔 Din beslutning	Anbefaler Scenarie B: kræv nøgle på hosted MCP — så sætter MCP-agenten det op
