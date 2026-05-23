@@ -1,0 +1,117 @@
+MCP Brief — nordic-data-mcp v1.4.0
+Til: MCP-agent i det andet Replit-projekt (nordic-data-mcp) Fra: Martin / Addon Nordic Dato: 2026-05-23 Scope: Eksponér det nye FR History endpoint som MCP tool
+
+Hvad er nyt i backenden
+Wave A er nu komplet (6/6 endpoints live på https://api.addonnordic.dk):
+
+Endpoint	Status
+/api/company/dk/:cvr/production-units	live (allerede i MCP)
+/api/company/dk/:cvr/history	live (allerede i MCP)
+/api/company/fr/:siren/production-units	live (allerede i MCP)
+/api/company/no/:orgnr/production-units	live (allerede i MCP)
+/api/company/nl/:kvk/production-units	live (allerede i MCP)
+/api/company/uk/:number/history	live (allerede i MCP)
+/api/company/fr/:siren/history	NY — skal tilføjes i v1.4.0
+Det nye tool: fr_history
+Endpoint-kontrakt
+Method: GET
+Path: /api/company/fr/:siren/history
+Header: X-Api-Key: <tenant key> (samme som de øvrige tools)
+Path param: siren — 9 cifre, fx 652014051 (Carrefour) eller 775670417 (LVMH)
+Cost: 1 unit (FR er ikke i FREE_TIER_BLOCKED_COUNTRIES)
+Cache: 24 h server-side; klient kan se X-Cache: HIT|MISS header
+Response (JSON)
+{
+  "siren": "652014051",
+  "dateCreation": "1963-01-01",
+  "categorieEntreprise": "GE",
+  "sigle": null,
+  "periodCount": 9,
+  "count": 11,
+  "events": [
+    {
+      "date": "1963-01-01",
+      "endDate": "2004-12-24",
+      "type": "initial:name",           // initial:<field> for første periode
+      "from": null,
+      "to":   "CARREFOUR"
+    },
+    {
+      "date": "2010-12-13",
+      "endDate": "2018-12-31",
+      "type": "activity",                // efterfølgende: ren feltnavn
+      "from": "70.10Z",
+      "to":   "64.20Z"
+    }
+    // ...
+  ],
+  "source": "api.insee.fr",
+  "sourceNote": "Derived from Sirene 3.11 periodesUniteLegale (bitemporal)",
+  "fetchedAt": "2026-05-23T14:42:33.117Z"
+}
+
+Mulige event types
+initial:name, initial:usage_name, initial:activity, initial:status, initial:legal_form, initial:employer_flag, initial:ess_flag — én "initial:" per ikke-null felt i første periode (baseline)
+name — denominationUniteLegale ændret
+usage_name — denominationUsuelle1UniteLegale ændret
+activity — NAF-kode (activitePrincipaleUniteLegale) ændret
+status — A (active) ↔ C (cessée)
+legal_form — categorieJuridiqueUniteLegale ændret (numerisk INSEE-kode)
+employer_flag — caractereEmployeurUniteLegale ændret (O/N)
+ess_flag — economieSocialeSolidaireUniteLegale ændret (O/N)
+NDJSON streaming (valgfri)
+Send Accept: application/x-ndjson for line-delimited output:
+
+{"type":"meta","siren":"652014051","dateCreation":"1963-01-01","periodCount":9,"count":11,"source":"api.insee.fr","fetchedAt":"..."}
+{"type":"event","eventType":"initial:name","date":"1963-01-01","endDate":"2004-12-24","from":null,"to":"CARREFOUR"}
+{"type":"event","eventType":"activity","date":"2010-12-13","endDate":"2018-12-31","from":"70.10Z","to":"64.20Z"}
+
+type = line discriminator (meta eller event). eventType = selve felt-typen.
+
+Fejl
+HTTP	Body	Hvornår
+400	{ "error": "invalid_id_format", "expected": "9-digit SIREN number..." }	Ikke 9 cifre
+401	(auth-middleware)	Manglende/forkert X-Api-Key
+402	{ "error": "upgrade_required", ... }	Ikke relevant for FR — kun NL+DE er blokeret på free tier
+403	{ "error": "non_diffusible", "siren": ..., "country": "fr", "message": "..." }	SIREN findes men er privatlivs-beskyttet (art. R123-232-1)
+404	{ "error": "not_found", "siren": ..., "country": "fr" }	Ukendt SIREN
+503	{ "error": "upstream_unavailable", "source": "api.insee.fr", "reason": "..." }	INSEE nede eller rate-limited
+Tool description (forslag til Claude)
+Name: fr_history
+Description: French company history timeline. Returns one event per change
+to the company's name, activity (NAF code), status (active/closed), legal
+form, or social-economy flag, derived from INSEE Sirene 3.11's bitemporal
+periodesUniteLegale array. Includes "initial:<field>" events showing the
+state at company creation. Input: 9-digit SIREN number. Free tier: yes
+(France costs 1 unit, not blocked).
+Input schema: { siren: string (9 digits, e.g. "652014051" for Carrefour) }
+
+Versionering & release
+Bump: v1.3.x → v1.4.0 (minor — additiv, ingen breaking changes)
+CHANGELOG.md:
+## [1.4.0] — 2026-05-23
+### Added
+- `fr_history` tool — French company bitemporal history via INSEE Sirene 3.11.
+  Wave A nu komplet (alle 14 lande dækket på production-units + relevante history-endpoints).
+
+Vigtigt — tool descriptions for hele kataloget
+Mens du alligevel er i pakken: tjek at kun NL og DE har 402-warning i deres tool-descriptions (free-tier blokering). BE og LU er gratis upstreams og må ikke have warning.
+
+Smoke-test efter release
+Brug Claude eller npx @anthropic/mcp-inspector mod den udgivne pakke:
+
+Tool: fr_history
+Input: { "siren": "652014051" }
+Forventet: 11 events, første er initial:name → CARREFOUR, dateCreation 1963-01-01
+
+Tool: fr_history
+Input: { "siren": "775670417" }
+Forventet: 9 events, LVMH-historik
+
+Tool: fr_history
+Input: { "siren": "111222333" }
+Forventet: 404 not_found
+
+Tool: fr_history
+Input: { "siren": "abc" }
+Forventet: 400 invalid_id_format
