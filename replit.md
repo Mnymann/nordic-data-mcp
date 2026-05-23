@@ -19,7 +19,25 @@ Per release the agent must:
    - Railway: `curl -s https://nordic-data-mcp-production.up.railway.app/healthz`
    - MCP Registry: `curl 'https://registry.modelcontextprotocol.io/v0/servers?search=Mnymann'` (single-quote URL — zsh treats `?` as glob)
 
-**Current registry status:** `io.github.Mnymann/nordic-data` is LIVE on the official MCP Registry at version 1.4.1 (synced May 23, 2026). The `mcp-publisher` CLI binary lives at `/Users/martinnymann/mcp-registry/bin/mcp-publisher` on Martin's Mac. There is a competing entry `cloud.nordicdata/nordic-data` (different owner — `sofiajameson20-star`, hosted at `nordicdata.cloud`); name-collision is a branding concern to address separately.
+**Current shipped version: 1.4.2** (May 23, 2026). Live on NPM, Railway, and the official MCP Registry (`io.github.Mnymann/nordic-data`). The `mcp-publisher` CLI binary lives at `/Users/martinnymann/mcp-registry/bin/mcp-publisher` on Martin's Mac.
+
+**Name collision noted, decision = ignore.** A competing entry `cloud.nordicdata/nordic-data` exists on the registry (different owner — `sofiajameson20-star`, hosted at `nordicdata.cloud`, 78 tools, claims global B2B intelligence). Martin's decision: our brand is AddonNordic and namespacing `io.github.Mnymann/nordic-data` is distinct enough — focus on distribution instead of escalation.
+
+## Distribution status (May 23, 2026)
+
+All discovery channels submitted. **No further submissions needed in this round** — wait for organic traction:
+
+| Channel | Status | Notes |
+|---|---|---|
+| NPM | ✅ live `nordic-data-mcp@1.4.2` | `npx -y nordic-data-mcp` works |
+| MCP Registry | ✅ live `io.github.Mnymann/nordic-data@1.4.2` | Anthropic's `modelcontextprotocol/servers` README no longer accepts PRs — registry is the canonical replacement |
+| Glama.ai | ✅ submitted (auto-indexes from GitHub) | Listing typically appears within hours |
+| mcpservers.org | ✅ submitted (was `wong2/awesome-mcp-servers` — moved to form-based submission) | Free tier, review queue |
+| punkpeye/awesome-mcp-servers | ✅ PR open | Category: 💰 Finance & Fintech. 87.5k stars |
+| TensorBlock/awesome-mcp-servers | ✅ PR open | Category: 📊 Data Analysis & Business Intelligence |
+| Cursor forum (Show and Tell) | ✅ posted | https://forum.cursor.com/c/show-and-tell |
+
+**Anthropic `modelcontextprotocol/servers` README PR is intentionally NOT pursued** — maintainers retired the README list in favor of the official MCP Registry, which we are already on.
 
 ## Run & Operate (nordic-data-mcp)
 
