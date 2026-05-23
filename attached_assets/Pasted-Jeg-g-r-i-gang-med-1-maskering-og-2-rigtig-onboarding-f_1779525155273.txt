@@ -1,0 +1,22 @@
+Jeg går i gang med #1 (maskering) og #2 (rigtig onboarding for non-coders) nu, plus en hurtig fix på kvote-labels for #3. #4 og #5 er besvaret i bunden.
+
+Lad mig først tjekke hvor `monthly_quota` kommer fra så jeg ikke laver inkonsistens:
+
+Færdig. Her er hvad jeg har leveret + svar på dine spørgsmål:
+
+✅ #1 Maskering — Ny `MaskedKey`-komponent vises som `ndk_XTzY••…•••akQ` overalt (både i Step 2 i wizardrn og i "API-nøgle"-kortet). Klik "Vis" → afslører i 30 sek med nedtælling → skjuler automatisk. "Kopier" virker uden at afsløre.
+
+✅ #2 Onboarding trin 3 — Helt omskrevet. Tab-baseret valg: Claude Desktop (Mac), Claude Desktop (Windows), Cursor, ChatGPT (web), Claude.ai (web). For desktop/Cursor: fuld JSON-config med kopierbar sti til `claude_desktop_config.json` + færdig blok hvor nøglen er sat ind. For web-tabsene: "kommer snart" — kræver din beslutning på #5 før jeg kan skrive en endelig instruks (se nedenfor). Den gamle `npx ... + export` blok er fjernet helt.
+
+🐛 #3 Kvote-mismatch — Jeg har ikke ændret tallene endnu. Status:
+- Webhook (`src/routes/api/public/payments/webhook.ts`) skriver: Starter=500, Business=5000, Scale=50000
+- Backend `/admin/tiers` siger: starter=1000, pro=10000, scale=50000
+- Backend kender ikke `business` — kun `pro`. `paddleProductToTier` mapper `business_plan → "business"` som backend vil afvise.
+
+Sig hvilken sandhed der gælder (jeg foreslår dit forslag: 1.000 / 10.000 / 50.000 og remap `business_plan → "pro"`), så fixer jeg webhook + `nordic-backend.server.ts` + display-labels i én omgang.
+
+🤔 #4 — Du tester med en konto der allerede har betalt (Scenarie A). Koden genererer kun nøglen fra Paddle webhook efter `transaction.completed` / aktiv subscription — ikke ved signup. Bekræftet.
+
+🤔 #5 — Forretningsbeslutning. Min anbefaling: Scenarie B (hosted URL kræver `Authorization: Bearer ndk_...`). Ellers efterlader du penge på bordet hos præcis det publikum (ChatGPT/Claude.ai web-brugere) der har mindst teknisk friktion til at betale. Det kræver én ændring backend-side (kræv header på `/mcp`). Når det er på plads, fjerner jeg "kommer snart" og skriver den rigtige connector-instruks.
+
+Sig til om jeg skal køre #3-fixet med 1k/10k/50k + `business → pro` mapping.
