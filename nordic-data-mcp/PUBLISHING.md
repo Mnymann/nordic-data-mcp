@@ -2,7 +2,11 @@
 
 Authoritative checklist for releasing a new version. Follow it top-to-bottom; do not skip steps.
 
-This file exists because the publish process has six failure modes that we keep re-discovering. Each one is documented below with its symptom and fix.
+This file exists because the publish process has many failure modes that we keep re-discovering. Each one is documented below with its symptom and fix.
+
+**Two destinations per release:**
+1. **NPM** — the package itself (`npm publish`). Required for `npx -y nordic-data-mcp` to work.
+2. **Official MCP Registry** (`registry.modelcontextprotocol.io`) — the discovery layer for Claude/Cursor/etc. Uses the `mcp-publisher` CLI binary built from `modelcontextprotocol/registry` (lives at `/Users/martinnymann/mcp-registry/bin/mcp-publisher`). Driven by `server.json` in the package root.
 
 ## Prerequisites (one-time per machine)
 
@@ -145,12 +149,30 @@ Expected: the new version. If still old, NPM CDN propagation can take 1–2 minu
 | `error: Your local changes to ... would be overwritten by merge` | Old `package.json` mod from a previous failed publish | `git stash && git pull`; then `git stash drop` once new version is confirmed live |
 | `npm publish` → `E404 Not Found ... do not have permission` | NPM session expired (token TTL ~30 days) | `npm whoami` to confirm; `npm login` to re-authenticate |
 | `npm error enoent Could not read package.json` | Ran `npm` outside the package folder | `cd` into `/Users/martinnymann/nordic-data-mcp` first |
+| `mcp-publisher publish` → 400 `cannot publish duplicate version` | This version-string already exists (or was reserved) in the MCP Registry — even a previously failed publish can reserve it | Bump to next patch (e.g. 1.4.0 → 1.4.1), update all 5 version locations including `server.json`, re-publish to NPM too |
+| `mcp-publisher publish` → 401 `Invalid or expired Registry JWT token` | `mcp-publisher login github` token TTL is ~1 hour, much shorter than NPM | Re-run `mcp-publisher login github` (device-code flow, fresh GitHub code each time), then retry publish |
+| `mcp-publisher publish` → 422 `expected length <= 100, location: body.description` | `server.json` description exceeds 100 chars | Shorten to ≤100 chars. Keep marketing copy in `README.md` instead |
+| `mcp-publisher publish` → 422 `remotes[0].type ... must be "streamable-http"` with empty value | Schema bug-trap: `type` must be at top of each `remotes[]` entry, NOT nested under `transport: { type: ... }`. Conversely, `packages[].transport.type` IS nested. The two are asymmetric. | Use `"remotes": [{ "type": "streamable-http", "url": "..." }]` (flat) and `"packages": [{ "transport": { "type": "stdio" } }]` (nested) |
 
 ## What the agent must do every release
 
-1. Bump version in **all four places**: `package.json`, `src/http.ts` VERSION constant, `src/index.ts` Server constructor, `src/lib/apiClient.ts` USER_AGENT.
+1. Bump version in **all five places**: `package.json`, `src/http.ts` VERSION constant, `src/index.ts` Server constructor, `src/lib/apiClient.ts` USER_AGENT, **and `server.json`** (`.version` AND `.packages[0].version` — both!).
 2. Add CHANGELOG entry.
 3. Typecheck + build + local smoke test.
 4. Commit.
-5. **Tell Martin explicitly: "push to GitHub from Replit, then run the 8 commands in PUBLISHING.md on your Mac."**
-6. After Martin confirms publish success, verify Railway `/healthz` returns the new version.
+5. **Tell Martin explicitly: "push to GitHub from Replit, then run the publish commands in PUBLISHING.md on your Mac."**
+6. Mac publish order: `git pull` → `npm install` → `npm run build` → `npm publish` → `mcp-publisher publish` (re-login first if last login was >1 hour ago).
+7. After Martin confirms, verify all three destinations:
+   - NPM: `npm view nordic-data-mcp version`
+   - Railway: `curl -s https://nordic-data-mcp-production.up.railway.app/healthz`
+   - MCP Registry: `curl 'https://registry.modelcontextprotocol.io/v0/servers?search=Mnymann'` (single-quote URL — zsh treats `?` as glob)
+
+## MCP Registry — server.json schema gotchas
+
+- `description` max length: **100 chars**. Hard validation, no waiver.
+- `remotes[]` entries: `type` is **flat** at the top level (`{ "type": "streamable-http", "url": "..." }`).
+- `packages[]` entries: `transport` is **nested** (`{ "transport": { "type": "stdio" } }`). The two transport-locations are intentionally asymmetric.
+- `name` must be `io.github.<github-username>/<repo>` with case-exact GitHub username (`Mnymann`, not `mnymann`).
+- Registry version-string is permanently reserved on first publish attempt — even failed attempts. Never retry the same version after any successful or partially-successful publish. Bump first.
+- Authoritative schema: https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json
+- Useful introspection endpoint: `GET /v0/servers?search=<term>` (latest version only). Direct `/v0/servers/<name>` returns 404 — server is keyed by internal UUID, not name.

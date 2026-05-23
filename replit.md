@@ -9,10 +9,17 @@ The MCP server itself is in **`nordic-data-mcp/`** — a standalone NPM package,
 **Authoritative checklist: `nordic-data-mcp/PUBLISHING.md`** — read it before bumping any version. It documents the 6 failure modes we keep hitting (zsh-comment-in-cd, missing GitHub push, expired npm token, etc.) and the exact command sequence to avoid them.
 
 Per release the agent must:
-1. Bump version in **four places**: `package.json`, `VERSION` in `src/http.ts`, Server constructor in `src/index.ts`, `USER_AGENT` in `src/lib/apiClient.ts`.
+1. Bump version in **five places**: `package.json`, `VERSION` in `src/http.ts`, Server constructor in `src/index.ts`, `USER_AGENT` in `src/lib/apiClient.ts`, and **`server.json`** (both `.version` AND `.packages[0].version`).
 2. Add a CHANGELOG entry.
 3. Run `npm run typecheck && npm run build && NORDIC_API_KEY=… scripts/smoke-test-http.sh`.
 4. Commit, then **explicitly tell Martin to push from Replit** (the agent has no GitHub credentials in this environment) before he runs the publish flow on his Mac.
+5. Mac runs: `git pull` → `npm install` → `npm run build` → `npm publish` → `mcp-publisher publish` (re-login first if >1 hour since last `mcp-publisher login github` — registry JWT TTL is ~1 hour, much shorter than NPM's ~30 days).
+6. Verify all three destinations:
+   - NPM: `npm view nordic-data-mcp version`
+   - Railway: `curl -s https://nordic-data-mcp-production.up.railway.app/healthz`
+   - MCP Registry: `curl 'https://registry.modelcontextprotocol.io/v0/servers?search=Mnymann'` (single-quote URL — zsh treats `?` as glob)
+
+**Current registry status:** `io.github.Mnymann/nordic-data` is LIVE on the official MCP Registry at version 1.4.1 (synced May 23, 2026). The `mcp-publisher` CLI binary lives at `/Users/martinnymann/mcp-registry/bin/mcp-publisher` on Martin's Mac. There is a competing entry `cloud.nordicdata/nordic-data` (different owner — `sofiajameson20-star`, hosted at `nordicdata.cloud`); name-collision is a branding concern to address separately.
 
 ## Run & Operate (nordic-data-mcp)
 
