@@ -1,0 +1,38 @@
+Last login: Sat May 23 15:14:39 on ttys000
+martinnymann@MacBookPro ~ % go version
+go version go1.26.3 darwin/arm64
+martinnymann@MacBookPro ~ % cd /Users/martinnymann
+martinnymann@MacBookPro ~ % git clone https://github.com/modelcontextprotocol/registry.git mcp-registry
+Cloning into 'mcp-registry'...
+remote: Enumerating objects: 6667, done.
+remote: Counting objects: 100% (257/257), done.
+remote: Compressing objects: 100% (162/162), done.
+remote: Total 6667 (delta 197), reused 95 (delta 95), pack-reused 6410 (from 4)
+Receiving objects: 100% (6667/6667), 75.91 MiB | 8.37 MiB/s, done.
+Resolving deltas: 100% (4036/4036), done.
+martinnymann@MacBookPro ~ % cd mcp-registry
+martinnymann@MacBookPro mcp-registry % make publisher
+go build -ldflags="-X main.Version=dev-deb5e7b -X main.GitCommit=deb5e7b24a8ca30fb3ffdac55fbabf99b26614e4 -X main.BuildTime=2026-05-23T13:27:37Z" -o bin/mcp-publisher ./cmd/publisher
+martinnymann@MacBookPro mcp-registry % ls bin/mcp-publisher
+bin/mcp-publisher
+martinnymann@MacBookPro mcp-registry % cd /Users/martinnymann/nordic-data-mcp
+martinnymann@MacBookPro nordic-data-mcp % git pull
+Already up to date.
+martinnymann@MacBookPro nordic-data-mcp % cd nordic-data-mcp
+martinnymann@MacBookPro nordic-data-mcp % /Users/martinnymann/mcp-registry/bin/mcp-publisher login github
+Logging in with github...
+
+To authenticate, please:
+1. Go to: https://github.com/login/device
+2. Enter code: 7908-90A8
+3. Authorize this application
+Waiting for authorization...
+Successfully authenticated!
+✓ Successfully logged in
+martinnymann@MacBookPro nordic-data-mcp % /Users/martinnymann/mcp-registry/bin/mcp-publisher publish
+Publishing to https://registry.modelcontextprotocol.io...
+Error: publish failed: server returned status 400: {"title":"Bad Request","status":400,"detail":"Failed to publish server","errors":[{"message":"invalid version: cannot publish duplicate version"}]}
+
+martinnymann@MacBookPro nordic-data-mcp % curl https://registry.modelcontextprotocol.io/v0/servers?search=nordic-data
+zsh: no matches found: https://registry.modelcontextprotocol.io/v0/servers?search=nordic-data
+martinnymann@MacBookPro nordic-data-mcp % 
