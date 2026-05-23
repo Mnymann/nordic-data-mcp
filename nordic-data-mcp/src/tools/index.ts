@@ -5,6 +5,7 @@ import { kybFull } from "./kybFull.js";
 import { autocompleteAddress } from "./autocompleteAddress.js";
 import { lookupLei } from "./lookupLei.js";
 import { companyEnriched } from "./companyEnriched.js";
+import { frHistory } from "./frHistory.js";
 import type { McpTool } from "../types.js";
 
 export const tools: McpTool[] = [
@@ -15,6 +16,7 @@ export const tools: McpTool[] = [
   autocompleteAddress,
   lookupLei,
   companyEnriched,
+  frHistory,
 ];
 
 export {
@@ -25,4 +27,5 @@ export {
   autocompleteAddress,
   lookupLei,
   companyEnriched,
+  frHistory,
 };

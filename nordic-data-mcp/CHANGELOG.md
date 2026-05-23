@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.3] — 2026-05-23
+
+### Added
+- **`fr_history` tool** — French company bitemporal history timeline. Returns one event per change to the company's name, NAF activity code, status, legal form, or social-economy flag, derived from INSEE Sirene 3.11's `periodesUniteLegale` array. Includes `initial:<field>` events showing the state at company creation. Input: 9-digit SIREN. Free tier supported (France is not tier-gated). Backend endpoint: `GET /api/company/fr/:siren/history`. Wave A coverage on the Nordic Data API is now complete.
+
 ## [1.4.2] — 2026-05-23
 
 ### Added
