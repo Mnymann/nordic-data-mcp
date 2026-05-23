@@ -2,10 +2,22 @@
 /**
  * Streamable HTTP transport for the Nordic Data MCP server.
  *
- * Used for remote MCP hosting (e.g. Railway + Anthropic remote connectors).
+ * Two endpoints:
+ *
+ *   POST/GET/DELETE /mcp        Public, no-auth. Uses server-side
+ *                               NORDIC_API_KEY for all upstream calls.
+ *                               Intended for the Anthropic Connectors
+ *                               Directory and freemium discovery.
+ *
+ *   POST/GET/DELETE /mcp/auth   Requires "Authorization: Bearer ndk_..."
+ *                               on every request. The provided key is
+ *                               forwarded to upstream so each paying
+ *                               customer is billed against their own
+ *                               tenant and quota.
+ *
  * For local Claude Desktop / Cursor / Claude Code, use src/index.ts (stdio).
  */
-import express, { type Request, type Response } from "express";
+import express, { type Request, type Response, type NextFunction } from "express";
 import { randomUUID } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -15,10 +27,13 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
+import { runWithApiKey, isStrictApiKeyScopeActive } from "./lib/apiClient.js";
+
+const VERSION = "1.3.0";
 
 function buildServer(): Server {
   const server = new Server(
-    { name: "nordic-data-mcp", version: "1.2.3" },
+    { name: "nordic-data-mcp", version: VERSION },
     { capabilities: { tools: {} } },
   );
 
@@ -62,34 +77,137 @@ app.use(express.json({ limit: "4mb" }));
 
 // Health endpoint — does not require an MCP session.
 app.get("/healthz", (_req, res) => {
-  res.json({ status: "ok", service: "nordic-data-mcp", version: "1.2.3" });
+  res.json({ status: "ok", service: "nordic-data-mcp", version: VERSION });
 });
 
-// Sessions are keyed by Mcp-Session-Id header.
-const transports = new Map<string, StreamableHTTPServerTransport>();
+/**
+ * Generic MCP request handler shared by `/mcp` and `/mcp/auth`. The caller
+ * supplies its own session map so the two endpoints maintain independent
+ * sessions (a customer's authenticated session never leaks into the public
+ * pool, and vice versa).
+ */
+async function handleMcpRequest(
+  req: Request,
+  res: Response,
+  transports: Map<string, StreamableHTTPServerTransport>,
+): Promise<void> {
+  const sessionId = req.header("mcp-session-id") ?? undefined;
+  let transport = sessionId ? transports.get(sessionId) : undefined;
+
+  if (!transport) {
+    transport = new StreamableHTTPServerTransport({
+      sessionIdGenerator: () => randomUUID(),
+      onsessioninitialized: (id) => {
+        transports.set(id, transport!);
+      },
+    });
+    transport.onclose = () => {
+      if (transport!.sessionId) transports.delete(transport!.sessionId);
+    };
+    const server = buildServer();
+    await server.connect(transport);
+  }
+
+  await transport.handleRequest(req, res, req.body);
+}
+
+// ─── Public, no-auth endpoint ────────────────────────────────────────────────
+// Uses server-side NORDIC_API_KEY (env var). For Anthropic Directory and
+// freemium discovery. Sessions kept separate from /mcp/auth.
+const publicTransports = new Map<string, StreamableHTTPServerTransport>();
 
 app.all("/mcp", async (req: Request, res: Response) => {
   try {
-    const sessionId = req.header("mcp-session-id") ?? undefined;
-    let transport = sessionId ? transports.get(sessionId) : undefined;
-
-    if (!transport) {
-      transport = new StreamableHTTPServerTransport({
-        sessionIdGenerator: () => randomUUID(),
-        onsessioninitialized: (id) => {
-          transports.set(id, transport!);
-        },
-      });
-      transport.onclose = () => {
-        if (transport!.sessionId) transports.delete(transport!.sessionId);
-      };
-      const server = buildServer();
-      await server.connect(transport);
-    }
-
-    await transport.handleRequest(req, res, req.body);
+    await handleMcpRequest(req, res, publicTransports);
   } catch (err) {
     console.error("MCP request failed:", formatError(err));
+    if (!res.headersSent) {
+      res.status(500).json({ error: "internal_error" });
+    }
+  }
+});
+
+// ─── Authenticated endpoint ──────────────────────────────────────────────────
+// Requires "Authorization: Bearer ndk_..." on every request. The key is
+// forwarded to upstream as X-API-Key so each customer's tenant + quota
+// are tracked correctly.
+const authTransports = new Map<string, StreamableHTTPServerTransport>();
+
+function extractBearerToken(req: Request): string | null {
+  const header = req.header("authorization");
+  if (!header) return null;
+  const match = /^Bearer\s+(.+)$/i.exec(header.trim());
+  if (!match) return null;
+  const token = match[1]!.trim();
+  return token.length > 0 ? token : null;
+}
+
+function sendAuthError(
+  res: Response,
+  status: number,
+  code: string,
+  message: string,
+): void {
+  if (res.headersSent) return;
+  if (status === 401) {
+    res.setHeader("WWW-Authenticate", 'Bearer realm="nordic-data-mcp"');
+  }
+  res.status(status).json({
+    jsonrpc: "2.0",
+    error: {
+      code: status === 401 ? -32001 : -32603,
+      message,
+      data: { code },
+    },
+    id: null,
+  });
+}
+
+function requireBearer(req: Request, res: Response, next: NextFunction): void {
+  const token = extractBearerToken(req);
+  if (!token) {
+    sendAuthError(
+      res,
+      401,
+      "missing_authorization",
+      'Missing "Authorization: Bearer <your-ndk-key>" header. Get a key at https://addonnordic.com/dashboard',
+    );
+    return;
+  }
+  // Lightweight format check — full validation happens upstream on first call.
+  if (!/^ndk_[A-Za-z0-9_-]{16,}$/.test(token)) {
+    sendAuthError(
+      res,
+      401,
+      "invalid_api_key_format",
+      "Authorization token does not look like a Nordic Data API key (expected format: ndk_...).",
+    );
+    return;
+  }
+  (req as Request & { apiKey?: string }).apiKey = token;
+  next();
+}
+
+app.all("/mcp/auth", requireBearer, async (req: Request, res: Response) => {
+  const apiKey = (req as Request & { apiKey?: string }).apiKey!;
+  try {
+    await runWithApiKey(
+      apiKey,
+      async () => {
+        // Fail-closed assertion: if AsyncLocalStorage failed to propagate
+        // into this callback we must NOT proceed — silently using the env
+        // key would mis-bill the server tenant for a paying customer.
+        if (!isStrictApiKeyScopeActive()) {
+          throw new Error(
+            "Internal error: authenticated API key scope was lost before request dispatch",
+          );
+        }
+        await handleMcpRequest(req, res, authTransports);
+      },
+      { strict: true },
+    );
+  } catch (err) {
+    console.error("MCP /auth request failed:", formatError(err));
     if (!res.headersSent) {
       res.status(500).json({ error: "internal_error" });
     }
@@ -99,6 +217,6 @@ app.all("/mcp", async (req: Request, res: Response) => {
 const PORT = Number(process.env.PORT ?? 3000);
 app.listen(PORT, () => {
   console.error(
-    `Nordic Data MCP server (HTTP) listening on :${PORT} — POST /mcp`,
+    `Nordic Data MCP server (HTTP) v${VERSION} listening on :${PORT} — POST /mcp (public) and /mcp/auth (Bearer)`,
   );
 });

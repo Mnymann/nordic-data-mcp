@@ -4,6 +4,19 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] — 2026-05-22
+
+### Added
+- **New `/mcp/auth` HTTP endpoint** — authenticated Streamable HTTP transport for paying customers. Requires `Authorization: Bearer ndk_...` header on every request; the provided key is forwarded upstream as `X-API-Key` so each customer is billed against their own tenant and daily quota. Designed for ChatGPT and Claude.ai web custom-connector users who cannot use the stdio transport.
+- **`runWithApiKey()` helper in `apiClient`** — uses `AsyncLocalStorage` to scope a per-request API key to all upstream calls within a handler, without changing any tool signatures. Supports a `strict: true` mode used by `/mcp/auth` that is **fail-closed**: if the ALS context is lost between the request boundary and the upstream call, the request is rejected rather than silently falling back to the server-side env key. This prevents any scenario where a paying customer's session could be billed against the server tenant.
+- **`isStrictApiKeyScopeActive()` assertion** — called by `/mcp/auth` immediately before dispatch as belt-and-suspenders confirmation that ALS context propagated.
+- **`ensureApiKeyConfigured()` helper** — called at stdio startup to fail fast if `NORDIC_API_KEY` is not set in the environment.
+
+### Changed
+- **`/mcp` endpoint is unchanged** — still no-auth, still uses server-side `NORDIC_API_KEY`. Intended for the Anthropic Connectors Directory listing and freemium discovery. Sessions are now tracked in a separate map from `/mcp/auth`.
+- **Friendly error messages for quota and auth failures.** Upstream `429 Too Many Requests` is mapped to `quota_exceeded` with a link to the customer dashboard ("View your usage and upgrade your plan at https://addonnordic.com/dashboard"). Upstream `401`/`403` is mapped similarly with a regeneration link. Replaces generic "server error" / "internal_error" surfaces.
+- **`401`/`403` responses are no longer retried against fallback mirrors** — a bad key won't become valid on the second host, and retrying wastes the customer's budget on what is fundamentally a client error.
+
 ## [1.2.3] — 2026-05-21
 
 ### Added

@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { NordicApiError } from "./errors.js";
 
 /**
@@ -27,15 +28,91 @@ function resolveHosts(): string[] {
 }
 
 const HOSTS = resolveHosts();
-const API_KEY = process.env.NORDIC_API_KEY;
+const DEFAULT_API_KEY = process.env.NORDIC_API_KEY;
 
-if (!API_KEY) {
-  throw new Error(
-    "NORDIC_API_KEY environment variable is required. Get a key at https://addonnordic.com",
+const USER_AGENT = "nordic-data-mcp/1.3.0";
+
+/**
+ * Per-request API key override. Used by the authenticated HTTP endpoint
+ * (`/mcp/auth`) to forward the customer's own `ndk_...` key to upstream,
+ * so usage is tracked against their tenant + quota. When no contextual
+ * scope is active, the module-level `NORDIC_API_KEY` env var is used
+ * (stdio mode and the public `/mcp` endpoint).
+ *
+ * `strict: true` makes the scope fail-closed: if the AsyncLocalStorage
+ * context is somehow lost between the request boundary and the upstream
+ * call, we throw rather than silently billing the server tenant. This is
+ * critical for `/mcp/auth` — losing the customer key mid-request would
+ * leak server-key usage into a paying customer's session.
+ */
+interface ApiKeyScope {
+  apiKey: string;
+  strict: boolean;
+}
+
+const apiKeyStorage = new AsyncLocalStorage<ApiKeyScope>();
+
+/**
+ * Run an async function with a per-request API key in context. All
+ * `apiGet` / `apiPost` calls inside `fn` will use this key instead of
+ * the env-var default. When `strict` is true, missing context inside
+ * `fn` will throw rather than fall back to the env key — use this for
+ * the authenticated HTTP endpoint where the wrong tenant must never
+ * be billed.
+ */
+export function runWithApiKey<T>(
+  apiKey: string,
+  fn: () => Promise<T>,
+  options: { strict?: boolean } = {},
+): Promise<T> {
+  return apiKeyStorage.run(
+    { apiKey, strict: options.strict ?? false },
+    fn,
   );
 }
 
-const USER_AGENT = "nordic-data-mcp/1.2.3";
+/**
+ * Throws if no `NORDIC_API_KEY` is configured in the environment.
+ * Called at startup by the stdio entrypoint (`src/index.ts`), which
+ * cannot rely on per-request overrides.
+ */
+export function ensureApiKeyConfigured(): void {
+  if (!DEFAULT_API_KEY) {
+    throw new Error(
+      "NORDIC_API_KEY environment variable is required. Get a key at https://addonnordic.com",
+    );
+  }
+}
+
+function resolveApiKey(): string {
+  const scope = apiKeyStorage.getStore();
+  if (scope) return scope.apiKey;
+  // No ALS scope active — this is the normal path for stdio mode and the
+  // public /mcp endpoint, both of which depend on NORDIC_API_KEY from env.
+  // The authenticated /mcp/auth endpoint enters via runWithApiKey({strict:true}),
+  // so if we reach here from that path the env key would silently mis-bill
+  // a paying customer. `isStrictApiKeyScopeActive()` is checked at request
+  // entry (`requireStrictApiKey` middleware) to fail fast before we ever
+  // get here in that broken state.
+  if (DEFAULT_API_KEY) return DEFAULT_API_KEY;
+  throw new NordicApiError({
+    status: 401,
+    code: "missing_api_key",
+    message:
+      "No API key available for this request. Set NORDIC_API_KEY or use the authenticated /mcp/auth endpoint with an Authorization: Bearer header.",
+  });
+}
+
+/**
+ * Returns true iff a strict per-request key scope is active in the current
+ * async context. The authenticated HTTP endpoint uses this immediately
+ * before invoking the MCP transport to assert that ALS context has actually
+ * propagated, so we never silently fall back to the server key.
+ */
+export function isStrictApiKeyScopeActive(): boolean {
+  const scope = apiKeyStorage.getStore();
+  return scope?.strict === true;
+}
 
 interface RawErrorBody {
   error?: string;
@@ -48,6 +125,39 @@ interface RawErrorBody {
 async function parseError(res: Response): Promise<NordicApiError> {
   const body = (await res.json().catch(() => ({}))) as RawErrorBody;
   const code = body.error ?? `http_${res.status}`;
+
+  // Friendly mapping for quota-exceeded — backend agent specifically asked us
+  // not to surface a generic "server error" here. Customers seeing this need
+  // to know it's a quota issue and where to upgrade.
+  if (res.status === 429) {
+    const detail =
+      typeof body.message === "string" && body.message.trim().length > 0
+        ? body.message.trim()
+        : "Daily API quota exceeded.";
+    return new NordicApiError({
+      status: 429,
+      code: "quota_exceeded",
+      message: `${detail} View your usage and upgrade your plan at https://addonnordic.com/dashboard`,
+      source: body.source,
+      details: body,
+    });
+  }
+
+  // Friendly mapping for invalid / revoked API key.
+  if (res.status === 401 || res.status === 403) {
+    const detail =
+      typeof body.message === "string" && body.message.trim().length > 0
+        ? body.message.trim()
+        : "API key is invalid, revoked, or missing.";
+    return new NordicApiError({
+      status: res.status,
+      code: code || "unauthorized",
+      message: `${detail} Get or regenerate your key at https://addonnordic.com/dashboard`,
+      source: body.source,
+      details: body,
+    });
+  }
+
   const message =
     body.message ??
     body.expected ??
@@ -88,13 +198,14 @@ async function callWithFailover<T>(
 ): Promise<T> {
   let lastError: unknown;
   const mirrorMode = HOSTS.length > 1;
+  const apiKey = resolveApiKey();
 
   for (let i = 0; i < HOSTS.length; i++) {
     const host = HOSTS[i]!;
     const isFallback = i > 0;
     try {
       const headers: Record<string, string> = {
-        "X-API-Key": API_KEY!,
+        "X-API-Key": apiKey,
         Accept: "application/json",
         "User-Agent": USER_AGENT,
       };
@@ -108,7 +219,12 @@ async function callWithFailover<T>(
 
       if (!res.ok) {
         const err = await parseError(res);
-        if (isRetryable(res.status, mirrorMode) && i < HOSTS.length - 1) {
+        // 401/403 are NOT retryable — a bad key won't become good on the mirror.
+        const retryable =
+          isRetryable(res.status, mirrorMode) &&
+          res.status !== 401 &&
+          res.status !== 403;
+        if (retryable && i < HOSTS.length - 1) {
           // stderr only — stdout is reserved for the MCP stdio protocol.
           // Host URL is intentionally not logged (internal infrastructure).
           console.error(

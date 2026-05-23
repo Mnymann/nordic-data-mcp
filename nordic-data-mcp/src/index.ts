@@ -7,9 +7,14 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
+import { ensureApiKeyConfigured } from "./lib/apiClient.js";
+
+// stdio mode cannot rely on per-request key overrides — fail fast at startup
+// if the operator has not configured NORDIC_API_KEY.
+ensureApiKeyConfigured();
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.2.3" },
+  { name: "nordic-data-mcp", version: "1.3.0" },
   { capabilities: { tools: {} } },
 );
 
