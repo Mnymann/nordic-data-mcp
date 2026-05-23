@@ -49,7 +49,7 @@ export const lookupCompany: McpTool = {
       source: { type: "string", description: "Upstream registry name (CVR, Brønnøysund, etc.)." },
     },
   },
-  annotations: { title: "Look Up Company", readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Look Up Company", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, id } = inputSchema.parse(args);
     return apiGet(`/api/company/${country}/${encodeURIComponent(id)}`);

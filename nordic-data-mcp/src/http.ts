@@ -35,7 +35,7 @@ import {
 } from "./lib/requestContext.js";
 import { dispatchToolCall } from "./lib/dispatcher.js";
 
-const VERSION = "1.4.1";
+const VERSION = "1.4.2";
 
 function buildServer(): Server {
   const server = new Server(

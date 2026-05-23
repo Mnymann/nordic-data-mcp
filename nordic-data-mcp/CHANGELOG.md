@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2] — 2026-05-23
+
+### Added
+- Full MCP tool annotations on all 7 tools: `destructiveHint: false` and `idempotentHint: true` added alongside the existing `readOnlyHint: true` and `openWorldHint: true`. These hints let MCP clients (Claude Desktop, Cursor, etc.) know that all Nordic Data tools are safe to retry, have no destructive side effects, and reach out to external HTTP services. Agents can skip confirmation prompts and safely retry on transient network errors.
+
 ## [1.4.1] — 2026-05-23
 
 ### Changed

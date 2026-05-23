@@ -47,7 +47,7 @@ export const autocompleteAddress: McpTool = {
       },
     },
   },
-  annotations: { title: "Autocomplete Address", readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Autocomplete Address", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, query } = inputSchema.parse(args);
     const qs = new URLSearchParams({ q: query }).toString();

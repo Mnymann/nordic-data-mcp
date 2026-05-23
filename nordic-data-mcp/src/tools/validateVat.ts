@@ -37,7 +37,7 @@ export const validateVat: McpTool = {
       source: { type: "string", description: "Either 'VIES' or 'HMRC'." },
     },
   },
-  annotations: { title: "Validate VAT Number", readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Validate VAT Number", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, vat_number } = inputSchema.parse(args);
     return apiGet(

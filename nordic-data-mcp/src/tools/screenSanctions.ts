@@ -74,7 +74,7 @@ export const screenSanctions: McpTool = {
       checked_at: { type: "string", description: "ISO-8601 timestamp of the screening." },
     },
   },
-  annotations: { title: "Screen Sanctions and PEP Lists", readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Screen Sanctions and PEP Lists", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   handler: async (args) => {
     const parsed = inputSchema.parse(args);
     return apiPost("/api/sanctions/screen", parsed);

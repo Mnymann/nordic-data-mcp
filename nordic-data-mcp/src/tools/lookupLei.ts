@@ -82,7 +82,7 @@ export const lookupLei: McpTool = {
       },
     },
   },
-  annotations: { title: "Look Up LEI", readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Look Up LEI", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   handler: async (args) => {
     const parsed = inputSchema.parse(args);
     if (parsed.mode === "reverse") {

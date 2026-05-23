@@ -59,7 +59,7 @@ export const companyEnriched: McpTool = {
       },
     },
   },
-  annotations: { title: "Enriched Company Profile", readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Enriched Company Profile", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, id } = inputSchema.parse(args);
     return apiGet(

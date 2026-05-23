@@ -78,7 +78,7 @@ export const kybFull: McpTool = {
       cached: { type: "boolean", description: "True if served from the 6h cache." },
     },
   },
-  annotations: { title: "Full KYB Report", readOnlyHint: true, openWorldHint: true },
+  annotations: { title: "Full KYB Report", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   handler: async (args) => {
     const { country, id } = inputSchema.parse(args);
     return apiGet(`/api/kyc/full/${country}/${encodeURIComponent(id)}`);
