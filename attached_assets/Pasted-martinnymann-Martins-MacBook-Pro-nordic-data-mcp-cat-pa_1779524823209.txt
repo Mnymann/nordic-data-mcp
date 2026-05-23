@@ -1,0 +1,103 @@
+martinnymann@Martins-MacBook-Pro nordic-data-mcp % cat package.json | grep '"version"' && npm install && npm run build && npm publish
+  "version": "1.3.0",
+
+up to date, audited 141 packages in 720ms
+
+33 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+> nordic-data-mcp@1.3.0 build
+> tsc
+
+
+> nordic-data-mcp@1.3.0 prepublishOnly
+> npm run build
+
+
+> nordic-data-mcp@1.3.0 build
+> tsc
+
+npm notice
+npm notice 📦  nordic-data-mcp@1.3.0
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 6.6kB README.md
+npm notice 65B dist/http.d.ts
+npm notice 102B dist/http.d.ts.map
+npm notice 7.3kB dist/http.js
+npm notice 5.8kB dist/http.js.map
+npm notice 66B dist/index.d.ts
+npm notice 104B dist/index.d.ts.map
+npm notice 1.9kB dist/index.js
+npm notice 1.9kB dist/index.js.map
+npm notice 1.3kB dist/lib/apiClient.d.ts
+npm notice 600B dist/lib/apiClient.d.ts.map
+npm notice 8.9kB dist/lib/apiClient.js
+npm notice 5.8kB dist/lib/apiClient.js.map
+npm notice 1.0kB dist/lib/countries.d.ts
+npm notice 348B dist/lib/countries.d.ts.map
+npm notice 1.0kB dist/lib/countries.js
+npm notice 638B dist/lib/countries.js.map
+npm notice 552B dist/lib/errors.d.ts
+npm notice 481B dist/lib/errors.d.ts.map
+npm notice 1.6kB dist/lib/errors.js
+npm notice 1.4kB dist/lib/errors.js.map
+npm notice 144B dist/tools/autocompleteAddress.d.ts
+npm notice 224B dist/tools/autocompleteAddress.d.ts.map
+npm notice 1.2kB dist/tools/autocompleteAddress.js
+npm notice 1.0kB dist/tools/autocompleteAddress.js.map
+npm notice 136B dist/tools/companyEnriched.d.ts
+npm notice 214B dist/tools/companyEnriched.d.ts.map
+npm notice 1.2kB dist/tools/companyEnriched.js
+npm notice 941B dist/tools/companyEnriched.js.map
+npm notice 593B dist/tools/index.d.ts
+npm notice 594B dist/tools/index.d.ts.map
+npm notice 665B dist/tools/index.js
+npm notice 620B dist/tools/index.js.map
+npm notice 120B dist/tools/kybFull.d.ts
+npm notice 198B dist/tools/kybFull.d.ts.map
+npm notice 1.3kB dist/tools/kybFull.js
+npm notice 923B dist/tools/kybFull.js.map
+npm notice 132B dist/tools/lookupCompany.d.ts
+npm notice 210B dist/tools/lookupCompany.d.ts.map
+npm notice 1.6kB dist/tools/lookupCompany.js
+npm notice 937B dist/tools/lookupCompany.js.map
+npm notice 124B dist/tools/lookupLei.d.ts
+npm notice 204B dist/tools/lookupLei.d.ts.map
+npm notice 2.7kB dist/tools/lookupLei.js
+npm notice 2.2kB dist/tools/lookupLei.js.map
+npm notice 136B dist/tools/screenSanctions.d.ts
+npm notice 215B dist/tools/screenSanctions.d.ts.map
+npm notice 1.3kB dist/tools/screenSanctions.js
+npm notice 1.1kB dist/tools/screenSanctions.js.map
+npm notice 128B dist/tools/validateVat.d.ts
+npm notice 207B dist/tools/validateVat.d.ts.map
+npm notice 1.2kB dist/tools/validateVat.js
+npm notice 927B dist/tools/validateVat.js.map
+npm notice 475B dist/types.d.ts
+npm notice 595B dist/types.d.ts.map
+npm notice 44B dist/types.js
+npm notice 102B dist/types.js.map
+npm notice 1.6kB package.json
+npm notice Tarball Details
+npm notice name: nordic-data-mcp
+npm notice version: 1.3.0
+npm notice filename: nordic-data-mcp-1.3.0.tgz
+npm notice package size: 22.0 kB
+npm notice unpacked size: 74.7 kB
+npm notice shasum: 9566398982c546a7fe678f143295be89cce77cd1
+npm notice integrity: sha512-vI9My0HKK2/4K[...]dp9Oz1ittBppA==
+npm notice total files: 59
+npm notice
+npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+npm error code E404
+npm error 404 Not Found - PUT https://registry.npmjs.org/nordic-data-mcp - Not found
+npm error 404
+npm error 404  The requested resource 'nordic-data-mcp@1.3.0' could not be found or you do not have permission to access it.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: /Users/martinnymann/.npm/_logs/2026-05-23T08_26_50_850Z-debug-0.log
+martinnymann@Martins-MacBook-Pro nordic-data-mcp % 
