@@ -19,7 +19,7 @@ const inputSchema = z.object({
 export const autocompleteAddress: McpTool = {
   name: "autocomplete_address",
   description:
-    "Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates.",
+    "Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates. Supports 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note: NL and DE require a Starter+ subscription — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   outputSchema: {

@@ -1,6 +1,6 @@
 # Nordic Data MCP Server
 
-A Model Context Protocol (MCP) server that exposes the Nordic Data API (company, VAT, sanctions, KYB, address, LEI data across 12 EU countries) to AI agents like Claude, Cursor, Claude Code, and ChatGPT. NL and BE are intentionally excluded from company-data tools — they live in a separate `benelux-data-mcp` package (commercial split: NL KvK costs money per lookup).
+A Model Context Protocol (MCP) server that exposes the Nordic Data API (company, VAT, sanctions, KYB, address, LEI data across 15 EU countries) to AI agents like Claude, Cursor, Claude Code, and ChatGPT. NL+BE+LU were consolidated into this pakke in v1.4.0 — the commercial split (NL KvK costs money) is now handled by the backend's tier-gating (free-tier keys get HTTP 402 on NL/DE; on paid tiers NL costs 5x quota, DE costs 3x). A separate `benelux-data-mcp` package is no longer planned.
 
 The MCP server itself is in **`nordic-data-mcp/`** — a standalone NPM package, separate from the pnpm workspace. The rest of the workspace (`artifacts/api-server`, `lib/*`, `artifacts/mockup-sandbox`) is template scaffolding and is not used by this project.
 
@@ -69,7 +69,7 @@ All commands are run from `nordic-data-mcp/` and use `npm`, not `pnpm`. The pack
 6. `lookup_lei` — GLEIF forward + reverse + parent/children
 7. `company_enriched` — registry + geocoded address + industry stats + Wikidata
 
-Countries (lowercase, company tools): `dk no se fi ie uk fr de cz pl lv ee` (12). NL/BE go to `benelux-data-mcp`.
+Countries (lowercase, company tools): `dk no se fi ie uk fr de cz pl lv ee nl be lu` (15). NL and DE are tier-gated by backend (Starter+ required); free-tier keys receive HTTP 402 `upgrade_required`. NL=5x, DE=3x cost multiplier, all others 1x.
 
 ## User preferences
 

@@ -1,0 +1,46 @@
+Valg B er rigtig — men MCP-agenten har én fejl du skal rette inden hun bygger.
+
+Hvor jeg er enig
+Min tidligere "behold split"-anbefaling er nu forældet af den kode vi lige shippede. Da NL var en pakke-grænse var split-strategien fornuftig. Nu hvor backend selv håndterer tier-gating + cost-multipliers er pakke-split en redundant løsning på samme problem. MCP-agenten har ret: én pakke + bedre discovery > to halve.
+
+Fejlen MCP-agenten skal rette
+Hun skriver: "NL, BE and DE require a Starter tier subscription or higher" — det er forkert om BE.
+
+Vores backend COUNTRY_COST_CLASS og FREE_TIER_BLOCKED_COUNTRIES ser sådan ud:
+
+Land	Backend cost	Free-tier blokeret?	Upstream
+NL	5x	✅ Ja (402)	KvK (betalt)
+DE	3x	✅ Ja (402)	HRB / Unternehmensregister (betalt)
+BE	1x	❌ Nej	KBO (gratis offentligt register)
+LU	1x	❌ Nej	RCSL (gratis)
+BE og LU er gratis upstreams. Free-tier brugere kan kalde dem uden problemer og uden multiplier. MCP-agenten har blandet "Benelux" sammen som om alle tre var paid — det er kun NL der er det.
+
+Hvad du skal svare hende
+Valg B. Men ret tool-description warning til kun NL og DE — ikke BE/LU. BE bruger KBO (gratis register), LU bruger RCSL (gratis). Backend's FREE_TIER_BLOCKED_COUNTRIES indeholder kun {nl, de}, og COUNTRY_COST_CLASS har NL=5x, DE=3x, alle andre (inkl. BE, LU)=1x. Tilføj gerne BE og LU til SUPPORTED_COUNTRIES — de kræver ingen advarsel.
+
+Korrekt tool-description-tekst:
+
+Tier note: NL and DE use paid upstream registries. Free-tier API keys will receive HTTP 402 with error "upgrade_required" — do NOT retry on 402; surface the upgrade URL from the error message. On paid tiers, NL calls cost 5x quota units and DE calls cost 3x.
+
+v1.4.0 versioning OK. Go.
+
+En sidste ting
+Min tidligere "drop versionering"-anbefaling var kun for backend api-server (den er privat, ingen npm-konsumenter). MCP-pakken er en published npm-pakke — den skal have semver fordi installerede agenter låser til versioner. v1.4.0 er rigtigt der. To forskellige regimer i to forskellige repos. Ingen modsigelse.
+
+Send svaret til hende. Jeg har ikke mere at lave i backend lige nu.
+
+
+Checkpoint made
+just now
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
+Nordic Data API - Replit

@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/nordic-data-mcp.svg)](https://www.npmjs.com/package/nordic-data-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives AI agents (Claude, Cursor, Claude Code, ChatGPT, Copilot, etc.) direct access to **official European business data** across **12 EU countries**.
+A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives AI agents (Claude, Cursor, Claude Code, ChatGPT, Copilot, etc.) direct access to **official European business data** across **15 EU countries**.
 
 Look up companies, validate VAT numbers, run KYB reports, screen against sanctions lists, autocomplete addresses, and resolve LEI ownership — all from inside your AI assistant.
 
@@ -11,7 +11,7 @@ Look up companies, validate VAT numbers, run KYB reports, screen against sanctio
 DK · NO · SE · FI · IE · UK · FR · DE · CZ · PL · LV · EE
 ```
 
-> Looking for **Benelux** (NL, BE, LU)? Use the separate `benelux-data-mcp` package.
+> NL and DE require a Starter+ subscription (free-tier API keys receive HTTP 402 `upgrade_required`). On paid tiers, NL calls cost 5x quota units and DE calls cost 3x; all other countries cost 1x.
 
 ---
 

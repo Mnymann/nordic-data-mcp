@@ -4,6 +4,19 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] — 2026-05-23
+
+### Added
+- **NL, BE and LU added to all company-data tools** (`lookup_company`, `kyb_full`, `autocomplete_address`, `company_enriched`, `lookup_lei` reverse mode). Brings the supported country set from 12 to 15. BE uses the free public KBO register; LU uses the free RCSL register; NL uses the paid KvK register.
+- **Tier-gating documentation in tool descriptions.** All five country-aware tools now disclose that NL and DE require a Starter+ subscription, that free-tier API keys receive HTTP 402 `upgrade_required`, and that agents must NOT retry on 402 — they should surface the upgrade URL to the user instead. Tools also document the per-country cost multipliers (NL=5x, DE=3x, all others=1x) so agents can budget calls.
+
+### Changed
+- `lookup_company` `id` parameter description now covers NL (KvK), BE (BCE/KBO) and LU (RCSL) identifier formats.
+- README and project metadata updated: removed references to a separate `benelux-data-mcp` package (NL/BE/LU are now first-class here; backend tier-gating handles the commercial split).
+
+### Migration note
+- This is technically additive (no existing call shape changes), but if your code relied on receiving a Zod validation error for `country: "nl"`, `"be"` or `"lu"` inputs, you will now see backend HTTP 402 (for NL on free tier) or successful responses (BE, LU, or paid-tier NL) instead.
+
 ## [1.3.6] — 2026-05-23
 
 ### Added

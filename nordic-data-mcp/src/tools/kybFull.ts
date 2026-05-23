@@ -19,7 +19,7 @@ const inputSchema = z.object({
 export const kybFull: McpTool = {
   name: "kyb_full",
   description:
-    "Full Know-Your-Business master report for a company across 12 EU countries. Aggregates: identity, registered address (geocoded), key persons & directors, financial statements, official filings, LEI + corporate ownership, VAT registration, sanctions + PEP screening, adverse media (GDELT 2.0), and a composite risk score. Single call. Cached 6h; may take 5-15s on cold cache.",
+    "Full Know-Your-Business master report for a company across 15 EU countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Aggregates: identity, registered address (geocoded), key persons & directors, financial statements, official filings, LEI + corporate ownership, VAT registration, sanctions + PEP screening, adverse media (GDELT 2.0), and a composite risk score. Single call. Cached 6h; may take 5-15s on cold cache. Tier note: NL and DE use paid upstream registries — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402. On paid tiers, NL costs 5x quota and DE costs 3x.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   outputSchema: {

@@ -50,7 +50,7 @@ const inputSchema = z
 export const lookupLei: McpTool = {
   name: "lookup_lei",
   description:
-    "Look up a Legal Entity Identifier (LEI) via GLEIF — the global standard for entity identification. Returns legal name, registered address, status, parent + ultimate parent relationships, and child entities (subsidiaries). Also supports reverse lookup from a national company number to LEI.",
+    "Look up a Legal Entity Identifier (LEI) via GLEIF — the global standard for entity identification. Returns legal name, registered address, status, parent + ultimate parent relationships, and child entities (subsidiaries). Also supports reverse lookup from a national company number to LEI across 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note (reverse mode only): NL and DE use paid upstream registries — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   outputSchema: {

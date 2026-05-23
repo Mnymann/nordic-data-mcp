@@ -1,10 +1,12 @@
 /**
  * Supported countries across Nordic Data API tools.
  *
- * Company-data tools use the lowercase set (12 countries with native business registries).
- * NL and BE are intentionally excluded — they belong to a separate Benelux package.
- * VAT validation uses the uppercase set (broader EU coverage via VIES + HMRC for GB)
- * and still includes NL/BE because VIES is free upstream.
+ * Company-data tools use the lowercase set (15 countries with native business registries).
+ * Backend enforces tier-gating: NL and DE require a Starter+ subscription
+ * (free-tier keys receive HTTP 402 upgrade_required). On paid tiers, NL calls
+ * cost 5x quota units and DE calls cost 3x — all others 1x.
+ *
+ * VAT validation uses the uppercase set (broader EU coverage via VIES + HMRC for GB).
  */
 
 export const SUPPORTED_COUNTRIES = [
@@ -20,6 +22,9 @@ export const SUPPORTED_COUNTRIES = [
   "pl",
   "lv",
   "ee",
+  "nl",
+  "be",
+  "lu",
 ] as const;
 
 export type SupportedCountry = (typeof SUPPORTED_COUNTRIES)[number];
