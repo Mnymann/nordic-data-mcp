@@ -1,0 +1,40 @@
+Last login: Sat May 23 15:14:39 on ttys000
+martinnymann@MacBookPro ~ % go version
+go version go1.26.3 darwin/arm64
+martinnymann@MacBookPro ~ % cd /Users/martinnymann
+martinnymann@MacBookPro ~ % git clone https://github.com/modelcontextprotocol/registry.git mcp-registry
+Cloning into 'mcp-registry'...
+remote: Enumerating objects: 6667, done.
+remote: Counting objects: 100% (257/257), done.
+remote: Compressing objects: 100% (162/162), done.
+remote: Total 6667 (delta 197), reused 95 (delta 95), pack-reused 6410 (from 4)
+Receiving objects: 100% (6667/6667), 75.91 MiB | 8.37 MiB/s, done.
+Resolving deltas: 100% (4036/4036), done.
+martinnymann@MacBookPro ~ % cd mcp-registry
+martinnymann@MacBookPro mcp-registry % make publisher
+go build -ldflags="-X main.Version=dev-deb5e7b -X main.GitCommit=deb5e7b24a8ca30fb3ffdac55fbabf99b26614e4 -X main.BuildTime=2026-05-23T13:27:37Z" -o bin/mcp-publisher ./cmd/publisher
+martinnymann@MacBookPro mcp-registry % ls bin/mcp-publisher
+bin/mcp-publisher
+martinnymann@MacBookPro mcp-registry % cd /Users/martinnymann/nordic-data-mcp
+martinnymann@MacBookPro nordic-data-mcp % git pull
+Already up to date.
+martinnymann@MacBookPro nordic-data-mcp % cd nordic-data-mcp
+martinnymann@MacBookPro nordic-data-mcp % /Users/martinnymann/mcp-registry/bin/mcp-publisher login github
+Logging in with github...
+
+To authenticate, please:
+1. Go to: https://github.com/login/device
+2. Enter code: 7908-90A8
+3. Authorize this application
+Waiting for authorization...
+Successfully authenticated!
+✓ Successfully logged in
+martinnymann@MacBookPro nordic-data-mcp % /Users/martinnymann/mcp-registry/bin/mcp-publisher publish
+Publishing to https://registry.modelcontextprotocol.io...
+Error: publish failed: server returned status 400: {"title":"Bad Request","status":400,"detail":"Failed to publish server","errors":[{"message":"invalid version: cannot publish duplicate version"}]}
+
+martinnymann@MacBookPro nordic-data-mcp % curl https://registry.modelcontextprotocol.io/v0/servers?search=nordic-data
+zsh: no matches found: https://registry.modelcontextprotocol.io/v0/servers?search=nordic-data
+martinnymann@MacBookPro nordic-data-mcp % curl 'https://registry.modelcontextprotocol.io/v0/servers?search=nordic-data'
+{"servers":[{"server":{"$schema":"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json","name":"cloud.nordicdata/nordic-data","description":"Global B2B intelligence for AI agents: 35M+ companies, 1.6M sanctions, KYB pack. 78 tools.","repository":{"url":"https://github.com/sofiajameson20-star/Nordicdata","source":"github"},"version":"0.5.0","websiteUrl":"https://nordicdata.cloud","remotes":[{"type":"streamable-http","url":"https://api.nordicdata.cloud/mcp"}]},"_meta":{"io.modelcontextprotocol.registry/official":{"status":"active","statusChangedAt":"2026-05-21T23:03:39.360348Z","publishedAt":"2026-05-21T23:03:39.360348Z","updatedAt":"2026-05-21T23:03:39.360348Z","isLatest":false}}},{"server":{"$schema":"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json","name":"cloud.nordicdata/nordic-data","description":"Nordic business data API: 1.4M Norwegian companies, sanctions, procurement, contacts. 28 tools.","repository":{"url":"https://github.com/sofiajameson20-star/Nordicdata","source":"github"},"version":"1.0.0","websiteUrl":"https://nordicdata.cloud","remotes":[{"type":"streamable-http","url":"https://api.nordicdata.cloud/mcp"}]},"_meta":{"io.modelcontextprotocol.registry/official":{"status":"active","statusChangedAt":"2026-05-11T07:31:04.019886Z","publishedAt":"2026-05-11T07:31:04.019886Z","updatedAt":"2026-05-11T07:31:04.019886Z","isLatest":false}}},{"server":{"$schema":"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json","name":"cloud.nordicdata/nordic-data","description":"Global B2B intelligence for AI agents: 35M+ companies, 1.6M sanctions, KYB pack. 78 tools.","repository":{"url":"https://github.com/sofiajameson20-star/Nordicdata","source":"github"},"version":"1.1.0","websiteUrl":"https://nordicdata.cloud","remotes":[{"type":"streamable-http","url":"https://api.nordicdata.cloud/mcp"}]},"_meta":{"io.modelcontextprotocol.registry/official":{"status":"active","statusChangedAt":"2026-05-21T23:04:26.335413Z","publishedAt":"2026-05-21T23:04:26.335413Z","updatedAt":"2026-05-21T23:04:26.335413Z","isLatest":true}}},{"server":{"$schema":"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json","name":"io.github.Mnymann/nordic-data","description":"EU company data for AI agents: KYB, sanctions, VAT, LEI, address across 12 countries.","repository":{"url":"https://github.com/Mnymann/nordic-data-mcp","source":"github"},"version":"1.2.2","packages":[{"registryType":"npm","identifier":"nordic-data-mcp","version":"1.2.2","transport":{"type":"stdio"},"environmentVariables":[{"description":"Your Nordic Data API key — get one at https://addonnordic.com","isRequired":true,"format":"string","isSecret":true,"name":"NORDIC_API_KEY"}]}]},"_meta":{"io.modelcontextprotocol.registry/official":{"status":"active","statusChangedAt":"2026-05-21T07:15:38.348231Z","publishedAt":"2026-05-21T07:15:38.348231Z","updatedAt":"2026-05-21T07:15:38.348231Z","isLatest":false}}},{"server":{"$schema":"https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json","name":"io.github.Mnymann/nordic-data","description":"EU company data for AI agents: KYB, sanctions, VAT, LEI, address across 12 countries.","repository":{"url":"https://github.com/Mnymann/nordic-data-mcp","source":"github"},"version":"1.2.3","packages":[{"registryType":"npm","identifier":"nordic-data-mcp","version":"1.2.3","transport":{"type":"stdio"},"environmentVariables":[{"description":"Your Nordic Data API key — get one at https://addonnordic.com","isRequired":true,"format":"string","isSecret":true,"name":"NORDIC_API_KEY"}]}]},"_meta":{"io.modelcontextprotocol.registry/official":{"status":"active","statusChangedAt":"2026-05-21T15:07:06.413101Z","publishedAt":"2026-05-21T15:07:06.413101Z","updatedAt":"2026-05-21T15:07:06.413101Z","isLatest":true}}}],"metadata":{"count":5}}
+martinnymann@MacBookPro nordic-data-mcp % 
