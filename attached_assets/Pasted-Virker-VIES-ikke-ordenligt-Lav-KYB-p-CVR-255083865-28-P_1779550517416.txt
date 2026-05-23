@@ -1,0 +1,60 @@
+Virker VIES ikke ordenligt?
+
+Lav KYB på CVR 255083865:28 PM
+
+Claude responded: Her er den fulde KYB-rapport for CVR 25508386:Tænker på at slå CVR-nummer 25508386 op for at finde KYB-informationTænker på at slå CVR-nummer 25508386 op for at finde KYB-informationHer er den fulde KYB-rapport for CVR 25508386:
+
+🏢 CARLSBERG DANMARK A/S — KYB Rapport
+CVR: 25508386 | Genereret: 23. maj 2026
+
+Identitet
+FeltDataNavnCARLSBERG DANMARK A/SJuridisk formAnpartsselskab (ApS) (registreret som A/S i navn)StatusAktivStiftet29. juni 2000Branchekode463410AdresseJ.C. Jacobsens Gade 1, 1799 København VTlf.33 27 33 27MarkedsføringsbeskyttelseNej
+
+Compliance & Risiko
+CheckResultatSamlet risikovurdering🟢 LAV (score: 0)Sanktioner (UN + EU + OFAC)✅ Ingen matchAdverse media (GDELT)✅ Ingen artiklerLEI-registrering (GLEIF)❌ Ikke registreretVIES momsvalidering⚠️ Ikke aktiv i VIESAdresse valideret (DAWA)✅ Match
+
+Note: VIES-status betyder ikke nødvendigvis manglende momsregistrering — DK-selskaber med kun dansk handel er ikke altid synlige i VIES.
+
+Økonomi (DKK)
+ÅrOmsætningResultatEgenkapitalAktiver20245.003.732.000475.033.000863.692.0002.674.357.00020234.919.362.000436.447.000825.106.0002.494.086.000
+Vækst omsætning 2023→2024: +1,7%
+Nettomargin 2024: ~9,5%
+Seneste årsrapport indsendt 23. maj 2025, godkendt af Cecilie Elgaard Boving d. 7. maj 2025.
+
+Årsrapporter (seneste 5)
+RegnskabsårIndsendtSagsref.202423. maj 2025X25-CH-13-TU202317. maj 2024X24-HN-00-QE202217. maj 2023X23-DY-72-NS202124. maj 2022X22-CR-71-VG20202. jun 2021X21-CB-66-HX
+Alle indsendt rettidigt. 20 årsrapporter i alt siden stiftelsen.
+
+Nøglepersoner
+CVR API returnerede ingen registrerede direktører/ejere via den anvendte kilde (kun ejere). For fuld ledelsesstruktur: tjek virk.dk/virksomhed/25508386.
+
+Konklusion: Ingen røde flag. Stor, veletableret dansk datterselskab af Carlsberg-koncernen med stabil økonomi og ren compliance-profil.
+
+
+Show more
+2 minutes ago
+
+1 message & 2 actions
+
+Worked for 24 seconds
+Claude on mac
+
+1 minute ago
+
+10 actions
+VIES virker fint i backenden — bekræftet med direkte kald:
+
+{ "valid": true, "name": "CARLSBERG DANMARK A/S", "address": "J.C. Jacobsens Gade 1\n1799 København V\n", "source": "VIES" }
+
+Problemet ligger i nordic-financial-mcp (det andet Replit-projekt der kører på din Mac via Claude Desktop). Jeg har ikke adgang til den kode herfra — kun MCP-briefen i attached_assets/MCP_BRIEF_v1.4.0.md, og den dækker kun fr_history, ikke noget VIES-tool.
+
+Sandsynlige årsager i MCP-projektet:
+
+Aggregerings-toolet (kyb_full eller company_enriched) kalder /api/vat/validate/... men forventer et andet response-format end {valid: true, name, address} — fx kigger efter et felt der ikke findes
+Stripper "DK"-prefix fra "DK25508386" forkert før upstream-kald
+Behandler tom adresse/navn som "ikke aktiv" selvom valid: true er sat
+For at fixe det skal jeg se MCP-koden. To muligheder:
+
+A) Du sender mig snippet'et fra nordic-financial-mcp der håndterer VIES (formentlig en vies.ts eller inde i kyb_full.ts-aggregeringen), så fixer jeg det her og du committer derovre
+B) Jeg laver et nyt MCP-brief (v1.4.1) med præcis kontrakt for hvordan VIES-svaret skal læses, så agenten i det andet projekt kan fixe det selv
+Hvad foretrækker du?
