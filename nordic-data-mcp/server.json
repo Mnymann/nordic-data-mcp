@@ -40,7 +40,7 @@
   ],
   "remotes": [
     {
-      "transport": { "type": "streamable-http" },
+      "type": "streamable-http",
       "url": "https://nordic-data-mcp-production.up.railway.app/mcp/auth",
       "headers": [
         {
