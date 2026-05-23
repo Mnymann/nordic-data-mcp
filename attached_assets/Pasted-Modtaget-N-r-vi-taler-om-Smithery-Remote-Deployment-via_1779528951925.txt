@@ -1,0 +1,24 @@
+Modtaget! Når vi taler om Smithery Remote Deployment (via Gatewayen), ændrer spillereglerne sig en smule i forhold til en standard lokal MCP-opsætning.
+
+Når du ser "status":{"state":"connected"} og popup-vinduet dukker op med "Waiting for Sign In", hvorefter den dør ud med serverInfo: null, skyldes det typisk én ud af to meget specifikke årsager i måden, Smithery håndterer eksterne web-servere på:
+
+1. Manglende eller forkert håndtering af config-parametrene i Gatewayen
+Når en bruger trykker på din server på Smithery, forsøger Smithery at konfigurere serveren (typisk indsamle API-nøgler eller miljøvariabler via popup-vinduet).
+
+Hvis din kode forventer en miljøvariabel (process.env.API_KEY), men Smithery sender den med som en JSON-konfiguration i selve initialiserings-anmodningen, vil serveren crashe under opstart i Railway, fordi den mangler variablen i miljøet, indtil den modtager den over netværket.
+
+I dit initialize-svar (eller under opsætningen) skal din server acceptere tomme/initielle kald for overhovedet at fortælle Smithery: "Hej, jeg er her, og jeg hedder Nordic Data MCP". Hvis den crasher inden den svarer, fordi process.env.NØGLE er undefined, får Smithery serverInfo: null.
+
+2. HTTP Transport vs. SSE (Server-Sent Events)
+Smithery's Remote Gateway understøtter det, de kalder Streamable HTTP eller standard SSE.
+
+Hvis din kode er bygget op omkring standard @modelcontextprotocol/sdk med en simpel SSEServerTransport, skal du sikre dig, at dit /sse endpoint rent faktisk holder forbindelsen åben (sender de rigtige headers som Content-Type: text/event-stream).
+
+Hvis Railway (eller en middleware) lukker HTTP-forbindelsen for hurtigt (f.eks. fordi der ikke sendes "keep-alive" eller et heartbeat), tror Smithery, at serveren loggede af, og returnerer serverInfo: null.
+
+Sådan kommer vi videre herfra:
+For at vi kan knække denne nød og få dit release til at gå igennem på Smithery, har vi brug for at se, hvad der sker "under motorhjelmen" på Railway:
+
+Tjek Railway-loggen præcis i det sekund, du trykker "Sign In" på Smithery: Smed den en fejlkode? (f.eks. en Error: Missing environment variable eller en routing-fejl som 404 Not Found på det endpoint, Smithery rammer).
+
+Hvordan ser din index.ts / server.ts opsætning ud for transport-laget? Hvis du kan dele den stump kode, hvor du opsætter din MCP-server og dens HTTP/SSE endpoint, kan jeg spotte, om den overholder de krav, som Smithery's gateway stiller for at fuldføre sit handshake.

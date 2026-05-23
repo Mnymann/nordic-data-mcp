@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] — 2026-05-23
+
+### Fixed
+- **`/mcp/auth` now allows unauthenticated `initialize`, `ping`, and `notifications/initialized` requests** so MCP discovery clients (Smithery's gateway scanner, MCP Inspector, Claude.ai connector pre-flight) can confirm the server is alive and learn its identity before prompting the user for an API key. Previously these methods returned 401, which Smithery's scanner interpreted as "OAuth required" and trapped the user in a sign-in popup that could never complete. All other methods — `tools/list`, `tools/call`, batched requests — continue to require a valid `ndk_...` key. The allow-list is purely server-identity metadata: no upstream Nordic Data API calls and no PII are reachable through it.
+
 ## [1.3.2] — 2026-05-23
 
 ### Fixed

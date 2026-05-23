@@ -17,7 +17,7 @@
  *
  * For local Claude Desktop / Cursor / Claude Code, use src/index.ts (stdio).
  */
-import express, { type Request, type Response, type NextFunction } from "express";
+import express, { type Request, type Response } from "express";
 import { randomUUID } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
@@ -29,7 +29,7 @@ import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
 import { runWithApiKey, isStrictApiKeyScopeActive } from "./lib/apiClient.js";
 
-const VERSION = "1.3.2";
+const VERSION = "1.3.3";
 
 function buildServer(): Server {
   const server = new Server(
@@ -174,7 +174,43 @@ function sendAuthError(
   });
 }
 
-function requireBearer(req: Request, res: Response, next: NextFunction): void {
+// Methods that are safe to serve without auth. These only reveal static
+// server identity / capabilities and never call upstream Nordic Data API.
+// Allowing them unauth'd lets MCP discovery clients (Smithery's gateway
+// scanner, MCP Inspector, etc.) probe `/mcp/auth` to learn the server is
+// alive BEFORE the end-user has been prompted for an API key. Without
+// this, Smithery's pre-flight initialize gets a 401 and concludes the
+// server requires OAuth, hanging the user in a sign-in popup that can
+// never complete.
+const UNAUTH_METHODS = new Set([
+  "initialize",
+  "notifications/initialized",
+  "ping",
+]);
+
+function isDiscoveryProbe(req: Request): boolean {
+  const body = req.body;
+  if (!body || typeof body !== "object" || Array.isArray(body)) return false;
+  const method = (body as { method?: unknown }).method;
+  return typeof method === "string" && UNAUTH_METHODS.has(method);
+}
+
+app.all("/mcp/auth", async (req: Request, res: Response) => {
+  // Discovery path: initialize / ping / notifications. No auth required,
+  // no upstream calls, no per-request API key needed.
+  if (isDiscoveryProbe(req)) {
+    try {
+      await handleMcpRequest(req, res, authTransports);
+    } catch (err) {
+      console.error("MCP /auth discovery probe failed:", formatError(err));
+      if (!res.headersSent) {
+        res.status(500).json({ error: "internal_error" });
+      }
+    }
+    return;
+  }
+
+  // Authenticated path: tools/list, tools/call, and everything else.
   const token = extractBearerToken(req);
   if (!token) {
     sendAuthError(
@@ -185,7 +221,6 @@ function requireBearer(req: Request, res: Response, next: NextFunction): void {
     );
     return;
   }
-  // Lightweight format check — full validation happens upstream on first call.
   if (!/^ndk_[A-Za-z0-9_-]{16,}$/.test(token)) {
     sendAuthError(
       res,
@@ -195,19 +230,11 @@ function requireBearer(req: Request, res: Response, next: NextFunction): void {
     );
     return;
   }
-  (req as Request & { apiKey?: string }).apiKey = token;
-  next();
-}
 
-app.all("/mcp/auth", requireBearer, async (req: Request, res: Response) => {
-  const apiKey = (req as Request & { apiKey?: string }).apiKey!;
   try {
     await runWithApiKey(
-      apiKey,
+      token,
       async () => {
-        // Fail-closed assertion: if AsyncLocalStorage failed to propagate
-        // into this callback we must NOT proceed — silently using the env
-        // key would mis-bill the server tenant for a paying customer.
         if (!isStrictApiKeyScopeActive()) {
           throw new Error(
             "Internal error: authenticated API key scope was lost before request dispatch",
