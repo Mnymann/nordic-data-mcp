@@ -1,0 +1,63 @@
+Bekræftet på prod — alt virker som forventet for Scenarie A:
+
+Test	Resultat
+Opret tier: "free" nøgle	✅ 100/dag, aktiv
+DK lookup (Carlsberg)	✅ 200 OK
+NL lookup	✅ 402 upgrade_required med korrekt besked + upgrade-link
+DE lookup	✅ 402 upgrade_required
+Cleanup test-nøgle	✅ deaktiveret
+(Test-nøglen ndk_pdm...VcbzA blev oprettet og deaktiveret igen i samme session — den virker ikke længere.)
+
+Her er briefen til Lovable-agenten:
+
+Brief til Lovable-agent — Free tier 0-kr plan i Paddle + onboarding-tekst
+
+Baggrund: Vi indfører en gratis "Free" plan på addonnordic.com/api så MCP-brugere kan komme i gang uden betaling. Backend-understøttelsen er allerede live og verificeret på prod (api.addonnordic.dk).
+
+1. Paddle-konfiguration
+
+Opret en ny pris på det eksisterende produkt:
+
+Navn: Free
+Pris: 0 kr/måned (Paddle understøtter 0-kr produkter — standard feature)
+Trial: ingen
+Frequency: monthly
+2. Paddle-webhook payload til backend
+
+Den eksisterende webhook der kalder POST https://api.addonnordic.dk/admin/keys skal sende:
+
+{
+  "tenant_name": "<paddle customer_id eller email>",
+  "tier": "free"
+}
+
+Backend returnerer 201 med api_key: "ndk_...". Den skal vises én gang til kunden (samme flow som betalte planer) — kan ikke hentes igen.
+
+Hvis webhook'en allerede sender tier baseret på Paddle plan-navn, skal mappingen blot udvides så Paddle's "Free" plan → "free".
+
+3. Canonical tiers (fra GET /admin/tiers på prod)
+
+{ "free": 100, "starter": 500, "business": 5000, "compliance": 10000, "scale": 50000, "enterprise": 200000 }
+
+Tal = daily quota. "free" blokerer lande nl og de med HTTP 402 + besked om upgrade — alle 13 øvrige lande virker.
+
+4. Tekstændring på pricing-siden
+
+Erstat Step 1 i onboarding:
+
+1. Pick a plan
+
+Choose a plan further down the page. The Free tier is $0/month and gives you 100 calls/day across 13 countries (NL and DE require Starter or higher). Paid plans unlock NL+DE, higher quotas, and priority support. Cancel anytime with one click.
+
+Tilføj evt. en "Just want to test without signup?"-boks med:
+
+curl https://api.addonnordic.dk/api/company/dk/25508386
+
+(Anonymous tier: 20 kald/måned per IP, ingen nøgle nødvendig — god til hurtig Postman/curl-evaluering.)
+
+5. Test-checklist efter Paddle-go-live
+
+Gennemfør et 0-kr checkout i inkognito → bekræft at webhook fyrer og kunden får en ndk_... nøgle
+Kald GET /admin/keys/<tenant_name> med INTERNAL_API_KEY → bekræft tier: "free", daily_quota: 100, active: true
+Kald GET /api/company/dk/25508386 med nøglen → forventet 200
+Kald GET /api/company/nl/12345678 med nøglen → forventet 402 upgrade_required
