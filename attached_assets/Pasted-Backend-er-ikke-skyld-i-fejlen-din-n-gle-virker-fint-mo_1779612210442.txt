@@ -1,0 +1,68 @@
+Backend er ikke skyld i fejlen — din nøgle virker fint mod prod:
+
+Test	Status
+lookup_company (Mærsk)	✅ 200 — returnerer A.P. MØLLER - MÆRSK A/S
+company_enriched	✅ 200
+kyb_full	✅ 200
+Problemet ligger altså i selve MCP-pipen mellem Claude Desktop og backend. Claude Desktop viser kun "generisk fejl" — den rigtige fejlbesked står i logs.
+
+Find fejlen — kør på din Mac:
+
+# 1. Se MCP-server-loggen (Claude Desktop skriver alle MCP-fejl her)
+tail -100 ~/Library/Logs/Claude/mcp-server-nordic-data.log
+# 2. Hvis loggen ikke findes / ikke har noget, kør MCP-serveren manuelt
+# og send en testkommando — så ser du fejlen direkte i terminalen:
+NORDIC_API_KEY="ndk_XTzY73anx9tmK08V5UHZJuxzVMO501aKhBnRAmvqakQ" \
+  npx -y nordic-data-mcp
+# 3. Tjek om npx har en stale cache med en gammel version
+npx clear-npx-cache 2>/dev/null || rm -rf ~/.npm/_npx
+# Genstart derefter Claude Desktop (⌘+Q og åbn igen)
+
+Mistænkte (i prioriteret rækkefølge):
+
+Stale npx-cache — npx -y henter nyeste version, men ~/.npm/_npx-cachen kan stadig servere en gammel build der peger på et tidligere backend-format. Cache-clear + restart Claude fixer typisk dette.
+NPM-pakken er gået i stå — hvis nordic-data-mcp på NPM ikke er publiceret siden en backend-breaking change, fejler den indtil MCP-agenten publisher en ny version.
+ENV-var når ikke subprocess — sjælden, men sker hvis Claude Desktop er installeret under en anden bruger end den der har shell-aliaser sat.
+Send mig output fra trin 1 (log-filen), så kan jeg sige præcis hvad der fejler. Hvis loggen er tom, kør trin 2 og kopier den første fejlbesked du ser når serveren starter.
+
+
+Worked for 42 seconds
+
+Pasted-Last-login-Sun-May-24-09-53-34-on-ttys000-martinnymann-_1779612147490.txt
+Just now
+
+Planning API timeout handling (12 seconds)
+Diagnosen er klar — og det er ikke en fejl i strikt forstand.
+
+Hvad loggen viser:
+
+Tool	Varighed	Resultat på MCP-serveren
+company_enriched 22756214	66 sek	✅ Success (3.000+ chars JSON)
+lookup_company 22756214	<100 ms	✅ Success
+kyb_full 22756214	67 sek	✅ Success (26.356 chars JSON)
+Alle 3 kald lykkedes faktisk — serveren returnerede valide JSON-svar. Men Claude Desktop har en intern timeout (sandsynligvis 60 sekunder) for MCP-tools, så når svaret kommer efter 66-67 sekunder, viser UI'et "generic error" til dig, selvom data faktisk er kommet retur.
+
+Root cause: kyb_full og company_enriched er for langsomme. kyb_full laver 9 sektions-fetches (identity, persons, financials, filings, address, vat, lei, sanctions, adverseMedia) — flere af dem med 20-sekunders timeouts internt. Når flere upstreams er langsomme samtidig, hober det sig op til 60+ sekunder.
+
+Tre mulige løsninger:
+
+Lazy / partial responses — kyb_full returnerer hurtigt med kun de hurtige sektioner (identity, vat, lei) klar, og resten kommer som NDJSON-stream. Sværere, men bedst UX.
+Strammere parallelisering + lavere timeouts — race-style fetch hvor langsomme sektioner får 5-8s i stedet for 20s, og markeres available: false, reason: "timeout". Behold de 9 sektioner, men cap'er total til ~15s. Anbefalet — hurtigt at lave, løser problemet for ~95% af kald.
+Cache først — første kald cacher resultatet 6h, så næste kald er sub-second. Det virker allerede (kycCache med 6h TTL), men det første kald lider stadig.
+Vil du have mig til at lave løsning 2 (stramme timeouts + parallelisering for kyb_full)? Det er ~30 min arbejde og fjerner timeout-fejlen for langt de fleste kald.
+
+Optimized Agent memory
+
+Checkpoint made
+just now
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+
