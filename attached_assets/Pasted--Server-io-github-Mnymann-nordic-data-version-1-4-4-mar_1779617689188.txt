@@ -1,0 +1,81 @@
+✓ Server io.github.Mnymann/nordic-data version 1.4.4
+martinnymann@MacBookPro nordic-data-mcp % tail -50 ~/Library/Logs/Claude/mcp-server-nordic-data.log
+2026-05-24T06:43:56.539Z [nordic-data] [info] Message from client: {"method":"notifications/initialized","jsonrpc":"2.0"} { metadata: undefined }
+2026-05-24T06:43:56.539Z [nordic-data] [info] Message from client: {"method":"tools/list","params":{},"jsonrpc":"2.0","id":1} { metadata: undefined }
+2026-05-24T06:43:56.544Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"lookup_company","description":"Look up basic company data (name, address, status, industry, VAT registration, founding date) from official European business registries. Supports 15 countries: DK (CVR), NO...[17706 chars truncated]...d set used."},"fetchedAt":{"type":"string","description":"ISO-8601 timestamp when the data was fetched upstream."}}},"annotations":{"title":"French Company History","readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":true}}]}} { metadata: undefined }
+2026-05-24T08:34:06.470Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T08:34:06.470Z [nordic-data] [info] Server transport closed (intentional shutdown) { metadata: undefined }
+2026-05-24T08:34:06.471Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T08:34:06.470Z [nordic-data] [info] Shutting down server... { metadata: undefined }
+2026-05-24T08:34:06.717Z [nordic-data] [info] Server transport closed { metadata: undefined }
+2026-05-24T08:34:06.718Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T08:34:13.803Z [nordic-data] [info] Initializing server... { metadata: undefined }
+2026-05-24T08:34:13.809Z [nordic-data] [info] Using MCP server command: /opt/homebrew/bin/npx with args and path: {
+  metadata: {
+    args: [ '-y', 'nordic-data-mcp', [length]: 2 ],
+    paths: [
+      '/Users/martinnymann/.local/bin',
+      '/opt/homebrew/bin',
+      '/opt/homebrew/sbin',
+      '/usr/local/bin',
+      '/System/Cryptexes/App/usr/bin',
+      '/usr/bin',
+      '/bin',
+      '/usr/sbin',
+      '/sbin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin',
+      '/pkg/env/global/bin',
+      [length]: 13
+    ]
+  }
+} %o
+2026-05-24T08:34:13.810Z [nordic-data] [info] Server started and connected successfully { metadata: undefined }
+Nordic Data MCP server running on stdio
+2026-05-24T08:34:15.239Z [nordic-data] [info] Message from client: {"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{"extensions":{"io.modelcontextprotocol/ui":{"mimeTypes":["text/html;profile=mcp-app"]}}},"clientInfo":{"name":"claude-ai","version":"0.1.0"}},"jsonrpc":"2.0","id":0} { metadata: undefined }
+2026-05-24T08:34:15.244Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{}},"serverInfo":{"name":"nordic-data-mcp","version":"1.4.3"}}} { metadata: undefined }
+2026-05-24T08:34:15.577Z [nordic-data] [info] Message from client: {"method":"notifications/initialized","jsonrpc":"2.0"} { metadata: undefined }
+2026-05-24T08:34:15.577Z [nordic-data] [info] Message from client: {"method":"tools/list","params":{},"jsonrpc":"2.0","id":1} { metadata: undefined }
+2026-05-24T08:34:15.580Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"lookup_company","description":"Look up basic company data (name, address, status, industry, VAT registration, founding date) from official European business registries. Supports 15 countries: DK (CVR), NO...[17706 chars truncated]...d set used."},"fetchedAt":{"type":"string","description":"ISO-8601 timestamp when the data was fetched upstream."}}},"annotations":{"title":"French Company History","readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":true}}]}} { metadata: undefined }
+2026-05-24T08:34:35.560Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"company_enriched","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":2} { metadata: undefined }
+2026-05-24T08:35:41.531Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"{\n  \"company\": {\n    \"id\": \"22756214\",\n    \"country\": \"dk\",\n    \"name\": \"A.P. MØLLER - MÆRSK A/S\",\n    \"status\": \"active\",\n    \"address\": {\n      \"street\": \"E...[2203 chars truncated]...",\n        \"value\": 504,\n        \"unit\": \"antal arbejdssteder\"\n      },\n      {\n        \"year\": \"2024\",\n        \"value\": 517,\n        \"unit\": \"antal arbejdssteder\"\n      }\n    ],\n    \"source\": \"Danmarks Statistik\"\n  }\n}"}]}} { metadata: undefined }
+2026-05-24T08:35:44.016Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"lookup_company","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":3} { metadata: undefined }
+2026-05-24T08:35:44.082Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"{\n  \"id\": \"22756214\",\n  \"country\": \"dk\",\n  \"name\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"status\": \"active\",\n  \"address\": {\n    \"street\": \"Esplanaden 50\",\n    \"city\": \"København K\",\n    \"zip\": \"1263\"\n  },\n  \"industry\": {\n    \"code\": \"701010\",\n    \"description\": \"Ikke-finansielle hovedsæders aktiviteter\"\n  },\n  \"vatRegistered\": true,\n  \"founded\": \"1904-04-16\",\n  \"source\": \"cvrapi.dk\",\n  \"fetchedAt\": \"2026-05-24T08:35:38.229Z\"\n}"}]}} { metadata: undefined }
+2026-05-24T08:35:57.309Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"kyb_full","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":4} { metadata: undefined }
+2026-05-24T08:37:04.405Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":4,"result":{"content":[{"type":"text","text":"{\n  \"country\": \"dk\",\n  \"id\": \"22756214\",\n  \"companyName\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"risk\": {\n    \"score\": 0,\n    \"level\": \"low\",\n    \"reasons\": []\n  },\n ...[26356 chars truncated]..."persons\",\n      \"financials\",\n      \"filings\",\n      \"addressValidated\",\n      \"vat\",\n      \"lei\",\n      \"sanctions\",\n      \"adverseMedia\"\n    ]\n  },\n  \"elapsedMs\": 67015,\n  \"generatedAt\": \"2026-05-24T08:37:04.364Z\"\n}"}]}} { metadata: undefined }
+2026-05-24T10:13:14.059Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"kyb_full","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":5} { metadata: undefined }
+2026-05-24T10:13:14.674Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":5,"result":{"content":[{"type":"text","text":"{\n  \"country\": \"dk\",\n  \"id\": \"22756214\",\n  \"companyName\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"risk\": {\n    \"score\": 0,\n    \"level\": \"low\",\n    \"reasons\": []\n  },\n ...[26786 chars truncated]... \"adverseMedia\"\n    ]\n  },\n  \"sectionsUnavailable\": [\n    {\n      \"section\": \"financials\",\n      \"reason\": \"not_found\"\n    }\n  ],\n  \"truncated\": false,\n  \"elapsedMs\": 20316,\n  \"generatedAt\": \"2026-05-24T10:05:49.552Z\"\n}"}]}} { metadata: undefined }
+2026-05-24T10:13:20.049Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"company_enriched","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":6} { metadata: undefined }
+2026-05-24T10:13:20.326Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":6,"result":{"content":[{"type":"text","text":"{\n  \"company\": {\n    \"id\": \"22756214\",\n    \"country\": \"dk\",\n    \"name\": \"A.P. MØLLER - MÆRSK A/S\",\n    \"status\": \"active\",\n    \"address\": {\n      \"street\": \"E...[2431 chars truncated]...",\n        \"value\": 504,\n        \"unit\": \"antal arbejdssteder\"\n      },\n      {\n        \"year\": \"2024\",\n        \"value\": 517,\n        \"unit\": \"antal arbejdssteder\"\n      }\n    ],\n    \"source\": \"Danmarks Statistik\"\n  }\n}"}]}} { metadata: undefined }
+2026-05-24T10:13:23.048Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"lookup_company","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":7} { metadata: undefined }
+2026-05-24T10:13:23.099Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":7,"result":{"content":[{"type":"text","text":"{\n  \"id\": \"22756214\",\n  \"country\": \"dk\",\n  \"name\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"status\": \"active\",\n  \"address\": {\n    \"street\": \"Esplanaden 50\",\n    \"city\": \"København K\",\n    \"zip\": \"1263\"\n  },\n  \"industry\": {\n    \"code\": \"701010\",\n    \"description\": \"\"\n  },\n  \"vatRegistered\": true,\n  \"founded\": \"1904-04-16\",\n  \"source\": \"graphql.datafordeler.dk/CVR\",\n  \"fetchedAt\": \"2026-05-24T10:05:40.008Z\",\n  \"legalForm\": {\n    \"code\": \"60\",\n    \"description\": \"Anpartsselskab (ApS)\"\n  },\n  \"contact\": {\n    \"phone\": \"33142990\",\n    \"email\": null,\n    \"website\": null\n  },\n  \"marketingProtection\": false\n}"}]}} { metadata: undefined }
+martinnymann@MacBookPro nordic-data-mcp % curl -i -H "X-Api-Key: ndk_XTzY73anx9tmK08V5UHZJuxzVMO501aKhBnRAmvqakQ" https://api.addonnordic.dk/api/company/dk/22756214
+HTTP/2 200 
+date: Sun, 24 May 2026 10:14:30 GMT
+content-type: application/json; charset=utf-8
+content-length: 475
+etag: W/"1db-TVq6aLI3UUR0wjWGzXm1PSR7cAc"
+ratelimit-limit: 100
+ratelimit-policy: 100;w=60
+ratelimit-remaining: 99
+ratelimit-reset: 60
+server: cloudflare
+vary: Origin
+x-cache: HIT
+x-country: dk
+x-multitenancy: enabled
+x-powered-by: Express
+x-quota-cost: 1
+x-quota-limit: 500
+x-quota-used: 10
+x-railway-edge: railway/europe-west4-drams3a
+x-railway-request-id: qw5TIwbXTW2WRO5v0-QtfA
+x-tenant: customer_acefe9b2-cdae-435d-a028-41f8643ec900
+cf-cache-status: DYNAMIC
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=Bxm0epRg%2BAgeoCVQY1MY6sltAFYdr1zY8dANg3whP3VpB8CD2NQPEPX9xXVSgn1ENZGStRUIhnH%2BoPFG1YjCx%2BcjkQD6iDMazviQFd2JEW0uSFv7Ry8rvTKji8B9TI68LQt52Js%3D"}]}
+cf-ray: a00b88a98b8d840e-CPH
+alt-svc: h3=":443"; ma=86400
+
+{"id":"22756214","country":"dk","name":"A.P. MØLLER - MÆRSK A/S","status":"active","address":{"street":"Esplanaden 50","city":"København K","zip":"1263"},"industry":{"code":"701010","description":""},"vatRegistered":true,"founded":"1904-04-16","source":"graphql.datafordeler.dk/CVR","fetchedAt":"2026-05-24T10:05:40.008Z","legalForm":{"code":"60","description":"Anpartsselskab (ApS)"},"contact":{"phone":"33142990","email":null,"website":null},"marketingProtection":false}%       martinnymann@MacBookPro nordic-data-mcp % 
