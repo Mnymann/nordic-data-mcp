@@ -1,0 +1,153 @@
+Last login: Sun May 24 10:42:08 on ttys000
+martinnymann@MacBookPro ~ % cd /Users/martinnymann/nordic-data-mcp
+martinnymann@MacBookPro nordic-data-mcp % git pull
+remote: Enumerating objects: 55, done.
+remote: Counting objects: 100% (55/55), done.
+remote: Compressing objects: 100% (15/15), done.
+remote: Total 42 (delta 29), reused 40 (delta 27), pack-reused 0 (from 0)
+Unpacking objects: 100% (42/42), 16.98 KiB | 322.00 KiB/s, done.
+From https://github.com/Mnymann/nordic-data-mcp
+   56ec4db..35ff689  main       -> origin/main
+Updating 56ec4db..35ff689
+Fast-forward
+ ...s-bekr-fter-fixen-Test-Tid-Re_1779617069693.txt |  53 +++++
+ ...jlen-din-n-gle-virker-fint-mo_1779612210442.txt |  68 +++++++
+ ...r-som-forventet-for-Scenarie-_1779603909965.txt |  63 ++++++
+ ...low-this-short-guide-no-codin_1779609287361.txt |  77 ++++++++
+ ...low-this-short-guide-no-codin_1779609289633.txt |  77 ++++++++
+ ...low-this-short-guide-no-codin_1779609296733.txt |  77 ++++++++
+ ...iness-data-straight-into-your_1779609640661.txt | 217 +++++++++++++++++++++
+ ...-Lav-KYB-p-CVR-255083865-28-P_1779550517416.txt |  60 ++++++
+ nordic-data-mcp/CHANGELOG.md                       |   9 +
+ nordic-data-mcp/package.json                       |   2 +-
+ nordic-data-mcp/server.json                        |   4 +-
+ nordic-data-mcp/src/http.ts                        |   2 +-
+ nordic-data-mcp/src/index.ts                       |   2 +-
+ nordic-data-mcp/src/lib/apiClient.ts               |   2 +-
+ nordic-data-mcp/src/tools/kybFull.ts               |  24 ++-
+ 15 files changed, 730 insertions(+), 7 deletions(-)
+ create mode 100644 attached_assets/Pasted-Alt-virker-lokalt-Tre-tests-bekr-fter-fixen-Test-Tid-Re_1779617069693.txt
+ create mode 100644 attached_assets/Pasted-Backend-er-ikke-skyld-i-fejlen-din-n-gle-virker-fint-mo_1779612210442.txt
+ create mode 100644 attached_assets/Pasted-Bekr-ftet-p-prod-alt-virker-som-forventet-for-Scenarie-_1779603909965.txt
+ create mode 100644 attached_assets/Pasted-Get-started-in-3-steps-Follow-this-short-guide-no-codin_1779609287361.txt
+ create mode 100644 attached_assets/Pasted-Get-started-in-3-steps-Follow-this-short-guide-no-codin_1779609289633.txt
+ create mode 100644 attached_assets/Pasted-Get-started-in-3-steps-Follow-this-short-guide-no-codin_1779609296733.txt
+ create mode 100644 attached_assets/Pasted-Nordic-Data-API-Nordic-business-data-straight-into-your_1779609640661.txt
+ create mode 100644 attached_assets/Pasted-Virker-VIES-ikke-ordenligt-Lav-KYB-p-CVR-255083865-28-P_1779550517416.txt
+martinnymann@MacBookPro nordic-data-mcp % cd nordic-data-mcp
+martinnymann@MacBookPro nordic-data-mcp % npm install
+
+up to date, audited 141 packages in 783ms
+
+33 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+martinnymann@MacBookPro nordic-data-mcp % npm run build
+
+> nordic-data-mcp@1.4.4 build
+> tsc
+
+martinnymann@MacBookPro nordic-data-mcp % npm publish
+
+> nordic-data-mcp@1.4.4 prepublishOnly
+> npm run build
+
+
+> nordic-data-mcp@1.4.4 build
+> tsc
+
+npm notice
+npm notice 📦  nordic-data-mcp@1.4.4
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 6.7kB README.md
+npm notice 65B dist/http.d.ts
+npm notice 102B dist/http.d.ts.map
+npm notice 10.2kB dist/http.js
+npm notice 7.0kB dist/http.js.map
+npm notice 66B dist/index.d.ts
+npm notice 104B dist/index.d.ts.map
+npm notice 1.6kB dist/index.js
+npm notice 1.4kB dist/index.js.map
+npm notice 1.3kB dist/lib/apiClient.d.ts
+npm notice 600B dist/lib/apiClient.d.ts.map
+npm notice 8.9kB dist/lib/apiClient.js
+npm notice 5.8kB dist/lib/apiClient.js.map
+npm notice 1.1kB dist/lib/countries.d.ts
+npm notice 351B dist/lib/countries.d.ts.map
+npm notice 1.2kB dist/lib/countries.js
+npm notice 670B dist/lib/countries.js.map
+npm notice 416B dist/lib/dispatcher.d.ts
+npm notice 274B dist/lib/dispatcher.d.ts.map
+npm notice 2.8kB dist/lib/dispatcher.js
+npm notice 2.2kB dist/lib/dispatcher.js.map
+npm notice 552B dist/lib/errors.d.ts
+npm notice 481B dist/lib/errors.d.ts.map
+npm notice 1.6kB dist/lib/errors.js
+npm notice 1.4kB dist/lib/errors.js.map
+npm notice 1.6kB dist/lib/requestContext.d.ts
+npm notice 481B dist/lib/requestContext.d.ts.map
+npm notice 1.1kB dist/lib/requestContext.js
+npm notice 1.1kB dist/lib/requestContext.js.map
+npm notice 144B dist/tools/autocompleteAddress.d.ts
+npm notice 225B dist/tools/autocompleteAddress.d.ts.map
+npm notice 2.6kB dist/tools/autocompleteAddress.js
+npm notice 1.8kB dist/tools/autocompleteAddress.js.map
+npm notice 136B dist/tools/companyEnriched.d.ts
+npm notice 215B dist/tools/companyEnriched.d.ts.map
+npm notice 3.0kB dist/tools/companyEnriched.js
+npm notice 1.9kB dist/tools/companyEnriched.js.map
+npm notice 124B dist/tools/frHistory.d.ts
+npm notice 203B dist/tools/frHistory.d.ts.map
+npm notice 4.6kB dist/tools/frHistory.js
+npm notice 2.1kB dist/tools/frHistory.js.map
+npm notice 648B dist/tools/index.d.ts
+npm notice 646B dist/tools/index.d.ts.map
+npm notice 735B dist/tools/index.js
+npm notice 681B dist/tools/index.js.map
+npm notice 120B dist/tools/kybFull.d.ts
+npm notice 199B dist/tools/kybFull.d.ts.map
+npm notice 5.6kB dist/tools/kybFull.js
+npm notice 2.5kB dist/tools/kybFull.js.map
+npm notice 132B dist/tools/lookupCompany.d.ts
+npm notice 211B dist/tools/lookupCompany.d.ts.map
+npm notice 3.3kB dist/tools/lookupCompany.js
+npm notice 1.7kB dist/tools/lookupCompany.js.map
+npm notice 124B dist/tools/lookupLei.d.ts
+npm notice 204B dist/tools/lookupLei.d.ts.map
+npm notice 4.3kB dist/tools/lookupLei.js
+npm notice 3.1kB dist/tools/lookupLei.js.map
+npm notice 136B dist/tools/screenSanctions.d.ts
+npm notice 216B dist/tools/screenSanctions.d.ts.map
+npm notice 3.4kB dist/tools/screenSanctions.js
+npm notice 2.1kB dist/tools/screenSanctions.js.map
+npm notice 128B dist/tools/validateVat.d.ts
+npm notice 208B dist/tools/validateVat.d.ts.map
+npm notice 2.1kB dist/tools/validateVat.js
+npm notice 1.5kB dist/tools/validateVat.js.map
+npm notice 887B dist/types.d.ts
+npm notice 666B dist/types.d.ts.map
+npm notice 44B dist/types.js
+npm notice 102B dist/types.js.map
+npm notice 1.6kB package.json
+npm notice Tarball Details
+npm notice name: nordic-data-mcp
+npm notice version: 1.4.4
+npm notice filename: nordic-data-mcp-1.4.4.tgz
+npm notice package size: 31.6 kB
+npm notice unpacked size: 116.1 kB
+npm notice shasum: dfd6b2c2bac771f8ea344f5db9044c424599facf
+npm notice integrity: sha512-zrSLI7vp8kpT2[...]5LF/U2fWooD0Q==
+npm notice total files: 71
+npm notice
+npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+npm error code E404
+npm error 404 Not Found - PUT https://registry.npmjs.org/nordic-data-mcp - Not found
+npm error 404
+npm error 404  The requested resource 'nordic-data-mcp@1.4.4' could not be found or you do not have permission to access it.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: /Users/martinnymann/.npm/_logs/2026-05-24T10_08_42_065Z-debug-0.log
+martinnymann@MacBookPro nordic-data-mcp % 
