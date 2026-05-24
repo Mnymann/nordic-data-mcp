@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.5] — 2026-05-24
+
+### Fixed
+- **`kyb_full` "Tool execution failed" regression in v1.4.4.** Removed `outputSchema` from `kyb_full` — Claude Desktop was rejecting valid server responses with a generic "Tool execution failed" error because the declared schema (`identity`, `persons`, `risk_score`, …) did not match the actual backend response shape (`country`, `id`, `companyName`, `risk`, …). The `kyb_full` response is rich and evolves with backend changes; documenting it in `description` is sufficient and consistent with our thin-adapter principle. Other 7 tools keep their `outputSchema` (they match their backends and work correctly).
+
 ## [1.4.4] — 2026-05-24
 
 ### Changed

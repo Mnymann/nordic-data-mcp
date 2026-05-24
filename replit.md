@@ -19,10 +19,11 @@ Per release the agent must:
    - Railway: `curl -s https://nordic-data-mcp-production.up.railway.app/healthz`
    - MCP Registry: `curl 'https://registry.modelcontextprotocol.io/v0/servers?search=Mnymann'` (single-quote URL — zsh treats `?` as glob)
 
-**Current shipped version: 1.4.4** (May 24, 2026). Live on NPM, Railway, and the official MCP Registry (`io.github.Mnymann/nordic-data`). The `mcp-publisher` CLI binary lives at `/Users/martinnymann/mcp-registry/bin/mcp-publisher` on Martin's Mac.
+**Current shipped version: 1.4.5** (May 24, 2026). Live on NPM, Railway, and the official MCP Registry (`io.github.Mnymann/nordic-data`). The `mcp-publisher` CLI binary lives at `/Users/martinnymann/mcp-registry/bin/mcp-publisher` on Martin's Mac.
 
 Release history this weekend:
-- **1.4.4** (May 24) — `kyb_full` outputSchema documents new partial-response fields: `truncated: boolean` and `sectionsUnavailable: [{section, reason}]`. Backend-coordinated; backend now caps KYB total time at 14s race-cap (was 66s+ cold), so reports complete well under Claude Desktop's 60s MCP-client timeout. Cold cache: Mærsk 20s, LEGO 15.6s, Novo 14.5s on prod (verified).
+- **1.4.5** (May 24) — **Hotfix.** Removed `outputSchema` from `kyb_full` after v1.4.4 caused Claude Desktop to reject valid responses with "Tool execution failed". Root cause: declared schema (`identity`, `persons`, `risk_score`, …) did not match actual backend shape (`country`, `id`, `companyName`, `risk`, …). Server log confirmed 200 OK responses with full data, but Claude rejected them client-side. Lesson: when the underlying API response shape isn't 1:1 stable, keep documentation in the description and skip `outputSchema` entirely. Other 7 tools keep theirs (their schemas match their backends).
+- **1.4.4** (May 24) — `kyb_full` outputSchema documents new partial-response fields: `truncated: boolean` and `sectionsUnavailable: [{section, reason}]`. Backend-coordinated; backend now caps KYB total time at 14s race-cap (was 66s+ cold), so reports complete well under Claude Desktop's 60s MCP-client timeout. Cold cache: Mærsk 20s, LEGO 15.6s, Novo 14.5s on prod (verified). **Superseded by 1.4.5 hotfix** — outputSchema mismatch broke kyb_full in Claude.
 - **1.4.3** (May 23) — added `fr_history` tool (French company bitemporal history via INSEE Sirene 3.11). 8 tools total now.
 - **1.4.2** (May 23) — full MCP tool annotations on all 7 tools (`destructiveHint: false`, `idempotentHint: true`).
 

@@ -1,0 +1,43 @@
+Last login: Sun May 24 12:08:11 on ttys000
+martinnymann@MacBookPro ~ % tail -40 ~/Library/Logs/Claude/mcp-server-nordic-data.log
+2026-05-24T10:13:23.099Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":7,"result":{"content":[{"type":"text","text":"{\n  \"id\": \"22756214\",\n  \"country\": \"dk\",\n  \"name\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"status\": \"active\",\n  \"address\": {\n    \"street\": \"Esplanaden 50\",\n    \"city\": \"København K\",\n    \"zip\": \"1263\"\n  },\n  \"industry\": {\n    \"code\": \"701010\",\n    \"description\": \"\"\n  },\n  \"vatRegistered\": true,\n  \"founded\": \"1904-04-16\",\n  \"source\": \"graphql.datafordeler.dk/CVR\",\n  \"fetchedAt\": \"2026-05-24T10:05:40.008Z\",\n  \"legalForm\": {\n    \"code\": \"60\",\n    \"description\": \"Anpartsselskab (ApS)\"\n  },\n  \"contact\": {\n    \"phone\": \"33142990\",\n    \"email\": null,\n    \"website\": null\n  },\n  \"marketingProtection\": false\n}"}]}} { metadata: undefined }
+2026-05-24T10:16:57.342Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T10:16:57.342Z [nordic-data] [info] Server transport closed (intentional shutdown) { metadata: undefined }
+2026-05-24T10:16:57.343Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T10:16:57.342Z [nordic-data] [info] Shutting down server... { metadata: undefined }
+2026-05-24T10:16:57.532Z [nordic-data] [info] Server transport closed { metadata: undefined }
+2026-05-24T10:16:57.532Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T10:17:05.537Z [nordic-data] [info] Initializing server... { metadata: undefined }
+2026-05-24T10:17:05.543Z [nordic-data] [info] Using MCP server command: /opt/homebrew/bin/npx with args and path: {
+  metadata: {
+    args: [ '-y', 'nordic-data-mcp', [length]: 2 ],
+    paths: [
+      '/Users/martinnymann/.local/bin',
+      '/opt/homebrew/bin',
+      '/opt/homebrew/sbin',
+      '/usr/local/bin',
+      '/System/Cryptexes/App/usr/bin',
+      '/usr/bin',
+      '/bin',
+      '/usr/sbin',
+      '/sbin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin',
+      '/pkg/env/global/bin',
+      [length]: 13
+    ]
+  }
+} %o
+2026-05-24T10:17:05.544Z [nordic-data] [info] Server started and connected successfully { metadata: undefined }
+2026-05-24T10:17:06.833Z [nordic-data] [info] Message from client: {"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{"extensions":{"io.modelcontextprotocol/ui":{"mimeTypes":["text/html;profile=mcp-app"]}}},"clientInfo":{"name":"claude-ai","version":"0.1.0"}},"jsonrpc":"2.0","id":0} { metadata: undefined }
+Nordic Data MCP server running on stdio
+2026-05-24T10:17:07.685Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{}},"serverInfo":{"name":"nordic-data-mcp","version":"1.4.4"}}} { metadata: undefined }
+2026-05-24T10:17:07.701Z [nordic-data] [info] Message from client: {"method":"notifications/initialized","jsonrpc":"2.0"} { metadata: undefined }
+2026-05-24T10:17:07.701Z [nordic-data] [info] Message from client: {"method":"tools/list","params":{},"jsonrpc":"2.0","id":1} { metadata: undefined }
+2026-05-24T10:17:07.703Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"lookup_company","description":"Look up basic company data (name, address, status, industry, VAT registration, founding date) from official European business registries. Supports 15 countries: DK (CVR), NO...[18896 chars truncated]...d set used."},"fetchedAt":{"type":"string","description":"ISO-8601 timestamp when the data was fetched upstream."}}},"annotations":{"title":"French Company History","readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":true}}]}} { metadata: undefined }
+2026-05-24T10:18:41.015Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"kyb_full","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":2} { metadata: undefined }
+2026-05-24T10:18:41.570Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"{\n  \"country\": \"dk\",\n  \"id\": \"22756214\",\n  \"companyName\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"risk\": {\n    \"score\": 0,\n    \"level\": \"low\",\n    \"reasons\": []\n  },\n ...[26786 chars truncated]... \"adverseMedia\"\n    ]\n  },\n  \"sectionsUnavailable\": [\n    {\n      \"section\": \"financials\",\n      \"reason\": \"not_found\"\n    }\n  ],\n  \"truncated\": false,\n  \"elapsedMs\": 20316,\n  \"generatedAt\": \"2026-05-24T10:05:49.552Z\"\n}"}]}} { metadata: undefined }
+2026-05-24T10:18:45.422Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"kyb_full","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":3} { metadata: undefined }
+2026-05-24T10:18:45.475Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"{\n  \"country\": \"dk\",\n  \"id\": \"22756214\",\n  \"companyName\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"risk\": {\n    \"score\": 0,\n    \"level\": \"low\",\n    \"reasons\": []\n  },\n ...[26786 chars truncated]... \"adverseMedia\"\n    ]\n  },\n  \"sectionsUnavailable\": [\n    {\n      \"section\": \"financials\",\n      \"reason\": \"not_found\"\n    }\n  ],\n  \"truncated\": false,\n  \"elapsedMs\": 20316,\n  \"generatedAt\": \"2026-05-24T10:05:49.552Z\"\n}"}]}} { metadata: undefined }
+martinnymann@MacBookPro ~ % 
