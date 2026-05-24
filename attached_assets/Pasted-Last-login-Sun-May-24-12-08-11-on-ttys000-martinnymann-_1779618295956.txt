@@ -1,0 +1,197 @@
+Last login: Sun May 24 12:08:11 on ttys000
+martinnymann@MacBookPro ~ % tail -40 ~/Library/Logs/Claude/mcp-server-nordic-data.log
+2026-05-24T10:13:23.099Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":7,"result":{"content":[{"type":"text","text":"{\n  \"id\": \"22756214\",\n  \"country\": \"dk\",\n  \"name\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"status\": \"active\",\n  \"address\": {\n    \"street\": \"Esplanaden 50\",\n    \"city\": \"København K\",\n    \"zip\": \"1263\"\n  },\n  \"industry\": {\n    \"code\": \"701010\",\n    \"description\": \"\"\n  },\n  \"vatRegistered\": true,\n  \"founded\": \"1904-04-16\",\n  \"source\": \"graphql.datafordeler.dk/CVR\",\n  \"fetchedAt\": \"2026-05-24T10:05:40.008Z\",\n  \"legalForm\": {\n    \"code\": \"60\",\n    \"description\": \"Anpartsselskab (ApS)\"\n  },\n  \"contact\": {\n    \"phone\": \"33142990\",\n    \"email\": null,\n    \"website\": null\n  },\n  \"marketingProtection\": false\n}"}]}} { metadata: undefined }
+2026-05-24T10:16:57.342Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T10:16:57.342Z [nordic-data] [info] Server transport closed (intentional shutdown) { metadata: undefined }
+2026-05-24T10:16:57.343Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T10:16:57.342Z [nordic-data] [info] Shutting down server... { metadata: undefined }
+2026-05-24T10:16:57.532Z [nordic-data] [info] Server transport closed { metadata: undefined }
+2026-05-24T10:16:57.532Z [nordic-data] [info] Client transport closed { metadata: undefined }
+2026-05-24T10:17:05.537Z [nordic-data] [info] Initializing server... { metadata: undefined }
+2026-05-24T10:17:05.543Z [nordic-data] [info] Using MCP server command: /opt/homebrew/bin/npx with args and path: {
+  metadata: {
+    args: [ '-y', 'nordic-data-mcp', [length]: 2 ],
+    paths: [
+      '/Users/martinnymann/.local/bin',
+      '/opt/homebrew/bin',
+      '/opt/homebrew/sbin',
+      '/usr/local/bin',
+      '/System/Cryptexes/App/usr/bin',
+      '/usr/bin',
+      '/bin',
+      '/usr/sbin',
+      '/sbin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin',
+      '/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin',
+      '/pkg/env/global/bin',
+      [length]: 13
+    ]
+  }
+} %o
+2026-05-24T10:17:05.544Z [nordic-data] [info] Server started and connected successfully { metadata: undefined }
+2026-05-24T10:17:06.833Z [nordic-data] [info] Message from client: {"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{"extensions":{"io.modelcontextprotocol/ui":{"mimeTypes":["text/html;profile=mcp-app"]}}},"clientInfo":{"name":"claude-ai","version":"0.1.0"}},"jsonrpc":"2.0","id":0} { metadata: undefined }
+Nordic Data MCP server running on stdio
+2026-05-24T10:17:07.685Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":0,"result":{"protocolVersion":"2025-11-25","capabilities":{"tools":{}},"serverInfo":{"name":"nordic-data-mcp","version":"1.4.4"}}} { metadata: undefined }
+2026-05-24T10:17:07.701Z [nordic-data] [info] Message from client: {"method":"notifications/initialized","jsonrpc":"2.0"} { metadata: undefined }
+2026-05-24T10:17:07.701Z [nordic-data] [info] Message from client: {"method":"tools/list","params":{},"jsonrpc":"2.0","id":1} { metadata: undefined }
+2026-05-24T10:17:07.703Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":1,"result":{"tools":[{"name":"lookup_company","description":"Look up basic company data (name, address, status, industry, VAT registration, founding date) from official European business registries. Supports 15 countries: DK (CVR), NO...[18896 chars truncated]...d set used."},"fetchedAt":{"type":"string","description":"ISO-8601 timestamp when the data was fetched upstream."}}},"annotations":{"title":"French Company History","readOnlyHint":true,"destructiveHint":false,"idempotentHint":true,"openWorldHint":true}}]}} { metadata: undefined }
+2026-05-24T10:18:41.015Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"kyb_full","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":2} { metadata: undefined }
+2026-05-24T10:18:41.570Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":2,"result":{"content":[{"type":"text","text":"{\n  \"country\": \"dk\",\n  \"id\": \"22756214\",\n  \"companyName\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"risk\": {\n    \"score\": 0,\n    \"level\": \"low\",\n    \"reasons\": []\n  },\n ...[26786 chars truncated]... \"adverseMedia\"\n    ]\n  },\n  \"sectionsUnavailable\": [\n    {\n      \"section\": \"financials\",\n      \"reason\": \"not_found\"\n    }\n  ],\n  \"truncated\": false,\n  \"elapsedMs\": 20316,\n  \"generatedAt\": \"2026-05-24T10:05:49.552Z\"\n}"}]}} { metadata: undefined }
+2026-05-24T10:18:45.422Z [nordic-data] [info] Message from client: {"method":"tools/call","params":{"name":"kyb_full","arguments":{"country":"dk","id":"22756214"}},"jsonrpc":"2.0","id":3} { metadata: undefined }
+2026-05-24T10:18:45.475Z [nordic-data] [info] Message from server: {"jsonrpc":"2.0","id":3,"result":{"content":[{"type":"text","text":"{\n  \"country\": \"dk\",\n  \"id\": \"22756214\",\n  \"companyName\": \"A.P. MØLLER - MÆRSK A/S\",\n  \"risk\": {\n    \"score\": 0,\n    \"level\": \"low\",\n    \"reasons\": []\n  },\n ...[26786 chars truncated]... \"adverseMedia\"\n    ]\n  },\n  \"sectionsUnavailable\": [\n    {\n      \"section\": \"financials\",\n      \"reason\": \"not_found\"\n    }\n  ],\n  \"truncated\": false,\n  \"elapsedMs\": 20316,\n  \"generatedAt\": \"2026-05-24T10:05:49.552Z\"\n}"}]}} { metadata: undefined }
+martinnymann@MacBookPro ~ % cd /Users/martinnymann/nordic-data-mcp
+martinnymann@MacBookPro nordic-data-mcp % git pull
+remote: Enumerating objects: 43, done.
+remote: Counting objects: 100% (43/43), done.
+remote: Compressing objects: 100% (10/10), done.
+remote: Total 29 (delta 22), reused 26 (delta 19), pack-reused 0 (from 0)
+Unpacking objects: 100% (29/29), 10.19 KiB | 208.00 KiB/s, done.
+From https://github.com/Mnymann/nordic-data-mcp
+   35ff689..b9f6287  main       -> origin/main
+Updating 35ff689..b9f6287
+Fast-forward
+ ...nordic-data-version-1-4-4-mar_1779617689188.txt |  81 +++++++++++
+ ...2-08-on-ttys000-martinnymann-_1779617334790.txt | 153 +++++++++++++++++++++
+ ...8-11-on-ttys000-martinnymann-_1779618023484.txt |  43 ++++++
+ ...rdic-data-mcp-npm-publish-nor_1779617461426.txt | 113 +++++++++++++++
+ nordic-data-mcp/CHANGELOG.md                       |   5 +
+ nordic-data-mcp/package.json                       |   2 +-
+ nordic-data-mcp/server.json                        |   4 +-
+ nordic-data-mcp/src/http.ts                        |   2 +-
+ nordic-data-mcp/src/index.ts                       |   2 +-
+ nordic-data-mcp/src/lib/apiClient.ts               |   2 +-
+ nordic-data-mcp/src/tools/kybFull.ts               |  83 +----------
+ replit.md                                          |   8 +-
+ 12 files changed, 413 insertions(+), 85 deletions(-)
+ create mode 100644 attached_assets/Pasted--Server-io-github-Mnymann-nordic-data-version-1-4-4-mar_1779617689188.txt
+ create mode 100644 attached_assets/Pasted-Last-login-Sun-May-24-10-42-08-on-ttys000-martinnymann-_1779617334790.txt
+ create mode 100644 attached_assets/Pasted-Last-login-Sun-May-24-12-08-11-on-ttys000-martinnymann-_1779618023484.txt
+ create mode 100644 attached_assets/Pasted-martinnymann-MacBookPro-nordic-data-mcp-npm-publish-nor_1779617461426.txt
+martinnymann@MacBookPro nordic-data-mcp % cd nordic-data-mcp
+martinnymann@MacBookPro nordic-data-mcp % npm install
+
+up to date, audited 141 packages in 932ms
+
+33 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+martinnymann@MacBookPro nordic-data-mcp % npm run build
+
+> nordic-data-mcp@1.4.5 build
+> tsc
+
+martinnymann@MacBookPro nordic-data-mcp % npm publish
+
+> nordic-data-mcp@1.4.5 prepublishOnly
+> npm run build
+
+
+> nordic-data-mcp@1.4.5 build
+> tsc
+
+npm notice
+npm notice 📦  nordic-data-mcp@1.4.5
+npm notice Tarball Contents
+npm notice 1.1kB LICENSE
+npm notice 6.7kB README.md
+npm notice 65B dist/http.d.ts
+npm notice 102B dist/http.d.ts.map
+npm notice 10.2kB dist/http.js
+npm notice 7.0kB dist/http.js.map
+npm notice 66B dist/index.d.ts
+npm notice 104B dist/index.d.ts.map
+npm notice 1.6kB dist/index.js
+npm notice 1.4kB dist/index.js.map
+npm notice 1.3kB dist/lib/apiClient.d.ts
+npm notice 600B dist/lib/apiClient.d.ts.map
+npm notice 8.9kB dist/lib/apiClient.js
+npm notice 5.8kB dist/lib/apiClient.js.map
+npm notice 1.1kB dist/lib/countries.d.ts
+npm notice 351B dist/lib/countries.d.ts.map
+npm notice 1.2kB dist/lib/countries.js
+npm notice 670B dist/lib/countries.js.map
+npm notice 416B dist/lib/dispatcher.d.ts
+npm notice 274B dist/lib/dispatcher.d.ts.map
+npm notice 2.8kB dist/lib/dispatcher.js
+npm notice 2.2kB dist/lib/dispatcher.js.map
+npm notice 552B dist/lib/errors.d.ts
+npm notice 481B dist/lib/errors.d.ts.map
+npm notice 1.6kB dist/lib/errors.js
+npm notice 1.4kB dist/lib/errors.js.map
+npm notice 1.6kB dist/lib/requestContext.d.ts
+npm notice 481B dist/lib/requestContext.d.ts.map
+npm notice 1.1kB dist/lib/requestContext.js
+npm notice 1.1kB dist/lib/requestContext.js.map
+npm notice 144B dist/tools/autocompleteAddress.d.ts
+npm notice 225B dist/tools/autocompleteAddress.d.ts.map
+npm notice 2.6kB dist/tools/autocompleteAddress.js
+npm notice 1.8kB dist/tools/autocompleteAddress.js.map
+npm notice 136B dist/tools/companyEnriched.d.ts
+npm notice 215B dist/tools/companyEnriched.d.ts.map
+npm notice 3.0kB dist/tools/companyEnriched.js
+npm notice 1.9kB dist/tools/companyEnriched.js.map
+npm notice 124B dist/tools/frHistory.d.ts
+npm notice 203B dist/tools/frHistory.d.ts.map
+npm notice 4.6kB dist/tools/frHistory.js
+npm notice 2.1kB dist/tools/frHistory.js.map
+npm notice 648B dist/tools/index.d.ts
+npm notice 646B dist/tools/index.d.ts.map
+npm notice 735B dist/tools/index.js
+npm notice 681B dist/tools/index.js.map
+npm notice 120B dist/tools/kybFull.d.ts
+npm notice 199B dist/tools/kybFull.d.ts.map
+npm notice 2.3kB dist/tools/kybFull.js
+npm notice 1.0kB dist/tools/kybFull.js.map
+npm notice 132B dist/tools/lookupCompany.d.ts
+npm notice 211B dist/tools/lookupCompany.d.ts.map
+npm notice 3.3kB dist/tools/lookupCompany.js
+npm notice 1.7kB dist/tools/lookupCompany.js.map
+npm notice 124B dist/tools/lookupLei.d.ts
+npm notice 204B dist/tools/lookupLei.d.ts.map
+npm notice 4.3kB dist/tools/lookupLei.js
+npm notice 3.1kB dist/tools/lookupLei.js.map
+npm notice 136B dist/tools/screenSanctions.d.ts
+npm notice 216B dist/tools/screenSanctions.d.ts.map
+npm notice 3.4kB dist/tools/screenSanctions.js
+npm notice 2.1kB dist/tools/screenSanctions.js.map
+npm notice 128B dist/tools/validateVat.d.ts
+npm notice 208B dist/tools/validateVat.d.ts.map
+npm notice 2.1kB dist/tools/validateVat.js
+npm notice 1.5kB dist/tools/validateVat.js.map
+npm notice 887B dist/types.d.ts
+npm notice 666B dist/types.d.ts.map
+npm notice 44B dist/types.js
+npm notice 102B dist/types.js.map
+npm notice 1.6kB package.json
+npm notice Tarball Details
+npm notice name: nordic-data-mcp
+npm notice version: 1.4.5
+npm notice filename: nordic-data-mcp-1.4.5.tgz
+npm notice package size: 31.0 kB
+npm notice unpacked size: 111.4 kB
+npm notice shasum: 3bfa8eae7389bd904c40d3388a094351dcb09b40
+npm notice integrity: sha512-Kn1qgOneWPArN[...]BR6DPACJNkkYA==
+npm notice total files: 71
+npm notice
+npm notice Publishing to https://registry.npmjs.org/ with tag latest and default access
+Authenticate your account at:
+https://www.npmjs.com/auth/cli/e875477b-b211-4127-9eb0-4b4adff6f191
+Press ENTER to open in the browser...
++ nordic-data-mcp@1.4.5
+martinnymann@MacBookPro nordic-data-mcp % /Users/martinnymann/mcp-registry/bin/mcp-publisher login github
+Logging in with github...
+
+To authenticate, please:
+1. Go to: https://github.com/login/device
+2. Enter code: 5DC9-3669
+3. Authorize this application
+Waiting for authorization...
+Successfully authenticated!
+✓ Successfully logged in
+martinnymann@MacBookPro nordic-data-mcp % /Users/martinnymann/mcp-registry/bin/mcp-publisher publish
+Publishing to https://registry.modelcontextprotocol.io...
+✓ Successfully published
+✓ Server io.github.Mnymann/nordic-data version 1.4.5
+martinnymann@MacBookPro nordic-data-mcp % 
