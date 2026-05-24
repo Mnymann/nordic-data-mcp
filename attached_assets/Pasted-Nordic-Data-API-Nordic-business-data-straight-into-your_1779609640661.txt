@@ -1,0 +1,217 @@
+Nordic Data API
+
+Nordic business data, straight into your code.
+Install the nordic-data-mcp NPM package, grab your NORDIC_API_KEY here, and let AI agents query company registers, KYB, sanctions and VAT data across 15 EU countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU) in seconds.
+
+Get your API key
+From 99 DKK/month →
+8 official registries · EU-hosted · 99.9% uptime · Cancel anytime
+
+Up and running in 30 seconds
+
+# Install the package
+npx -y nordic-data-mcp
+
+# Set your key (get it on this site)
+export NORDIC_API_KEY=ndk_live_...
+Your NORDIC_API_KEY is generated automatically when you create an account on this site.
+
+That's it. Your agent can look up CVR data right now.
+
+Listed on the official MCP Registry as io.github.Mnymann/nordic-data — discoverable in Claude Desktop, Cursor, Claude Code, ChatGPT and Anthropic's remote connectors out of the box.
+
+Live data from official registries
+Every lookup pulls fresh data straight from the public registries — no stale snapshots, no scraping.
+
+🇩🇰 Denmark
+
+Erhvervsstyrelsen (CVR / Virk)
+
+🇸🇪 Sweden
+
+Bolagsverket + SCB
+
+🇳🇴 Norway
+
+Brønnøysundregistrene
+
+🇫🇮 Finland
+
+Patentti- ja rekisterihallitus (PRH)
+
+🇪🇺 EU VAT
+
+VIES (European Commission)
+
+🌍 Sanctions
+
+EU, UN, OFAC, UK HMT consolidated lists
+
+🏛 LEI
+
+GLEIF global LEI index
+
+📮 Addresses
+
+DAWA (DK), Posti (FI), Lantmäteriet (SE)
+
+Built for AI agents
+Plug it into Claude, ChatGPT or Cursor and ask in plain language — the agent picks the right tool, calls the API, and returns structured data.
+
+Prompt to your AI assistant
+
+"Look up CVR 46495985 and tell me if AddonNordic ApS is active."
+
+Tool the agent calls
+
+lookup_company({
+  country: "DK",
+  identifier: "46495985"
+})
+What the agent returns
+
+AddonNordic ApS (CVR 46495985) is an active Danish private limited company (ApS), registered 2024-08-30, headquartered at Solvangen 15, 9210 Aalborg SØ. Industry: 620200 — IT consulting.
+
+Raw JSON from the API
+
+{
+  "country": "DK",
+  "identifier": "46495985",
+  "name": "AddonNordic ApS",
+  "status": "active",
+  "type": "ApS",
+  "registered_at": "2024-08-30",
+  "address": {
+    "street": "Solvangen 15",
+    "postal_code": "9210",
+    "city": "Aalborg SØ"
+  },
+  "industry_code": "620200",
+  "source": "cvrapi.dk"
+}
+Built in the EU, hosted in the EU
+A Danish ApS (CVR 46495985) based in Aalborg. All API infrastructure and data processing run on European servers — a clean fit with GDPR and the EU AI Act.
+
+Aalborg, Denmark · 🇩🇰 🇪🇺
+EU-only hosting
+
+API and data layer run exclusively on European cloud infrastructure. No transfers outside the EU/EEA.
+
+GDPR by default
+
+Danish data controller. DPA on request. Lookup logs scoped to your own tenant — never shared.
+
+EU AI Act ready
+
+Built for regulated AI use cases: KYB, sanctions screening, customer onboarding. Clear provenance on every field.
+
+From 99 DKK/month
+Simple, transparent pricing
+Monthly billing. Cancel in one click. No setup fees.
+
+Free — 0 kr/md
+Start free
+100 calls/day across 13 countries. NL and DE require Starter or higher. Perfect for testing Nordic Data inside Claude, Cursor, or any MCP assistant.
+
+Just want to test without signup?
+curl https://api.addonnordic.dk/api/company/dk/25508386
+Anonymous tier: 20 calls/month per IP, no key required — great for quick evaluation in Postman or curl.
+
+Starter
+99 DKK
+/mo
+500 lookups/day
+
+≈ 0.66 DKK / lookup
+
+500 API lookups/day
+Email support
+Access to all endpoints
+Choose Starter
+Most popular
+Business
+499 DKK
+/mo
+5,000 lookups/day
+
+≈ 0.07 DKK / lookup
+
+5,000 API lookups/day
+Priority support
+Access to all endpoints
+Choose Business
+Recommended for compliance
+Compliance Pro
+For auditors, lawyers and AML officers
+
+999 DKK
+/mo
+10,000 lookups/day
+
+≈ 0.10 DKK / lookup
+
+Everything in Business
+10,000 lookups/day (2x Business)
+Sanctions screening — 26,677 entities (UN, EU FSF, US OFAC)
+OpenSanctions Pro — 25+ datasets (UK FCDO, JP, NZ, AU, FR, CA, CH and more)
+KYB master report (/kyc/full)
+Show all 12 features
+Standalone sanctions screening typically costs 2,000+ DKK/mo. Included from 499 DKK/mo with us.
+
+Buy Compliance Pro
+Need more volume?
+Higher throughput, SLA and dedicated contact.
+
+Scale
+
+50,000 lookups/day · ≈ 0.04 DKK / lookup
+
+1.999 DKK
+
+/mo
+
+Choose Scale
+Enterprise
+
+200k+ lookups/mo · Volume discount
+
+Contact us
+
+Book a call
+Compare plans
+Built for purchase committees and partners who need a side-by-side justification.
+
+Show full comparison
+Country coverage
+Available to Compliance Pro and Scale customers. New additions are highlighted.
+
+Available
+New
+Coming soon
+Country	Companies	Production units	History
+🇩🇰Denmark			
+🇸🇪Sweden			
+🇳🇴Norway		New	
+🇫🇮Finland			
+🇫🇷France		New	New
+🇬🇧United Kingdom		New	New
+🇳🇱Netherlands		New	New
+🇧🇪Belgium	New	—	Coming soon
+🇱🇺Luxembourg	New	—	Coming soon
+🇩🇪Germany			Coming soon
+🇮🇪Ireland		—	Coming soon
+NL and DE require Starter tier or higher (paid upstream registries — KvK and Handelsregister). All other countries work on the free tier. Cost multipliers: NL = 5×, DE = 3×, others = 1×.
+
+Frequently asked questions
+How fast can I get started?
++
+Where does the data come from?
++
+Can I cancel anytime?
++
+Is my data and traffic stored inside the EU?
++
+Which AI tools does this work with?
++
+What if I go over my daily quota?
++
