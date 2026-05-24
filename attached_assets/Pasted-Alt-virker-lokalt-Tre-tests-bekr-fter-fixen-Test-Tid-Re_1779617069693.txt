@@ -1,0 +1,53 @@
+Alt virker lokalt. Tre tests bekræfter fixen:
+
+Test	Tid	Resultat
+Mærsk cold	11.2s (før: 66s)	7/9 sektioner, truncated=false
+Mærsk warm cache	7ms	X-Cache: HIT
+Carlsberg cold	11.2s	7/9 sektioner, truncated=false
+Begge cold-calls landede komfortabelt under MCP's 60s-ceiling med fuld data. adverseMedia timer ud individuelt på 10s (GDELT cold) men markeres som upstream_timeout, ikke deadline_exceeded, så hele rapporten ikke betragtes som afkortet — den caches stadig 6h. Kun hvis flere langsomme sektioner samtidig rammer 14s-loftet bliver truncated=true, og så cacher vi kun 60s + tvinger risk.level: "unknown".
+
+Færdigt. Backend-fixen er bygget, testet lokalt, committed (commit 2e9d49e), og workflowet kører den nye version.
+
+Sammenfatning til dig + MCP-agenten:
+
+Før	Efter
+kyb_full cold = 66s → MCP timeout	11.2s → langt under MCP's 60s
+sanctionsScreen timeout 20s	8s
+adverseScreen timeout 60s	10s
+Total batch bundet kun af længste sektion	Hard 14s race-cap
+Ingen signal til caller om manglende sektioner	sectionsUnavailable[] + truncated: bool
+Truncated rapport cached 6h (sticky)	Truncated = kun 60s cache, force risk.level: "unknown"
+Næste skridt — i din ende:
+
+Deploy til Railway (auto-deploy ved push, eller manuel — som du plejer).
+Verificér på prod:
+curl -sS -w "\ntime=%{time_total}s\n" \
+  "https://api.addonnordic.dk/api/kyc/full/dk/22756214" \
+  -H "X-API-Key: $INTERNAL_API_KEY" | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+print(d['companyName'], d['completeness'], 'truncated=',d['truncated'])
+"
+
+Forventet: ≤15s, 7-9/9, truncated=false.
+Test i Claude Desktop: Genstart Claude (⌘+Q) og prøv kyb_full på CVR 22756214 — burde nu virke uden timeout-fejl.
+Sig til MCP-agenten: "Deployed. Nye felter på response: sectionsUnavailable: [{section, reason}] og truncated: boolean. Opdater outputSchema i v1.4.4."
+Kendte follow-ups (rejst af code review, ikke kritiske):
+
+True end-to-end deadline der også indkapsler identity-fetchet
+AbortController-cancellation så timed-out promises faktisk stoppes (lige nu kører de videre i baggrunden indtil deres egen signal-timeout)
+Sig til efter Railway-deploy hvis du vil have mig til at verificere prod-tider.
+
+
+Worked for 37 seconds
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+
+Power
+
+
+

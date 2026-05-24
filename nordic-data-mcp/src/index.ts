@@ -16,7 +16,7 @@ import { dispatchToolCall } from "./lib/dispatcher.js";
 ensureApiKeyConfigured();
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.4.3" },
+  { name: "nordic-data-mcp", version: "1.4.4" },
   { capabilities: { tools: {} } },
 );
 

@@ -4,6 +4,15 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.4] — 2026-05-24
+
+### Changed
+- **`kyb_full` output schema** — documents two new response fields that backend now returns: `truncated: boolean` (true when one or more of the 9 sections hit the internal 14s race-cap) and `sectionsUnavailable: [{section, reason}]` (which sections are missing and why — `upstream_timeout`, `upstream_error`, `deadline_exceeded`, `not_applicable`). Lets AI agents detect partial reports and retry after 60s for completion.
+- **`kyb_full` description** — clarified cold-cache timing (10-15s, was 5-15s) and added retry guidance for partial responses.
+
+### Background
+- Backend now caps total KYB request time at 14s race-cap (was 60s+ cold) by aggressively parallelizing the 9 section fetches and using shorter per-upstream timeouts (sanctions 20s→8s, adverse media 60s→10s). Truncated reports cache for 60s (was sticky 6h) and force `risk.level: "unknown"` so callers know to retry. MCP-side change is schema-only.
+
 ## [1.4.3] — 2026-05-23
 
 ### Added
