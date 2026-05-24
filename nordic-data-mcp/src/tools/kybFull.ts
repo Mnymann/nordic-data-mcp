@@ -93,7 +93,7 @@ export const kybFull: McpTool = {
             },
             reason: {
               type: "string",
-              description: "Why this section is missing. One of: upstream_timeout, upstream_error, deadline_exceeded, not_applicable.",
+              description: "Why this section is missing. One of: not_found, upstream_timeout, deadline_exceeded, not_applicable, or a raw upstream error message.",
             },
           },
         },

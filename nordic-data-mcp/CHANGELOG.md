@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.4.4] — 2026-05-24
 
 ### Changed
-- **`kyb_full` output schema** — documents two new response fields that backend now returns: `truncated: boolean` (true when one or more of the 9 sections hit the internal 14s race-cap) and `sectionsUnavailable: [{section, reason}]` (which sections are missing and why — `upstream_timeout`, `upstream_error`, `deadline_exceeded`, `not_applicable`). Lets AI agents detect partial reports and retry after 60s for completion.
+- **`kyb_full` output schema** — documents two new response fields that backend now returns: `truncated: boolean` (true when one or more of the 9 sections hit the internal 14s race-cap) and `sectionsUnavailable: [{section, reason}]` (which sections are missing and why — `not_found`, `upstream_timeout`, `deadline_exceeded`, `not_applicable`, or raw upstream error message). Lets AI agents detect partial reports and retry after 60s for completion.
 - **`kyb_full` description** — clarified cold-cache timing (10-15s, was 5-15s) and added retry guidance for partial responses.
 
 ### Background
