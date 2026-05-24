@@ -19,7 +19,12 @@ Per release the agent must:
    - Railway: `curl -s https://nordic-data-mcp-production.up.railway.app/healthz`
    - MCP Registry: `curl 'https://registry.modelcontextprotocol.io/v0/servers?search=Mnymann'` (single-quote URL — zsh treats `?` as glob)
 
-**Current shipped version: 1.4.2** (May 23, 2026). Live on NPM, Railway, and the official MCP Registry (`io.github.Mnymann/nordic-data`). The `mcp-publisher` CLI binary lives at `/Users/martinnymann/mcp-registry/bin/mcp-publisher` on Martin's Mac.
+**Current shipped version: 1.4.4** (May 24, 2026). Live on NPM, Railway, and the official MCP Registry (`io.github.Mnymann/nordic-data`). The `mcp-publisher` CLI binary lives at `/Users/martinnymann/mcp-registry/bin/mcp-publisher` on Martin's Mac.
+
+Release history this weekend:
+- **1.4.4** (May 24) — `kyb_full` outputSchema documents new partial-response fields: `truncated: boolean` and `sectionsUnavailable: [{section, reason}]`. Backend-coordinated; backend now caps KYB total time at 14s race-cap (was 66s+ cold), so reports complete well under Claude Desktop's 60s MCP-client timeout. Cold cache: Mærsk 20s, LEGO 15.6s, Novo 14.5s on prod (verified).
+- **1.4.3** (May 23) — added `fr_history` tool (French company bitemporal history via INSEE Sirene 3.11). 8 tools total now.
+- **1.4.2** (May 23) — full MCP tool annotations on all 7 tools (`destructiveHint: false`, `idempotentHint: true`).
 
 **Name collision noted, decision = ignore.** A competing entry `cloud.nordicdata/nordic-data` exists on the registry (different owner — `sofiajameson20-star`, hosted at `nordicdata.cloud`, 78 tools, claims global B2B intelligence). Martin's decision: our brand is AddonNordic and namespacing `io.github.Mnymann/nordic-data` is distinct enough — focus on distribution instead of escalation.
 
