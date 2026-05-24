@@ -1,0 +1,77 @@
+Get started in 3 steps
+Follow this short guide — no coding required.
+
+Hide
+1
+Activate your subscription
+Pick a plan further down the page. The Free tier is 0 kr/month and gives you 100 calls/day across 13 countries (NL and DE require Starter or higher). Perfect for testing Nordic Data inside Claude, Cursor, or any MCP-compatible AI assistant. Paid plans unlock NL+DE, higher quotas, and priority support. Cancel anytime with one click.
+
+Grab your API key
+Keep it secret — it's like a password. Click "Show" if you need to see the full key (auto-hides after 30s).
+
+ndk_XTzY••••••••••••••••••••••••••••akQ
+Show
+Copy
+3
+Add the key to your AI assistant
+Pick where you'll use Nordic Data:
+
+Up and running in 30 seconds
+
+json
+Copy
+# Install the package
+npx -y nordic-data-mcp
+
+# Set your key (generated automatically on this site)
+export NORDIC_API_KEY=ndk_XTzY73anx9tmK08V5UHZJuxzVMO501aKhBnRAmvqakQ
+Your NORDIC_API_KEY is generated automatically when you create an account. Run the commands in Terminal (Mac) or PowerShell (Windows) — requires Node.js installed.
+
+That's it. Your agent can look up CVR data right now.
+
+Prefer a click-by-click guide for your specific AI app? Pick one below:
+
+Claude Desktop (Mac)
+Claude Desktop (Windows)
+Cursor
+ChatGPT (web)
+Claude.ai (web)
+First: Install Node.js (one-time, 2 min)
+
+Nordic Data MCP is a tiny program that launches automatically via the npx command. npx ships with Node.js — if you already have Node.js, you can skip this.
+
+1. Go to nodejs.org and click the big green LTS button. The installer walks you through it — just hit Next/Continue all the way (defaults are fine). Open nodejs.org
+2. Verify it worked: open Terminal (Mac: Cmd+Space → type "Terminal") or PowerShell (Windows: Win key → type "PowerShell"). Paste the line below and press Enter. You should see a version number like v20.x.x or higher.
+node --version
+Copy
+3. That's it! Next time you launch Claude or Cursor, npx automatically downloads the Nordic Data server on first run (takes 10-30 seconds). Nothing else to install manually.
+1. Open Claude's Extension Settings
+
+Open Claude Desktop. In your Mac's top menu bar: Claude → Settings (or press ⌘ + ,).
+
+2. Open your Configuration File
+
+Select the Developer tab in the left sidebar and click Edit Config. Claude automatically finds or creates the exact config file and opens it in your text editor — no folder-hunting required.
+
+3. Paste the Nordic Data server block
+
+Paste the following block into the file that opens:
+
+json
+Copy
+{
+  "mcpServers": {
+    "nordic-data": {
+      "command": "npx",
+      "args": ["-y", "nordic-data-mcp"],
+      "env": { "NORDIC_API_KEY": "ndk_XTzY73anx9tmK08V5UHZJuxzVMO501aKhBnRAmvqakQ" }
+    }
+  }
+}
+If you already have other servers configured, just add the "nordic-data" block inside your existing mcpServers object (remember to add a comma between them).
+
+4. Restart Claude completely
+
+Completely quit Claude Desktop with ⌘ + Q and reopen it. You'll now see a Tools (hammer) icon in the chat bar. Test it with:
+
+Look up CVR 22756214 via nordic-data
