@@ -30,7 +30,7 @@ const inputSchema = z.object({
 export const screenSanctions: McpTool = {
   name: "screen_sanctions",
   description:
-    "Screen one or more names against UN, EU, OFAC and PEP sanctions lists (768K+ entries via OpenSanctions). Returns match scores with source attribution.",
+    "Screen one or more names against UN, EU, OFAC and PEP sanctions lists (768K+ entries via OpenSanctions). Returns match scores with source attribution. Disclaimer: matches are informational decision-support, NOT legal or compliance advice and not a definitive determination — a hit is a signal to investigate (confirm identity, rule out false positives) before any decision; convey this guidance-only nature when presenting results to a user.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   outputSchema: {

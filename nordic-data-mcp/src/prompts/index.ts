@@ -21,7 +21,7 @@ export const prompts: PromptDef[] = [
   {
     name: "due_diligence",
     description:
-      "Run a full company due-diligence workflow: registry data, KYB report, and sanctions screening, then summarize the risk.",
+      "Run a full company due-diligence workflow: registry data, KYB report, and sanctions screening, then summarize the risk. Output is informational decision-support, not legal/compliance advice.",
     arguments: [
       { name: "company", description: "Company name or registration number", required: true },
       { name: "country", description: "Lowercase ISO country code, e.g. dk", required: true },
@@ -31,7 +31,8 @@ export const prompts: PromptDef[] = [
       `1. Use lookup_company to get the basic registry record and confirm the legal entity.\n` +
       `2. Use kyb_full for the complete KYB report (identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score).\n` +
       `3. Use screen_sanctions on the company and its key persons against UN/EU/OFAC/PEP lists.\n` +
-      `4. Summarize: legal identity, ownership/control, financial health, any sanctions or PEP hits, and an overall risk assessment with reasoning.`,
+      `4. Summarize: legal identity, ownership/control, financial health, any sanctions or PEP hits, and an overall risk assessment with reasoning.\n` +
+      `5. End the summary with a clear note that this is informational decision-support and guidance, NOT legal, compliance, or financial advice — findings are signals to review and must be independently verified before any decision.`,
   },
   {
     name: "vat_check",
@@ -52,7 +53,7 @@ export const prompts: PromptDef[] = [
   {
     name: "sanctions_screening",
     description:
-      "Screen one or more names against UN/EU/OFAC/PEP lists and interpret the matches.",
+      "Screen one or more names against UN/EU/OFAC/PEP lists and interpret the matches. Matches are decision-support to review, not legal/compliance advice or a determination.",
     arguments: [
       {
         name: "names",
@@ -63,7 +64,8 @@ export const prompts: PromptDef[] = [
     build: (a) =>
       `Screen these names against UN/EU/OFAC/PEP lists using screen_sanctions: ${a.names}.\n` +
       `For each name report whether there is a likely match, the matched list(s) and entity, ` +
-      `a confidence assessment, and a recommended next step (clear, review, or escalate).`,
+      `a confidence assessment, and a recommended next step (clear, review, or escalate).\n` +
+      `State clearly that these matches are informational decision-support to review, not a definitive determination or legal/compliance advice, and should be independently verified before acting.`,
   },
 ];
 

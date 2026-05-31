@@ -14,4 +14,8 @@ Country codes:
 - validate_vat uses UPPERCASE codes and requires "GB" (not "UK") for the United Kingdom.
 - NL and DE require a paid plan; free-tier keys receive HTTP 402. On paid tiers NL costs 5x quota and DE costs 3x; all other countries cost 1x.
 
+Scope & disclaimer:
+- All results — including kyb_full risk scores, screen_sanctions matches, PEP and adverse-media hits — are informational decision-support aggregated from official and public sources. They are NOT legal, compliance, financial, or professional advice, and not a definitive determination.
+- Treat a match or risk score as a signal to review, not a verdict. Verify independently and apply professional judgment before acting. When you present these results to a user, make their non-advisory, guidance-only nature clear.
+
 Authentication: each call is billed against the caller's own API key. Get a free key (100 lookups/day) at https://addonnordic.com.`;

@@ -88,6 +88,10 @@ function gettingStartedDoc(): string {
 4. NL and DE require a paid plan (free-tier keys get HTTP 402). NL costs 5x quota, DE 3x, all others 1x.
 
 See the \`nordic://countries\` and \`nordic://tools\` resources for the full country list and tool catalog.
+
+## Disclaimer
+
+Nordic Data returns informational decision-support aggregated from official and public sources. It is **not** legal, compliance, financial, or professional advice, and not a definitive determination. Sanctions/PEP matches, KYB reports, and risk scores are signals to review, not verdicts — verify independently and apply your own professional judgment before acting.
 `;
 }
 

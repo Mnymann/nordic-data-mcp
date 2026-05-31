@@ -202,6 +202,12 @@ Please **do not** include API keys, request bodies, or response payloads in bug 
 
 ---
 
+## Disclaimer
+
+Nordic Data returns **informational decision-support** aggregated from official and public sources. It is **not** legal, compliance, financial, or professional advice, and not a definitive determination. KYB reports, sanctions/PEP matches, adverse-media hits, and risk scores are **signals to review, not verdicts** — verify independently and apply your own professional judgment before acting. Use of the service is subject to the [AddonNordic Terms](https://addonnordic.com).
+
+---
+
 ## License
 
 MIT © [AddonNordic ApS](https://addonnordic.com)
