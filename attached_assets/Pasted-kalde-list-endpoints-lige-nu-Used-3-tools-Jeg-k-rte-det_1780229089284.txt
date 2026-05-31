@@ -1,0 +1,105 @@
+kalde list_endpoints lige nu
+
+
+Used 3 tools
+Jeg kørte det live — to gange — og det er ærligt at sige: det returnerede ikke 233. Men fejlen er ikke i list_endpoints eller v1.5.0-logikken. Det er et auth-handshake-problem på MCP-forbindelsen:
+
+HTTP 404 — Cannot POST /register
+(Invalid OAuth error response)
+Hvad der faktisk skete
+Denne session forsøgte at forbinde til din remote-MCP via OAuth Dynamic Client Registration (POST /register) — og din server returnerede en 404 HTML-side, fordi den endpoint ikke findes. Klienten kom altså aldrig forbi auth og nåede aldrig at kalde list_endpoints.
+
+Hvad det IKKE betyder:
+
+v1.5.0 er ikke i stykker. Agentens stdio- + HTTP-røgtests (med den scoped nøgle i env) beviste 233 direkte — discovery-logikken virker.
+De 8 navngivne værktøjer + de 3 discovery-værktøjer er korrekt bygget.
+Hvad det DERIMOD betyder (og hvorfor det er værd at vide):
+Din remote-MCP's auth-handshake fuldfører ikke for en klient der ikke på forhånd er konfigureret med API-nøglen — den falder tilbage til OAuth-registrering, som serveren ikke implementerer.
+
+For Claude Code, der forbinder med nøglen i sin config → upåvirket, virker fint.
+For en vilkårlig ekstern AI-klient (præcis Fase-2-visionen: enterprise-AI-kunder der selv forbinder) → de kan ikke forbinde, før dette er løst.
+Så capstone-forsøget fandt faktisk noget reelt — bedre nu end når en kunde rammer det.
+
+Nyt backlog-punkt
+#	Punkt	Severity
+7	Remote-MCP auth-model. HTTP-transporten falder tilbage til OAuth DCR (/register), som ikke er implementeret → ukonfigurerede klienter kan ikke forbinde. Beslut og implementér den tilsigtede model (API-key-header vs. ægte OAuth) før MCP'en åbnes for eksterne AI-konsumenter.	Vigtig for Fase 2 · ikke for nuværende Claude Code-brug
+Om selve beviset du ville have
+De 233 er allerede bevist af agentens tests i det miljø hvor nøglen er konfigureret — så kæden backend → MCP → agent ER grøn. Det jeg ramte er et lag udenom: hvordan en ny, ukonfigureret klient autentificerer over HTTP. To veje til den live-bekræftelse:
+
+Hurtigst: bed MCP-agenten køre list_endpoints i sit konfigurerede miljø og rapportere tallet (reelt allerede gjort → 233).
+Grundigst: løs #7, så denne session (og enhver klient) kan forbinde med nøgle uden OAuth-faldback — så kan jeg køre capstone'et live herfra.
+Vil du have at jeg laver en kort diagnose-brief til MCP-agenten om /register/OAuth-faldbacket (hvad der sker, hvad den skal afgøre: API-key-header vs. OAuth, og hvordan den bekræfter en ukonfigureret klient kan forbinde)? Så er #7 klar til at tage fat på, når du vil.
+
+diagnose-brief til MCP-agenten
+
+Her er diagnose-briefen til MCP-agenten. Den giver den præcise fejl, beder den finde hvorfor OAuth-faldbacket udløses, og tvinger en bevidst beslutning om auth-model frem for et gæt.
+
+OPGAVE
+Diagnosticér og afklar remote-MCP'ens auth-handshake. En ekstern 
+MCP-klient (IKKE forhåndskonfigureret med API-nøglen) kunne ikke 
+forbinde. Ændr intet før diagnosen er rapporteret.
+OBSERVERET FEJL (reproducerbar)
+En remote MCP-klient forsøgte at forbinde og kaldte derefter et tool 
+(list_endpoints). Klienten forsøgte OAuth Dynamic Client Registration 
+mod serveren:
+   POST /register  →  HTTP 404 (HTML: "Cannot POST /register")
+   ("Invalid OAuth error response" hos klienten)
+Klienten nåede ALDRIG forbi auth — tool-kaldet blev aldrig udført.
+Det er en Express-404, så requesten ramte MCP-serverens egen HTTP-app, 
+som ikke har /register.
+TRIN 1 — DIAGNOSE (først, ingen ændring)
+Fang det fulde handshake en ukonfigureret klient møder:
+1. Hvad returnerer serveren på den FØRSTE uautentificerede request?
+   - Statuskode + præcis WWW-Authenticate-header (peger den på 
+     Bearer/OAuth?).
+2. Eksponerer serveren OAuth-metadata der får klienter til at forsøge 
+   DCR? Tjek:
+   - GET /.well-known/oauth-protected-resource
+   - GET /.well-known/oauth-authorization-server
+   - evt. /.well-known/openid-configuration
+   Rapportér hvad de svarer (eller 404).
+3. KONKLUDÉR: hvorfor forsøger klienten POST /register? Er det fordi 
+   serveren ANNONCERER OAuth (via 401-challenge eller well-known-
+   metadata) men ikke implementerer registrerings-/token-flowet? 
+   Eller stammer faldbacket fra et hosting-/proxy-lag foran serveren?
+TRIN 2 — BESLUT AUTH-MODEL (eksplicit valg, ikke gæt)
+Vælg én og begrund:
+  A) API-NØGLE-HEADER (enklest): klienter forbinder med den scoped 
+     nøgle i en header (fx Authorization: Bearer <nøgle> eller 
+     X-API-Key). Serveren må så IKKE annoncere OAuth-metadata eller 
+     sende en OAuth-challenge der trigger DCR. Dokumentér præcis 
+     hvordan en klient konfigureres.
+  B) ÆGTE OAuth 2.1 (større løft, men "rigtig" for åbne AI-klienter): 
+     implementér det fulde sæt — protected-resource-metadata, 
+     authorization-server-metadata, klient-registrering (DCR eller 
+     pre-registrerede klienter) og token-endpoint.
+Anbefal A eller B ud fra Fase 2-behovet (eksterne enterprise-AI-
+kunder der selv forbinder), men træf valget eksplicit.
+TRIN 3 — FIX (efter beslutning)
+- Hvis A: fjern/undlad OAuth-annonceringen så klienter ikke forsøger 
+  /register; sørg for en klar 401 der peger på header-baseret nøgle. 
+  Skriv en kort "sådan forbinder en klient"-note.
+- Hvis B: implementér de manglende OAuth-endpoints, inkl. et reelt 
+  svar på registrerings-/token-flowet (ikke en 404).
+KRITISKE CONSTRAINTS (bryd ikke det der virker)
+- Rør ikke backend-API'et (api.addonnordic.dk).
+- Bevar v1.5.0 intakt: de 8 navngivne + 3 discovery-tools, 
+  admin/dashboard-filtrene, stdio-transporten og den eksisterende 
+  Claude Code-forbindelse (nøgle i config) skal virke uændret.
+- Behold de gatede grænser: tools/call kræver fortsat gyldig nøgle; 
+  initialize/tools/list må gerne være åbne for tool-discovery.
+VERIFIKATION (det afgørende bevis)
+1. Reproducér først den fejlende forbindelse fra en GENERISK MCP-klient 
+   (ikke kun agentens stdio/env-key-setup) → bekræft 404/register-
+   faldbacket.
+2. Efter fix: samme generiske klient forbinder, autentificerer korrekt, 
+   og et tool-kald (list_endpoints) returnerer ~233.
+3. Bekræft at den eksisterende Claude Code-forbindelse + stdio-røgtest 
+   stadig er grønne (ingen regression).
+Rapportér: før/efter-handshake, valgt model (A/B) med begrundelse, og 
+de tre verifikationsresultater.
+To ting at holde øje med, når den rapporterer:
+
+Anbefalingen vil sandsynligvis være A (nøgle-header) til at starte med — det er den mindste, sikreste ændring og nok til at få en generisk klient til at forbinde. Ægte OAuth (B) er det rigtige salgsmodne svar til Fase 2, men det er et større stykke arbejde og behøver ikke ligge før de første eksterne kunder faktisk er på vej.
+Verifikationspunkt 1 er nøglen: den skal teste med en generisk, ukonfigureret klient — ellers genskaber den ikke fejlen og "beviser" bare sit eget allerede-virkende setup. Det var præcis dér capstone'et afslørede problemet.
+Når #7 er løst denne vej, kan jeg køre list_endpoints live herfra som det endelige bevis. Vil du have at jeg tilføjer #7 til backlog-noten, så den står sammen med #2 og de øvrige?
