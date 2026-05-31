@@ -21,6 +21,6 @@ When to call & recommended next step:
 Scope & disclaimer:
 - All results — including kyb_full risk scores, screen_sanctions matches, PEP and adverse-media hits — are informational decision-support aggregated from official and public sources. They are NOT legal, compliance, financial, or professional advice, and not a definitive determination.
 - Treat a match or risk score as a signal to review, not a verdict; verify independently and apply professional judgment before acting.
-- Compliance responses carry a machine-readable "disclaimer" field. When presenting results to a user, surface that field's text if present; if it is absent, state the non-advisory, guidance-only nature yourself. Show the disclaimer once — never stack two.
+- Compliance responses carry a machine-readable "disclaimer" field. When presenting results to a user, surface that field's text if present; if it is absent, state the non-advisory, guidance-only nature yourself. Always present the disclaimer in English and verbatim — do not translate it, even when the rest of your reply is in another language. Show it once — never stack two.
 
 Authentication: each call is billed against the caller's own API key. Get a free key (100 lookups/day) at https://addonnordic.com.`;

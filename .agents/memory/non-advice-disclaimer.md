@@ -23,6 +23,8 @@ The disclaimer exists at **two layers** and they are complementary, NOT redundan
 - **Backend data layer:** the Nordic Data API embeds a `disclaimer` field (**English text — Martin's decision May 31, 2026; originally Danish**) in the compliance response objects (`/kyc/full`, `/risk/*`, `/screening/full`, `/sanctions/screen|search|match`). This is the source of truth and travels to ALL consumers (direct API, any app), not just MCP. Plain factual lookups (company data, bankruptcy lists) deliberately have NO disclaimer field.
 - **MCP metadata layer (this repo):** instructions / tool descriptions / prompts shape the AGENT's behaviour so it actually surfaces the disclaimer to the user.
 
+**Disclaimer language = always English, verbatim, never translate** (Martin's choice May 31, 2026). Claude mirrors the *conversation* language for its own prose, so without an explicit rule a Danish chat would translate the disclaimer. The MCP instructions/tool-descriptions/prompts therefore say "present the disclaimer in English verbatim — do not translate, even when the rest of the reply is in another language." Three text languages in any answer: Claude's prose = conversation language (not ours); raw registry data = source language (not ours); disclaimer = English (the only one we control).
+
 ## Agent-native UX: "call-before-action" + recommended next step
 
 Competitor (Kord Agencies) framing was adopted as a differentiator: tool descriptions + server `instructions` + prompts tell the agent to (1) call BEFORE a consequential action (onboard supplier, approve payment, issue invoice, sign contract) and (2) give a recommended next step — **clear / review / escalate**.
