@@ -1,0 +1,72 @@
+Martin wants me to mint a dedicated tenant (non-admin) API key for the MCP server using the existing key system. First I need to understand how keys/tenants are created, stored, and how quota + rate limits are assigned. Let me investigate the existing mechanism.
+Ran cd
+Now let me look at the tenant store to understand how keys are created, what fields a tenant has (tier, daily_quota), and how to add one.
+3 actions
+The system is clear: createTenant({ tenant_name, tier, daily_quota }) mints a normal ndk_-prefixed tenant key (SHA-256 hashed, shown once), tier-based daily quota, and the global 100/min rate limit applies to all keyed routes. The cleanest path that uses the existing mechanism is the admin endpoint. Let me find the admin key-creation route, confirm /admin/* gating, and check whether an mcp-server tenant already exists.
+2 actions
+Key finding: there's already an active MCP tenant — nordic-data-mcp, tier starter but with a 100,000/day quota (unusually high), created 2026-05-21. Two things matter: (1) we can't retrieve its key value (only the SHA-256 hash is stored), and (2) 100k/day isn't really "bounded blast radius." Since Martin needs a deployable key value and a bounded quota, I'll issue a fresh dedicated mcp-server key. First let me confirm /admin/* gating so the verification is meaningful.
+3 actions
+/admin is gated by internalKeyOnly (line 27), mounted at /admin (not /api/admin). Let me check the exact response shape of POST /admin/keys so I parse the raw key field correctly.
+2 actions
+The raw key comes back as api_key (only on first creation; 201). /admin is gated, DK cost = 1. Let me read the keyOrAnonTier middleware (to confirm tenant keys are quota-counted on the /api data routes) and, in parallel, create the mcp-server key and run all three verifications in one shell session (so the key never needs re-printing).
+3 actions
+Alle tre verifikationer består. Her er resultatet, Martin.
+Svar på dit spørgsmål
+Vi havde allerede en MCP-tenant (nordic-data-mcp), men den lever ikke op til briefen: dens nøgleværdi kan ikke hentes frem igen (vi gemmer kun et hash), og den har en kvote på 100.000/dag — det er ikke en "begrænset blast radius". Derfor har jeg udstedt en frisk, dedikeret nøgle via det eksisterende nøgle-system (POST /admin/keys), uden at røre auth-logikken.
+Din nye MCP-nøgle (vises ÉN gang — læg den i MCP-serverens env-variabel nu)
+ndk_tTFd6Gdfa-5hnIT2zG7-MVm0wCtTPeQOo2E4P37FCS0
+Den kan ikke hentes frem igen — kun dens hash gemmes. Hvis den mistes, sletter vi den og udsteder en ny.
+Egenskab	Værdi
+Label (tenant_name)	mcp-server
+Type	Almindelig kunde-nøgle (ikke admin)
+Tier	business
+Kvote	5.000 kald/dag
+Rate limit	100 kald/minut (systemets normale, gælder alle nøgler)
+Aktiv / roterbar	Ja — kan spærres/roteres uafhængigt
+Verifikation (rigtige kald)
+Data-rute med nøglen → GET /api/company/dk/22756214 = 200 OK (headers: X-Tenant: mcp-server, X-Quota-Limit: 5000, X-Quota-Used: 1). ✅
+/admin-rute med nøglen → GET /admin/keys = 401 (admin afvist — nøglen kan ikke ramme /admin/*). ✅
+Tæller mod kvote → andet kald viste X-Quota-Used: 2, og databasen (api_usage) bekræfter call_count = 2 for mcp-server i dag. Den opfører sig præcis som en betalende kunde. ✅
+Rotation & oprydning
+Nøglen kan til enhver tid:
+spærres: DELETE /admin/keys/mcp-server (soft delete)
+justeres (fx anden kvote): PATCH /admin/keys/mcp-server
+roteres: slet + opret igen.
+Anbefaling: Når den nye nøgle er bekræftet live i MCP-serveren, bør vi pensionere den gamle nordic-data-mcp (100k-kvote) så der kun er én MCP-nøgle. Jeg deaktiverer den ikke nu, da det ville afbryde den MCP-server der måske stadig kører på den — sig til, så spærrer jeg den.
+Nøglen her er den, Prompt 2's krav A bygger på. Sig til, når du vil have MCP-sikkerhedsreviewet gjort klar.
+Worked for 3 minutes
+Scroll to latest
+Make, test, iterate…
+Power
+
+Nøglen er udstedt korrekt, og verifikationen beviser præcis hvorfor vi insisterede på en scoped nøgle: /admin/keys → 401. Selv hvis denne nøgle lækker, er skaden begrænset til 5.000 kald/dag på data-ruter — ikke admin, ikke hele systemet. Det er scoped-key-princippet der betaler sig i praksis. Godt arbejde af Replit (god fangst at den gamle nordic-data-mcp havde en 100k-kvote der ikke var "bounded").
+
+⚠️ Én ting der skal håndteres: nøglen står nu i chat-loggen
+Selve nøgleværdien blev printet i klartekst her i samtalen. Den var ment til kun at vises én gang — nu ligger den i transskriptet. Det er ikke en krise (netop fordi den er scoped og roterbar — design'et virker), men den rene afslutning er:
+
+Læg nøglen i MCP-serverens env-variabel nu.
+Verificér at MCP'en kan hente den gatede spec med den (ikke 401).
+Roter den derefter (slet + udsted ny via samme /admin/keys), så den printede værdi er død. Den nye værdi holder du ude af chatten.
+Lav urgens på grund af scope — men gør det, før MCP'en går i rigtig brug. Det er præcis den slags exposure scoped keys er bygget til at overleve.
+
+Rækkefølge for at pensionere den gamle nøgle
+Vigtigt: der kører sandsynligvis allerede en MCP-server på den gamle nordic-data-mcp-nøgle lige nu (din forbundne Nordic Data MCP). Spær den derfor ikke før den nye er live — ellers afbryder du den kørende MCP. Korrekt sekvens:
+
+Skift MCP'ens env-variabel til den nye nøgle (evt. den roterede fra ovenfor).
+Bekræft at MCP'en svarer normalt på den nye nøgle.
+Så spær den gamle: DELETE /admin/keys/nordic-data-mcp. Derefter er der præcis én MCP-nøgle.
+Opdateret rækkefølge for MCP-leddet
+#	Trin	Status
+1	Udsted scoped mcp-server-nøgle	✅ gjort
+2	Læg i MCP-env + verificér mod gatet spec	← næste
+3	Roter nøglen (den eksponerede dør)	efter trin 2
+4	Prompt 2 — udvid MCP til hybrid discovery	klar til at fyre
+5	Spær gamle nordic-data-mcp-nøgle	efter MCP er live på ny nøgle
+6	Kort MCP-sikkerhedsreview	bekræftelse
+Åben backlog (så intet går tabt)
+Read-only operatør-nøgle til dashboardet (så browseren ikke holder INTERNAL_API_KEY) — noteret, til senere.
+En lille note: 5.000/dag er fint til dev-brug nu; kan altid hæves med PATCH /admin/keys/mcp-server hvis AI-trafikken vokser.
+Vil du have at jeg gør rotations-kommandoen + en kort "skift-MCP-env-og-verificér"-brief klar, så trin 2–3 kan køres i ét hug før Prompt 2?
+
+
+
