@@ -1,0 +1,40 @@
+Martin opdaterede nøglen direkte. Jeg kører smoke-testen igen:
+
+2 actions
+Stadig 401. Det er ikke tilfældigt — lad mig undersøge to ting: om processen faktisk ser den nye nøgle (uden at lække den), og hvilken backend smoke-testen rammer.
+
+Er det ikke bare fordi vi ikke har opdataret MCP server til Udvid MCP til hybrid (8 navngivne + 3 discovery. Den kører stadig med det gamle build?
+
+3 minutes ago
+
+Show less
+
+2 actions
+Forstået. Den nye prod-nøgle er bevist korrekt (mit curl mod præcis samme prod-backend gav 200 + tællede kvote). Når MCP'en så stadig får 401 med samme nøgle mod samme backend, ligger fejlen på MCP-siden — i hvordan nøglen sendes, ikke i nøglen selv.
+
+Til din hypothese: et gammelt build (8+3 hybrid vs. ny) giver ikke 401 i sig selv — antal tools har intet med auth at gøre. MEN hvis det gamle build læser nøglen fra et andet env-navn, har en hardcodet gammel nøgle, sender forkert header, eller peger på en anden URL — så giver det 401. Lad mig finde præcis hvilken request-form prod accepterer, så vi kan tjekke MCP'en mod den.
+
+
+2 actions
+Det er fundet. Prod accepterer kun nøglen i X-Api-Key-headeren. Alt andet giver 401:
+
+Form for at sende nøglen	Resultat
+X-Api-Key: <key>	200 ✅
+x-api-key: (små bogstaver)	200 ✅
+Authorization: Bearer <key>	401 ❌
+Authorization: <key>	401 ❌
+apikey: / api-key: header	401 ❌
+?api_key= / ?apikey= query	401 ❌
+Ingen nøgle (kontrol)	401
+Nøgle med trailing newline	200 ✅ (så afskrift/whitespace er IKKE problemet)
+Konklusion
+Nøglen er korrekt og lever i prod. MCP'ens 401 skyldes hvordan nøglen sendes — næsten med sikkerhed at MCP-klienten sender den som Authorization: Bearer … (standard for de fleste HTTP/MCP-klienter), som vores backend ikke læser. Den vil kun acceptere X-Api-Key.
+
+Til din hypothese: nej, det er ikke antallet af tools (8+3 hybrid vs. gammelt build). Tool-antal har intet med auth at gøre. MEN hvis det gamle build sender nøglen i en anden header (fx Authorization) eller fra et andet env-navn, så er det derfor 401 fortsætter. Selve nøglen er bevist god.
+
+Hvad du skal rette i MCP-projektet (det andet Replit-projekt)
+Header skal være X-Api-Key — ikke Authorization: Bearer. Find der hvor HTTP-klienten sætter headers og skift til:
+headers: { "X-Api-Key": <din nøgle> }
+Base-URL: https://api.addonnordic.dk, og data-ruter har /api-præfiks (fx /api/company/dk/…). Admin ligger på /admin (ikke /api/admin) — men MCP'en skal aldrig ramme admin.
+Genstart/genbyg MCP-processen efter ændringen, så den læser den nye header + nøgle.
+Når den sender X-Api-Key, rammer den 200 — præcis som mit curl gjorde tre gange lige før.
