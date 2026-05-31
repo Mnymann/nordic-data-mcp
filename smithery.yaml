@@ -29,17 +29,18 @@ startCommand:
   type: http
   configSchema:
     type: object
-    required:
-      - apiKey
     properties:
       apiKey:
         type: string
-        title: "Nordic Data API key"
+        title: "Nordic Data API key (recommended)"
         description: >
-          Your personal API key. Get one at https://addonnordic.com — free
-          tier (100 lookups/day) up to Enterprise (200,000/day). The key
-          starts with "ndk_" and is forwarded to our backend as a Bearer
-          token so usage is tracked against your account.
+          Your personal API key. Get one (free, 100 lookups/day) at
+          https://addonnordic.com — the key starts with "ndk_" and is
+          forwarded to our backend as a Bearer token so usage is tracked
+          and billed against YOUR account. Technically optional for
+          discovery (listing tools), but REQUIRED to run any lookup: without
+          it, tool calls return a clear "add your API key" error. Paste it
+          here to use the server.
         pattern: "^ndk_[A-Za-z0-9_-]{16,}$"
         minLength: 20
       defaultCountry:
