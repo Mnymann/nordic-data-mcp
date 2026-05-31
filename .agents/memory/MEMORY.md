@@ -1,0 +1,1 @@
+- [Server-tenant key rotation](key-rotation.md) — rotate NORDIC_API_KEY in BOTH Replit secret + Railway before revoking old key; verify deployed /mcp with a real tools/call; fingerprint keys (sha256 first 8) to compare without leaking.
