@@ -26,20 +26,25 @@ echo "T1: /healthz"
 HEALTH=$(curl -fsS "http://localhost:$PORT/healthz")
 echo "$HEALTH" | grep -q '"status":"ok"' && pass "healthz returns ok" || fail "healthz"
 
-echo "T2: /mcp/auth without Authorization → 401"
+# NOTE: `initialize`/`tools/list` are intentionally servable without auth on
+# /mcp/auth (UNAUTH_METHODS discovery-probe exemption in src/http.ts) so MCP
+# discovery clients can read tool metadata before the user supplies a key.
+# The real auth boundary is `tools/call` — the only path that hits the upstream
+# API and consumes quota — so that is what we assert here.
+echo "T2: /mcp/auth tools/call without Authorization → 401"
 CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://localhost:$PORT/mcp/auth" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"t","version":"1"}}}')
-[ "$CODE" = "401" ] && pass "no-auth rejected with 401" || fail "expected 401, got $CODE"
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"lookup_company","arguments":{"country":"dk","id":"22756214"}}}')
+[ "$CODE" = "401" ] && pass "no-auth tools/call rejected with 401" || fail "expected 401, got $CODE"
 
-echo "T3: /mcp/auth with malformed token → 401"
+echo "T3: /mcp/auth tools/call with malformed token → 401"
 CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "http://localhost:$PORT/mcp/auth" \
   -H "Authorization: Bearer wrong-shape" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json, text/event-stream" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"t","version":"1"}}}')
-[ "$CODE" = "401" ] && pass "malformed token rejected" || fail "expected 401, got $CODE"
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"lookup_company","arguments":{"country":"dk","id":"22756214"}}}')
+[ "$CODE" = "401" ] && pass "malformed token tools/call rejected" || fail "expected 401, got $CODE"
 
 echo "T4: /mcp public initialize works"
 RESP=$(curl -fsS -X POST "http://localhost:$PORT/mcp" \
@@ -47,6 +52,11 @@ RESP=$(curl -fsS -X POST "http://localhost:$PORT/mcp" \
   -H "Accept: application/json, text/event-stream" \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"t","version":"1"}}}')
 echo "$RESP" | grep -q '"protocolVersion"' && pass "public /mcp initializes" || fail "public /mcp"
+
+# NOTE: tools/list and tools/call over the Streamable HTTP transport require the
+# Mcp-Session-Id returned by `initialize`, so they are not curl-friendly one-liners.
+# The discovery tools (list_endpoints / get_endpoint_schema / call_endpoint) and the
+# full tool registry are verified end-to-end over stdio by scripts/smoke-test.mjs.
 
 echo ""
 echo "All smoke tests passed ✓"

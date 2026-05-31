@@ -4,6 +4,27 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] — 2026-05-31
+
+### Added
+- **Hybrid discovery: 3 new meta-tools (11 tools total).** The 8 curated tools are unchanged; these add runtime access to the *entire* Nordic Data API via the backend's live OpenAPI spec, so AI agents can discover and call any of the ~239 data endpoints without a new release:
+  - **`list_endpoints`** — lists all data endpoints (method, path, short description) from the live spec, with an optional `search` keyword filter.
+  - **`get_endpoint_schema`** — returns the full parameter and response schema for one endpoint (path + method), with `$ref`s resolved inline.
+  - **`call_endpoint`** — executes a real HTTP request against any non-admin endpoint and returns the response.
+
+### Security
+- Discovery tools authenticate with the same scoped tenant key as the curated tools (env `NORDIC_API_KEY`, or the per-request customer key on `/mcp/auth`) — never an internal/admin key.
+- `/admin/*` is never listed and never callable: admin paths are filtered out of the spec and `call_endpoint` refuses them outright (HTTP 403). The admin guard canonicalizes the path first (case-fold, iterative percent-decode, dot-segment resolution, backslash normalization), so variants like `/Admin/keys`, `/admin%2Fkeys`, and `/api/x/..%2f..%2fadmin%2fkeys` are all caught.
+- `call_endpoint` rejects encoded or backslash separators and `.`/`..` traversal segments (HTTP 400), and re-validates the **final substituted path** after template-parameter expansion — closing double-encoding smuggling (e.g. an injected `%2f` becoming `%252f`).
+- `call_endpoint` only permits HTTP methods the spec declares for a given path (HTTP 405 otherwise).
+- The API key is never echoed into any tool result, error message, or `details` field — discovery-tool outputs and upstream error bodies are deep-redacted before they leave the process.
+
+### Tooling
+- Added `npm run security-check` (`scripts/security-check.mjs`) — a regression matrix asserting the admin/path-smuggling refusals, method whitelist, and no-admin-in-listing guarantees for the discovery tools.
+
+### Operational
+- The OpenAPI spec is fetched from the canonical backend (`https://api.addonnordic.dk/openapi.json`) and cached for 5 minutes, so new endpoints appear without a redeploy. If the spec is temporarily unreachable, the last-known-good copy is served (flagged stale) rather than crashing.
+
 ## [1.4.5] — 2026-05-24
 
 ### Fixed

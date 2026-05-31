@@ -30,7 +30,7 @@ function resolveHosts(): string[] {
 const HOSTS = resolveHosts();
 const DEFAULT_API_KEY = process.env.NORDIC_API_KEY;
 
-const USER_AGENT = "nordic-data-mcp/1.4.5";
+const USER_AGENT = "nordic-data-mcp/1.5.0";
 
 /**
  * Per-request API key override. Used by the authenticated HTTP endpoint
@@ -101,6 +101,17 @@ function resolveApiKey(): string {
     message:
       "No API key available for this request. Set NORDIC_API_KEY or use the authenticated /mcp/auth endpoint with an Authorization: Bearer header.",
   });
+}
+
+/**
+ * Returns the API key that the current request should use — the per-request
+ * customer key when an ALS scope is active (/mcp/auth), otherwise the env
+ * `NORDIC_API_KEY`. Used by the discovery tools so spec fetches and
+ * call_endpoint authenticate with exactly the same key as the curated tools.
+ * Throws a `NordicApiError` (401) if no key is available.
+ */
+export function getResolvedApiKey(): string {
+  return resolveApiKey();
 }
 
 /**

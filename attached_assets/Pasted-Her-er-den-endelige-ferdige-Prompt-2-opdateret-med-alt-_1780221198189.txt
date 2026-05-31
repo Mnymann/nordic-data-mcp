@@ -1,0 +1,76 @@
+Her er den endelige, ferdige Prompt 2 — opdateret med alt vi lærte undervejs (kanonisk URL, gatet spec, scoped nøgle allerede i env). Klar til at fyre af mod MCP-agenten.
+
+**Før du fyrer:** bekræft at MCP'ens base-URL er sat til `https://api.addonnordic.dk` — ikke den rå `.up.railway.app`-URL. Det var hele 401-årsagen, og spec-hentningen nedenfor afhænger af det.
+
+```
+OPGAVE
+Udvid denne MCP-server fra 8 individuelle tools til en sikker HYBRID:
+behold de 8 eksisterende kuraterede tools UÆNDRET, og tilføj 3 
+discovery-meta-tools, der giver adgang til data-endpoints via 
+backendens OpenAPI-spec. Bevar eksisterende transport-opsætning uændret.
+
+KANONISK BACKEND (vigtigt — brug KUN denne)
+https://api.addonnordic.dk
+Brug ALDRIG en rå .up.railway.app-URL som mål. Al spec-hentning og 
+alle kald går til api.addonnordic.dk.
+
+SPEC-KILDE (hentes runtime, IKKE kopieres ind)
+https://api.addonnordic.dk/openapi.json
+Spec'en er GATED. Hent den MED MCP'ens scoped nøgle i X-API-Key-
+headeren (samme nøgle som tool-kald bruger), ikke som anonymt kald.
+
+TILFØJ DISSE 3 TOOLS
+1. list_endpoints — henter spec'en, returnerer alle DATA-endpoints 
+   med metode, path og kort beskrivelse. Valgfrit søgeord-filter 
+   (fx "sanktion", "adresse", "cvr", "history").
+2. get_endpoint_schema — tager path + metode, returnerer fuldt 
+   parameter- og response-schema for det endpoint.
+3. call_endpoint — tager metode, path og parametre; udfører det 
+   faktiske HTTP-kald mod api.addonnordic.dk og returnerer svaret.
+
+SIKKERHEDSKRAV (byg ind fra start)
+A. SCOPED NØGLE, IKKE MASTER: MCP'en autentificerer med den scoped 
+   tenant-nøgle der allerede ligger i env-variablen (business-tier, 
+   5.000/dag) — ALDRIG INTERNAL_API_KEY. Læs den fra env.
+B. INGEN ADMIN VIA DISCOVERY: list_endpoints, get_endpoint_schema og 
+   call_endpoint må ALDRIG røre /admin/*. Filtrér admin-ruter helt fra 
+   spec-parsingen, OG afvis eksplicit ethvert call_endpoint-kald hvis 
+   path starter med /admin (returnér en klar "forbidden"-besked, udfør 
+   ikke kaldet).
+C. NØGLE ALDRIG I OUTPUT: API-nøglen må aldrig optræde i tool-svar, 
+   fejlbeskeder, logs eller spec-dumps.
+D. KUN HVIDLISTEDE METODER: call_endpoint tillader kun de HTTP-metoder 
+   der faktisk findes i spec'en for det path.
+
+DRIFTSKRAV
+- Cache spec'en kortvarigt (fx 5 min), så nye endpoints dukker op uden 
+  redeploy, men hvert kald ikke rammer backend.
+- Hvis spec'en er utilgængelig: servér sidst-kendte cache + en tydelig 
+  fejlbesked — crash ALDRIG.
+- Robust fejlhåndtering: ved fejl returnér statuskode + besked som tekst.
+
+VERIFIKATION (rapportér hvert punkt)
+1. Kald list_endpoints → bekræft antal matcher backendens data-ruter 
+   (~232–250, ikke 8). Rapportér tallet.
+2. Bekræft at /admin-ruter IKKE optræder i list_endpoints.
+3. Forsøg call_endpoint mod en /admin-path → skal afvises uden at 
+   kaldet udføres.
+4. Kald get_endpoint_schema på CVR-opslags-endpointet → bekræft 
+   korrekte parametre/felter.
+5. Kald call_endpoint mod company-lookup (fx /api/company/dk/22756214) 
+   → forvent 200 med rigtige data.
+6. Bekræft at de 8 gamle tools stadig virker uændret.
+```
+
+## Når den melder grønt
+
+Du er i mål med det oprindelige formål: Claude Code kan nu opdage og teste alle ~250 endpoints selv — ingen copy-paste fra Replit igen.
+
+Tre verifikationspunkter er de afgørende:
+- **Punkt 1** (~250, ikke 8) = discovery virker.
+- **Punkt 2–3** (admin afvist) = sikkerhedshærdningen holder.
+- **Punkt 6** (8 gamle tools intakte) = ingen regression.
+
+Derefter er kun **MCP-reviewet** tilbage — og takket være at sikkerheden er bygget ind her, bliver det en kort bekræftelse, ikke en ny runde.
+
+Sig til når den er kørt, så kigger vi resultatet igennem sammen — og så er hele kæden backend → MCP → Claude Code lukket.

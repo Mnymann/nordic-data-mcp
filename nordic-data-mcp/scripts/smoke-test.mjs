@@ -83,9 +83,12 @@ try {
   console.log("   ", names.join(", "));
   const expected = [
     "autocomplete_address",
+    "call_endpoint",
     "company_enriched",
     "fr_history",
+    "get_endpoint_schema",
     "kyb_full",
+    "list_endpoints",
     "lookup_company",
     "lookup_lei",
     "screen_sanctions",

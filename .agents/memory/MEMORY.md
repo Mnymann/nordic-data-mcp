@@ -1,1 +1,3 @@
 - [Server-tenant key rotation](key-rotation.md) — rotate NORDIC_API_KEY in BOTH Replit secret + Railway before revoking old key; verify deployed /mcp with a real tools/call; fingerprint keys (sha256 first 8) to compare without leaking.
+- [HTTP auth boundary](http-auth-discovery-boundary.md) — /mcp/auth serves UNAUTH_METHODS (initialize/tools/list/ping/…) keyless by design for discovery; assert auth on tools/call, NOT initialize.
+- [call_endpoint path-smuggling](call-endpoint-path-smuggling.md) — validate the FINAL substituted path (post encodeURIComponent), reject %25; run security-check after touching path handling.

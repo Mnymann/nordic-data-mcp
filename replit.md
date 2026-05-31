@@ -11,7 +11,7 @@ The MCP server itself is in **`nordic-data-mcp/`** — a standalone NPM package,
 Per release the agent must:
 1. Bump version in **five places**: `package.json`, `VERSION` in `src/http.ts`, Server constructor in `src/index.ts`, `USER_AGENT` in `src/lib/apiClient.ts`, and **`server.json`** (both `.version` AND `.packages[0].version`).
 2. Add a CHANGELOG entry.
-3. Run `npm run typecheck && npm run build && NORDIC_API_KEY=… scripts/smoke-test-http.sh`.
+3. Run `npm run typecheck && npm run build && NORDIC_API_KEY=… scripts/smoke-test-http.sh && NORDIC_API_KEY=… npm run security-check`. (`security-check` is the discovery-tools path-smuggling/admin-bypass regression matrix added in 1.5.0. Note: `smoke-test-http.sh` asserts auth on `tools/call`, NOT `initialize` — `initialize`/`tools/list` are intentionally keyless on `/mcp/auth` for MCP discovery clients.)
 4. Commit, then **explicitly tell Martin to push from Replit** (the agent has no GitHub credentials in this environment) before he runs the publish flow on his Mac.
 5. Mac runs: `git pull` → `npm install` → `npm run build` → `npm publish` → `mcp-publisher publish` (re-login first if >1 hour since last `mcp-publisher login github` — registry JWT TTL is ~1 hour, much shorter than NPM's ~30 days).
 6. Verify all three destinations:
