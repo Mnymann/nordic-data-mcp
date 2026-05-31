@@ -103,6 +103,17 @@ async function run() {
       : fail(`list_endpoints leaked ${adminCount} admin paths`);
   }
 
+  console.log("\nC2: dashboard endpoints are hidden from discovery listing");
+  {
+    const res = parse(await dispatchToolCall("list_endpoints", {}));
+    const dashCount = (res.json?.endpoints ?? []).filter((e) =>
+      String(e.path).toLowerCase().startsWith("/api/dashboard"),
+    ).length;
+    dashCount === 0
+      ? pass("list_endpoints contains 0 /api/dashboard paths")
+      : fail(`list_endpoints leaked ${dashCount} dashboard paths`);
+  }
+
   if (process.env.NORDIC_API_KEY) {
     console.log("\nD: live sanity (legit calls still work)");
     const c = parse(
@@ -114,6 +125,21 @@ async function run() {
     !c.isError
       ? pass("call_endpoint /api/company/dk/22756214 returns data")
       : fail(`legit call failed -> ${c.txt.slice(0, 100)}`);
+
+    console.log(
+      "\nD2: dashboard filter is discovery-only, not an MCP hard block",
+    );
+    const d = parse(
+      await dispatchToolCall("call_endpoint", {
+        method: "GET",
+        path: "/api/dashboard/stats",
+      }),
+    );
+    // Must NOT be blocked MCP-side (403 forbidden). Backend auth (401/upstream)
+    // is expected because the scoped MCP key can't use the internal dashboard key.
+    !/\[403\]\s+forbidden/i.test(d.txt)
+      ? pass("call_endpoint dashboard route not MCP-blocked (backend auth applies)")
+      : fail(`dashboard route was MCP hard-blocked -> ${d.txt.slice(0, 100)}`);
   } else {
     console.log("\nD: live sanity skipped (no NORDIC_API_KEY)");
   }

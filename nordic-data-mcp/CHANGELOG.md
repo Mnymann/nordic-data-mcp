@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0] — 2026-05-31
 
 ### Added
-- **Hybrid discovery: 3 new meta-tools (11 tools total).** The 8 curated tools are unchanged; these add runtime access to the *entire* Nordic Data API via the backend's live OpenAPI spec, so AI agents can discover and call any of the ~239 data endpoints without a new release:
+- **Hybrid discovery: 3 new meta-tools (11 tools total).** The 8 curated tools are unchanged; these add runtime access to the *entire* Nordic Data API via the backend's live OpenAPI spec, so AI agents can discover and call any of the ~233 data endpoints without a new release:
   - **`list_endpoints`** — lists all data endpoints (method, path, short description) from the live spec, with an optional `search` keyword filter.
   - **`get_endpoint_schema`** — returns the full parameter and response schema for one endpoint (path + method), with `$ref`s resolved inline.
   - **`call_endpoint`** — executes a real HTTP request against any non-admin endpoint and returns the response.
@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Operational
 - The OpenAPI spec is fetched from the canonical backend (`https://api.addonnordic.dk/openapi.json`) and cached for 5 minutes, so new endpoints appear without a redeploy. If the spec is temporarily unreachable, the last-known-good copy is served (flagged stale) rather than crashing.
+- `/api/dashboard/*` routes are hidden from `list_endpoints` (they are operational — config/usage/stats/health — not data lookups, and sit behind an internal key the scoped MCP key cannot use). They remain reachable via `call_endpoint`, so this is a discovery-surface cleanup, not a hard block. Net effect: the spec's 246 paths surface as 233 data endpoints (8 admin/meta + 5 dashboard paths excluded).
 
 ## [1.4.5] — 2026-05-24
 

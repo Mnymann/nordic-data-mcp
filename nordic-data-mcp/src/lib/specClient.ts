@@ -104,6 +104,18 @@ function isAdminPath(path: string): boolean {
 }
 
 /**
+ * DISCOVERY-ONLY (not a security boundary): dashboard routes are operational
+ * (config/usage/stats/health), not data lookups, and sit behind
+ * INTERNAL_API_KEY — the scoped MCP key gets 401 on them. They're hidden from
+ * the discovery surface (list_endpoints) to keep it pure data, but call_endpoint
+ * still permits them, so this is intentionally NOT enforced as a hard block.
+ */
+function isDashboardPath(path: string): boolean {
+  const c = canonicalizeForPolicy(path);
+  return c === "/api/dashboard" || c.startsWith("/api/dashboard/");
+}
+
+/**
  * SECURITY: reject paths that try to smuggle traversal or hidden separators
  * before we ever build an outbound URL. Legitimate data paths never need
  * encoded slashes/dots, backslashes, or `..` segments.
@@ -334,6 +346,7 @@ export function listDataEndpoints(
   for (const [path, ops] of Object.entries(spec.paths)) {
     if (isAdminPath(path)) continue; // SECURITY: no admin in discovery
     if (stripPath(path) === SPEC_PATH) continue; // the spec itself is not a data endpoint
+    if (isDashboardPath(path)) continue; // DISCOVERY: dashboard routes are operational, not data
     for (const [method, op] of Object.entries(ops)) {
       if (!HTTP_METHODS.has(method.toLowerCase())) continue;
       const summary = (op.summary || op.description || "").toString().trim();
