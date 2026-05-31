@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "Ll52IiVonBviiEadjKXlG"
+uri = "file://icon.svg"
+type = "image"
+title = "Nordic Data — Smithery-ikon (forslag)"
