@@ -27,7 +27,7 @@ The score breakdown has a separate config dimension. Two mutually-exclusive tier
 
 So `Config schema OK` + `Optional config Not OK` together = a textbook signal that you have a required field. Fix: remove the field from `required` (keep `pattern`/format validation for when it *is* supplied).
 
-**Why:** stuck at 79 with exactly this breakdown; `smithery.yaml` had `required: [apiKey]`. Removing it flips the 10pt tier → 15pt tier (net ≥+5), crossing 80.
+**Why:** stuck at 79 with exactly this breakdown; the dashboard form had `apiKey` set to **Required**. Toggling it to optional (Connection settings step) flipped the score **79 → 94** (Configuration UX went to full 25/25: Optional config 15 + Config schema 10; Server Metadata 35/35). CONFIRMED OUTCOME.
 
 **How to apply:** this is a `smithery.yaml`-only change — NO code, NO version bump, NO NPM/registry republish. Just commit + push the repo and re-inspect on Smithery. Decision (Martin, "model A"): keep `/mcp/auth` per-tenant billing; apiKey is merely *declared* optional in the form (discovery works keyless) but still functionally required to run a lookup — keyless tool calls return a clear "add your API key" error.
 
