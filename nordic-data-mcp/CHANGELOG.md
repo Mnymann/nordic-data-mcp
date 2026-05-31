@@ -4,6 +4,20 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.3] — 2026-05-31
+
+### Added
+- **Remote-connect clarity (`oauth_not_supported` shim).** Generic MCP clients handed only a URL follow the MCP authorization spec and, on a 401, fall back to OAuth Dynamic Client Registration at `POST /register` — which previously hit Express's opaque HTML 404. The HTTP transport now answers `/register` and the OAuth/OIDC `/.well-known/*` discovery paths with a clear JSON **4xx** `oauth_not_supported` body explaining how to actually connect (public `/mcp`, or `/mcp/auth` with a Bearer key). It deliberately stays a 4xx — a 200 would make an OAuth client believe registration succeeded and hang.
+
+### Security
+- **Per-IP rate limit on the public `/mcp` endpoint.** Every upstream call on the keyless `/mcp` is billed to the server's own `NORDIC_API_KEY`, so anonymous abuse is a direct cost vector. Added an in-memory per-IP limiter (default 60 requests / 60s, tunable via `PUBLIC_RATE_LIMIT` / `PUBLIC_RATE_WINDOW_MS`) as defense-in-depth on top of the backend's per-key quota. `/mcp/auth` is unaffected — each call there is billed to the caller's own key. `trust proxy` is set to `1` so the limiter keys on the real client IP behind Railway's edge.
+
+### Docs
+- README documents both endpoints (`/mcp` public vs `/mcp/auth` Bearer) and adds a "Connecting a remote client" guide. Full OAuth 2.1 noted as a planned Phase-2 item.
+
+### Notes
+- No change to the 11 tools, the stdio transport, or the keyless discovery surface (initialize / tools|resources|prompts list + read/get). Existing key-in-config clients (Claude Code, Cursor, Smithery) are unaffected.
+
 ## [1.5.2] — 2026-05-31
 
 ### Added

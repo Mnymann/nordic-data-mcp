@@ -43,7 +43,7 @@ import { INSTRUCTIONS } from "./lib/instructions.js";
 import { listResources, readResource } from "./resources/index.js";
 import { listPrompts, getPrompt } from "./prompts/index.js";
 
-const VERSION = "1.5.2";
+const VERSION = "1.5.3";
 
 function buildServer(): Server {
   const server = new Server(
@@ -92,12 +92,54 @@ function buildServer(): Server {
 }
 
 const app = express();
+// Behind Railway's edge proxy: trust the first hop so `req.ip` resolves to the
+// real client IP (from X-Forwarded-For) for per-IP rate limiting, instead of
+// the proxy's address (which would bucket all traffic into one limit).
+app.set("trust proxy", 1);
 app.use(express.json({ limit: "4mb" }));
 
 // Health endpoint — does not require an MCP session.
 app.get("/healthz", (_req, res) => {
   res.json({ status: "ok", service: "nordic-data-mcp", version: VERSION });
 });
+
+// ─── OAuth discovery shim ────────────────────────────────────────────────────
+// Generic MCP clients handed only a URL (no key) follow the MCP authorization
+// spec: on a 401 they probe for OAuth metadata and, finding none, fall back to
+// Dynamic Client Registration at `POST /register`. This server uses static
+// API-key auth, NOT OAuth — those endpoints do not exist. Without these
+// handlers the client hits Express's opaque HTML 404 ("Cannot POST /register").
+// We answer with a clear JSON 4xx that explains how to actually connect. It
+// MUST stay a 4xx — a 200 would make an OAuth client believe registration
+// succeeded and hang waiting for a token endpoint we will never expose.
+function oauthNotSupported(_req: Request, res: Response): void {
+  res.status(404).json({
+    error: "oauth_not_supported",
+    error_description:
+      "This MCP server uses static API-key authentication, not OAuth 2.0 / OIDC. There is no client-registration, authorization, or token endpoint.",
+    how_to_connect: {
+      public: "No key needed — point your client at the public endpoint: <base>/mcp",
+      authenticated:
+        "Or use <base>/mcp/auth and send 'Authorization: Bearer ndk_...'. Get a key at https://addonnordic.com/dashboard",
+      stdio:
+        "For local clients (Claude Desktop, Cursor, Claude Code), run 'npx -y nordic-data-mcp' with NORDIC_API_KEY set.",
+    },
+    docs: "https://github.com/Mnymann/nordic-data-mcp#connecting-a-remote-client",
+  });
+}
+
+app.all(
+  [
+    "/register",
+    "/.well-known/oauth-authorization-server",
+    "/.well-known/oauth-authorization-server/*",
+    "/.well-known/oauth-protected-resource",
+    "/.well-known/oauth-protected-resource/*",
+    "/.well-known/openid-configuration",
+    "/.well-known/openid-configuration/*",
+  ],
+  oauthNotSupported,
+);
 
 /**
  * Generic MCP request handler shared by `/mcp` and `/mcp/auth`. The caller
@@ -135,7 +177,59 @@ async function handleMcpRequest(
 // freemium discovery. Sessions kept separate from /mcp/auth.
 const publicTransports = new Map<string, StreamableHTTPServerTransport>();
 
+// Per-IP rate limit for the public endpoint. Every upstream call here is billed
+// to the SERVER's own NORDIC_API_KEY, so anonymous abuse is a direct cost
+// vector. The backend's per-key quota is the hard ceiling (it returns 429
+// quota_exceeded); this in-memory limiter is defense-in-depth so one client
+// cannot drain the shared quota or hammer upstream. /mcp/auth is intentionally
+// NOT limited here — each call there is billed to the caller's own key + quota.
+// Tunable via PUBLIC_RATE_LIMIT (requests) and PUBLIC_RATE_WINDOW_MS (window).
+// Parse to a positive integer; fall back to a safe default on missing/NaN/0/
+// negative input so a bad env value can never silently disable throttling or
+// create a pathological sweep interval.
+function intEnv(raw: string | undefined, fallback: number, min: number): number {
+  const n = Math.floor(Number(raw));
+  return Number.isFinite(n) && n >= min ? n : fallback;
+}
+const PUBLIC_RATE_LIMIT = intEnv(process.env.PUBLIC_RATE_LIMIT, 60, 1);
+const PUBLIC_RATE_WINDOW_MS = intEnv(process.env.PUBLIC_RATE_WINDOW_MS, 60_000, 1000);
+const rateBuckets = new Map<string, { count: number; resetAt: number }>();
+
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, b] of rateBuckets) if (now >= b.resetAt) rateBuckets.delete(ip);
+}, PUBLIC_RATE_WINDOW_MS).unref();
+
+function rateLimitPublic(req: Request, res: Response): boolean {
+  const now = Date.now();
+  const ip = req.ip ?? "unknown";
+  let bucket = rateBuckets.get(ip);
+  if (!bucket || now >= bucket.resetAt) {
+    bucket = { count: 0, resetAt: now + PUBLIC_RATE_WINDOW_MS };
+    rateBuckets.set(ip, bucket);
+  }
+  bucket.count += 1;
+  if (bucket.count > PUBLIC_RATE_LIMIT) {
+    const retryAfter = Math.max(1, Math.ceil((bucket.resetAt - now) / 1000));
+    res.setHeader("Retry-After", String(retryAfter));
+    res.status(429).json({
+      jsonrpc: "2.0",
+      error: {
+        code: -32029,
+        message: `Rate limit exceeded on the public endpoint (max ${PUBLIC_RATE_LIMIT} requests per ${Math.round(
+          PUBLIC_RATE_WINDOW_MS / 1000,
+        )}s). Retry in ${retryAfter}s, or use /mcp/auth with your own API key.`,
+        data: { code: "rate_limited", retryAfter },
+      },
+      id: null,
+    });
+    return false;
+  }
+  return true;
+}
+
 app.all("/mcp", async (req: Request, res: Response) => {
+  if (!rateLimitPublic(req, res)) return;
   try {
     await runWithRequestOptions(parseRequestOptions(req), () =>
       handleMcpRequest(req, res, publicTransports),

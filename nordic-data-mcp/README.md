@@ -161,7 +161,20 @@ NORDIC_API_KEY=sk_... npm run start:http   # listens on :$PORT (default 3000)
 
 Endpoints:
 - `GET /healthz` — health check (returns version + status)
-- `ALL /mcp` — MCP Streamable HTTP endpoint (session-based via `Mcp-Session-Id` header)
+- `ALL /mcp` — **public** MCP endpoint. No key required; all upstream calls are billed to the server's own `NORDIC_API_KEY` (freemium / discovery). Per-IP rate-limited.
+- `ALL /mcp/auth` — **authenticated** MCP endpoint. Requires `Authorization: Bearer ndk_...` on every request; each call is billed to that customer's own key + quota.
+
+Both are session-based via the `Mcp-Session-Id` header.
+
+### Connecting a remote client
+
+This server uses **static API-key authentication, not OAuth.** How you connect depends on your client:
+
+- **Header-capable clients** (Claude Code, Cursor, Smithery, Claude.ai / ChatGPT custom connectors): point them at `…/mcp/auth` and supply your key as `Authorization: Bearer ndk_...`. Each request is billed to your own tenant + quota.
+- **Generic / auto-discovery clients that only know "URL + OAuth":** point them at the public `…/mcp` (no key). Otherwise such clients attempt OAuth Dynamic Client Registration (`POST /register`) and fail — this server has no OAuth endpoints by design and answers them with a clear JSON `oauth_not_supported` error (not a sign-in flow).
+- **Local clients:** prefer the stdio package — `npx -y nordic-data-mcp` with `NORDIC_API_KEY` set (see Quick start above).
+
+> Full OAuth 2.1 (so arbitrary external clients can self-onboard with their own key) is a planned Phase-2 item, not yet implemented.
 
 A `railway.toml` is included for one-click deploy on [Railway](https://railway.app):
 1. New Project → Deploy from GitHub repo → select `Mnymann/nordic-data-mcp`
@@ -176,7 +189,7 @@ A `railway.toml` is included for one-click deploy on [Railway](https://railway.a
 - **Thin adapter.** No business logic, no caching, no transformations. Each tool maps 1:1 to a Nordic Data API endpoint.
 - **No PII in logs.** Request and response bodies are never logged.
 - **API key required.** The process refuses to start without `NORDIC_API_KEY`.
-- **Rate limiting** and **caching** are handled upstream.
+- **Rate limiting.** The backend enforces per-key quotas; the HTTP transport additionally applies a per-IP limit on the **public** `/mcp` endpoint as defense-in-depth (tunable via `PUBLIC_RATE_LIMIT` / `PUBLIC_RATE_WINDOW_MS`). **Caching** is handled upstream.
 - Inputs are validated with [zod](https://zod.dev) before any HTTP call.
 
 ---
