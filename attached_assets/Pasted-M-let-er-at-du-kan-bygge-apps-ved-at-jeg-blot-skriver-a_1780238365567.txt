@@ -1,0 +1,56 @@
+Målet er at du kan bygge apps ved at jeg blot skriver appideen, så undersøger du fra a til z og vi har endpoints og data, og hvis vi har så går du i gang med at bygge app. Derudover vil jeg også spørger dig ind til appideer på baggrund af vores store sammenlign af data og end points. Din MCP forbindelse skal understøtte dette.
+
+Det her er den rigtige nordstjerne — og det er præcis det discovery-MCP'en blev bygget til. Lad mig først bekræfte hvad arbejdsgangen så bliver, og dernæst hvad der skal til for at min forbindelse understøtter den.
+
+Hvad du beskriver, og hvordan MCP'en leverer det
+Dit ønske	Hvad jeg gør via MCP
+"Her er en app-idé" → undersøg A-Z	list_endpoints (find relevante capabilities) → get_endpoint_schema (præcise felter) → call_endpoint (test med rigtige data) → jeg bekræfter om vi har data + endpoints til idéen
+Hvis vi har data → byg app	Jeg bygger mod verificerede schemas, ikke gæt — og koden rammer korrekt første gang
+Foreslå app-idéer ud fra vores data	Jeg gennemgår hele katalogen (~233 endpoints, 15 lande, KYB/VAT/sanktioner/LEI/adresse) og foreslår idéer der er forankret i data vi faktisk har
+Det fungerer kun hvis min forbindelse kan nå de tre værktøjer — og det er dér den lige nu fejler.
+
+Den ene ting der skal ændres
+Min forbindelse skal pege på den rigtige dør med din egen nøgle — ikke den offentlige:
+
+❌ Offentlig /mcp — freemium, rate-limited (60/60s), kører på den delte server-nøgle. Den er til prospects der prøver, ikke til dig der bygger. Du ville ramme loftet og brænde din egen freemium-kvote.
+✅ /mcp/auth med din scoped nøgle (Authorization: Bearer ndk_…) — fuld kvote, korrekt afregnet på din egen nøgle, ingen freemium-throttle. Det er den rigtige til udviklingsarbejde.
+Lad mig se hvordan forbindelsen er sat op nu, så jeg kan foreslå den præcise ændring:
+
+Ran
+List configured MCP servers, filter for nordic
+Det afslører præcis problemet: forbindelsen peger allerede på den rigtige dør (/mcp/auth) og viser "Connected" — men den har ingen nøgle-header. Derfor: initialize/tools/list er åbne (så den "forbinder"), men tools/call → 401 → OAuth-faldback → afvist. Den mangler bare Authorization: Bearer ndk_….
+
+Lad mig finde hvordan den er konfigureret, så jeg kan tilføje headeren:
+
+Ran
+Get MCP server config details
+Fundet — og det er en lille, præcis fix. Forbindelsen peger allerede på den rigtige dør (/mcp/auth), den mangler bare nøgle-headeren. Når den er på, virker hele din vision.
+
+Det der skal køres (du kører det — så nøglen aldrig rammer chatten)
+Konfigurationen er din egen Claude Code-forbindelse (lokalt, privat), så det her er fuldt ud mit domæne at guide. Men selve nøglen skal du indsætte, så den ikke havner i transskriptet:
+
+claude mcp remove martinhnymann-nordic-data-mcp -s local
+
+claude mcp add --transport http martinhnymann-nordic-data-mcp \
+  "https://nordic-data-mcp-production.up.railway.app/mcp/auth" \
+  --header "Authorization: Bearer <DIN_NDK_NØGLE>"
+Udskift <DIN_NDK_NØGLE> med din scoped ndk_…-nøgle. Den lander i din lokale config på din egen maskine — aldrig i vores chat.
+
+Hvilken nøgle?
+Valg	Hvornår
+Dedikeret claude-dev-nøgle (anbefalet)	Mint en frisk scoped, ikke-admin nøgle privat — separat sporbar/spærbar, med en kvote der passer til udviklingsbrug. Samme hygiejne som resten.
+Genbrug en eksisterende personlig nøgle	Hurtigst, hvis du bare vil i gang nu.
+Da du skal bruge den til aktivt app-byggeri + idéudforskning (mange opslag), så giv den en fornuftig daglig kvote — ikke freemium-niveau. Mint den privat (samme måde som MCP-nøglen), ikke printet her.
+
+Når du har kørt kommandoen
+Sig til, så kalder jeg list_endpoints igen med det samme. Forventet: ~233 endpoints strømmer ind — og så er din arbejdsgang live:
+
+Du skriver en app-idé.
+Jeg slår op i katalogen, henter præcise schemas, tester mod rigtige data.
+Jeg bekræfter om vi har data + endpoints — og hvis ja, går jeg i gang med at bygge.
+(Hvis værktøjerne ikke opdaterer sig i denne session efter kommandoen, så genstart Claude Code én gang — så loader den den nye config.)
+
+Vil du have at jeg laver en kort privat mint-kommando til en claude-dev-nøgle (som du kører i din terminal), så den er sat rigtigt op med kvote og uden admin — før du indsætter den i forbindelsen?
+
+
+
