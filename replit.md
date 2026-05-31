@@ -117,6 +117,13 @@ Countries (lowercase, company tools): `dk no se fi ie uk fr de cz pl lv ee nl be
 - **`npm install` in `nordic-data-mcp/`** — running it from the repo root will trigger the workspace `preinstall` hook that rejects npm.
 - The Nordic Data API may report individual countries as `error` or `unconfigured` in `/api/health`; this is upstream behavior and surfaces to MCP tools as `502 upstream_unavailable`.
 
+## Backlog (MCP repo only)
+
+Backend-specific items (read-only dashboard operator key, separate dev/prod `INTERNAL_API_KEY`, internal TS client, external SDK) live in `BACKLOG.md` in the **Nordic Data API backend repo** (`Mnymann/Nordic-Data-API`), NOT here. Only MCP-repo items belong below.
+
+- **RESOLVED — `list_endpoints` accounting is canonical, stop re-litigating it.** Live spec = **246 paths**. Discovery filters out **8**: the 7 `/admin/*` routes + `/openapi.json` (the spec itself). That leaves **238 unique data paths**, which `list_endpoints` reports as **239 endpoints** because exactly one path — `/api/dashboard/config` — exposes two methods (GET + PUT), and the tool counts method+path combos. No legitimate data route is lost. Admin match is anchored (`=== "/admin"` or `startsWith("/admin/")` after canonicalization), so paths merely *containing* "admin" (`/administrator`, `/api/admin-notes/...`) are NOT blocked. If the dashboard-filter item below ships, this 239 count drops — update it in lockstep.
+- **OPEN (low priority) — filter `/api/dashboard/*` out of discovery.** 6 dashboard routes (`config` GET+PUT, `company/{country}/{id}`, `health`, `stats`, `usage`) currently surface in `list_endpoints`. They're operational, not data lookups, and sit behind `INTERNAL_API_KEY` (the scoped MCP key gets 401 → no security risk), but they're noise on the data-discovery surface. Fix: exclude them in `listDataEndpoints` the same way `/openapi.json` is excluded. Removing `config` (the GET+PUT path) is what would change the 239 count above.
+
 ## Pointers
 
 - Build brief: `attached_assets/MCP_Build_Brief_1779279857443.md`

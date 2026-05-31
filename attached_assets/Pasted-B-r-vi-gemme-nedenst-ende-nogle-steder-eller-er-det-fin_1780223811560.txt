@@ -1,0 +1,94 @@
+Bør vi gemme nedenstående nogle steder eller er det fint med det vi har gjort nu?
+
+Her er backlog'en som én selvstændig note. Den er skrevet så den kan læses koldt — af dig om tre uger, eller af en ny Claude Code-session — uden resten af samtalen.
+
+# Nordic Data API — Backlog (intern tooling)
+Sidst opdateret: 2026-05-31
+Kontekst: Efter at have bygget kæden backend → OpenAPI-spec → 
+hybrid MCP (v1.5.0). Disse punkter er bevidst udskudt — intet haster.
+## ✅ Afsluttet (til reference)
+- Komplet OpenAPI-spec på api.addonnordic.dk/openapi.json (gated, 
+  selv-opdaterende, ~246 paths).
+- Dashboard-bagdør lukket (/api/dashboard/* + /openapi.json kræver nøgle).
+- Scoped, ikke-admin MCP-nøgle (5.000/dag) aktiv mod prod; dev-nøgle + 
+  gammel 100k-nøgle ude af drift; eksponeret chat-nøgle død.
+- Hybrid MCP: 8 navngivne + 3 discovery-tools, admin-filter ankret og 
+  testet, ~239 data-endepunkter. (Afventer evt. udgivelse af v1.5.0.)
+## �'' Sikkerhedshærdning (vigtigst)
+### 1. Read-only operatør-nøgle til dashboardet
+Problem: nordic-dashboard (browser-SPA) autentificerer i dag med 
+INTERNAL_API_KEY (superuser) gemt i localStorage. Ét XSS-hul = fuld 
+admin-lækage.
+Fix: udsted en scoped, read-only "operatør"-nøgle til dashboard-reads. 
+Kun config-SKRIV-handlingen skal bruge INTERNAL_API_KEY. Så holder 
+browseren aldrig master-nøglen.
+Severity: vigtig · Indsats: lille-middel
+### 2. Separat INTERNAL_API_KEY for dev og prod
+Problem: dev og prod deler (efter alt at dømme) samme INTERNAL_API_KEY 
+— et kompromis i dev giver fuld prod-admin.
+Fix: distinkte master-nøgler pr. miljø.
+Severity: vigtig · Indsats: lille
+## 🧹 Renhed / korrekthed
+### 3. Fjern /api/dashboard/* fra MCP discovery
+Problem: dashboard-ruter (config/usage/stats) dukker op i 
+list_endpoints. De er operationelle, ikke data-opslag, og bag 
+INTERNAL_API_KEY (scoped nøgle får 401 → ingen sikkerhedsrisiko), men 
+de støjer i discovery-fladen.
+Fix: filtrér dem fra discovery efter samme logik som /openapi.json, 
+så fladen er ren data.
+Severity: lav · Indsats: lille
+### 4. Afstem list_endpoints-tallet (kosmetisk)
+Problem: to agenter forklarede "239" på modstridende måder — er 
+/openapi.json med i listen? Tæller /api/dashboard/config dobbelt 
+(GET+PUT)?
+Fix: kig på det bogstavelige list_endpoints-output og fastlæg 
+regnskabet, så dokumentationen er entydig. (Ingen data-rute er tabt — 
+det er bevist; dette er kun præcision.)
+Severity: lav · Indsats: 10 min
+## 📐 Politik / proces (skriv ind, så det gælder fremtidige byg)
+### 5. Én kanonisk produktions-URL
+Regel: ALT (MCP, klienter, briefs) bruger https://api.addonnordic.dk. 
+Rå .up.railway.app-URL'er forbydes som mål (ustabile, skifter mellem 
+deploys). Allerede håndhævet i MCP'en — skriv reglen ind i CLAUDE.md.
+### 6. Angiv altid miljø (dev/prod) op front
+På alle nøgle-/config-opgaver. Underforstået miljø kostede en hel 
+fejlsøgningsrunde (nøgle mintet i dev, MCP ramte prod).
+## 🗺️ Roadmap (ikke backlog — udløses af signal, ikke dato)
+- Intern TS-klient (genereret fra openapi.json): byg når samme 
+  auth/retry/BYOK-kode er kopieret ind i 3.+ app. Trigges af 
+  gentagelse, ikke en dato.
+- Ekstern SDK: Fase 2, når enterprise-API åbnes. Salgsaktiv, ikke 
+  intern nødvendighed.
+(Den ene linje med �' blev til noget rod i kodeblokken — ret den til ## 🔒 Sikkerhedshærdning når du paster. Beklager.)
+Vil du have at jeg skriver den til en fil (fx BACKLOG.md) et bestemt sted — i backend-repoet, MCP-repoet, eller din fabriks-/skabelon-repo? Så siger du bare hvor, så lægger jeg den der i stedet for som copy-paste.
+
+Kortsvaret: det meste hører ikke hjemme her — det tilhører Nordic Data API-backendrepoet.
+
+Lad mig splittet det op:
+
+Hvad der allerede er fanget (intet at gøre)
+Backlog-item	Hvor det er
+#5 Kanonisk URL (api.addonnordic.dk)	CLAUDE.md + builder/validator-agenter
+MCP-discovery workflow	CLAUDE.md + alle 4 agenter
+Scoped nøgle i MCP	CLAUDE.md ("SCOPED NØGLE"-afsnit)
+Hvad der mangler i CLAUDE.md (tilføjer nu — 1 linje)
+Item #6 "Angiv altid miljø op front" er en udviklingsregel der gælder her:
+
+Edited
+CLAUDE.md
++2
+-0
+Hvad der tilhører Nordic Data API-repoet (gem der)
+Items #1, #2, #3, #4 og roadmap-punkterne handler udelukkende om backendrepoet (Mnymann/Nordic-Data-API) — ikke om denne Shopify-app. De er:
+
+Read-only operatør-nøgle til dashboard
+Separate dev/prod INTERNAL_API_KEY
+Filtrér /api/dashboard/* fra MCP discovery
+Afstem list_endpoints-tallet
+TS-klient og ekstern SDK (roadmap)
+Gem dem som BACKLOG.md i roden af Nordic Data API-repoet — ikke her. Hvis du åbner den repo i Claude Code, vil en session-start.sh-hook der automatisk injicere den (hvis du kopierer .claude/-opsætningen dertil).
+
+Konklusion: Én linje tilføjet til CLAUDE.md. Resten af backloggen gemmes i Nordic Data API-repoet som BACKLOG.md. Intet duplikeres her.
+
+
+
