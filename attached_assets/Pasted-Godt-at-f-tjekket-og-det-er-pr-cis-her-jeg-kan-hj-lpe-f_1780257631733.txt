@@ -1,0 +1,50 @@
+Godt at få tjekket — og det er præcis her jeg kan hjælpe, for jeg kan se backend-koden (det kunne Claude Code ikke). Lad mig verificere de konkrete påstande mod den faktiske kode, så svaret til dig er præcist og ikke gætværk.
+
+
+3 actions
+The grep mangled some country codes in display, so let me read the authoritative country list cleanly to get the count exactly right before I advise on numbers.
+
+
+2 actions
+Jeg har tjekket det mod den faktiske backend-kode. Her er bekræftelsen Claude Code bad om — og verdict på resten:
+
+🔴 Det vigtigste: tier-gatingen (bekræftet i koden)
+Claude Code har ret. Koden gater kun NL og DE, og kun for free-tier (giver HTTP 402). Alt andet er IKKE feature-gated — sanktions-screening, KYB Master, AML/screening, VAT-validering, PEPs, adverse media og MCP-adgang virker på alle tiers (free/Starter/Business). Den eneste forskel mellem tiers er kvoten (+ NL/DE-låsen på free).
+
+Så Compliance Pro-blokken er misvisende: den sælger datatyper som "eksklusive", selvom de virker på lavere tiers — og det modsiger både "Adgang til alle endpoints" (Starter/Business) og free-tier-linjen "test i Claude/Cursor" (= MCP virker gratis).
+
+Compliance Pros ægte forskelle (det du bør fremhæve i stedet): højere volumen (10.000/dag), prioritets-support, audit-log + per-kunde kvote, og centraliseret nøglestyring. Ikke selve datatyperne.
+
+🟠 Tal der ikke stemmer
+Starter pris/opslag er forkert: 199 ÷ (500 × 30) = ≈0,013 kr, ikke 0,007. (De øvrige tiers regner rigtigt.) Ret til ≈0,013.
+Landetal — her er Claude Code lige forsimplet. Sandheden afhænger af hvad man tæller:
+12 lande har fuld registerdata (dk, no, se, fi, nl, be, ie, uk, fr, cz, lv, ee) — det er faktisk det sidens "12" matcher.
+Tager man VAT-only/begrænsede lande med (DE, PL, LU), nærmer man sig de 15 som MCP'en nævner.
+VAT-validering virker for alle EU-lande via VIES.
+Så "12" er forsvarligt — men definér det, fx: "12 lande med fuld registerdata + VAT-validering i hele EU." Bare bump det ikke blindt til 15.
+Lille selvmodsigelse: står der "12 lande" og samtidig "NL kræver Starter+", får free reelt 11 af de 12. Skriv hellere landetallet og "NL/DE kræver Starter+" så de ikke kolliderer.
+🟡 Mindre — og et par hvor siden faktisk er korrekt
+Anon "20 kald/md per IP" er KORREKT og bevidst (månedligt, med en global kill-switch ved >500/time). Claude Codes "er det med vilje så lavt?" → ja. Men enheds-mixet (måned vs. dag) er et reelt læsbarhedspunkt — overvej samme enhed.
+Domæne: bekræftet OK. API'et kører rigtigt på api.addonnordic.dk (jeg testede mod det live for lidt siden, da jeg mintede din nøgle). curl-eksemplet er korrekt. .com = brand-site, .dk = API — det er fint.
+Sanktionstal (26.677 vs 768K): kan jeg ikke bekræfte præcist fra koden — de tal kommer fra upstream-datasæt der indlæses ved kørsel, ikke fra en konstant. De måler sandsynligvis forskellige ting (kerne UN/EU/OFAC vs. hele OpenSanctions inkl. PEPs). Brug konsistente, mærkede tal. Jeg kan slå de faktiske live-tal op for dig, hvis du vil have rigtige tal på siden.
+Kort sagt
+Siden ser professionel ud, men #1 (tier-gating) skal rettes — den kan vildlede kunder og gør MCP-beskrivelserne uærlige over for AI-agenter. Resten er små rettelser.
+
+Vil du have, at jeg skriver et rettet udkast til Compliance Pro-blokken + free-tier-linjen (med korrekte tal og ærlig feature-opdeling), som du kan give videre til Claude Code eller indsætte direkte? Sig også til, hvis jeg skal hente de rigtige sanktionstal live.
+
+
+Checkpoint made
+just now
+
+Worked for 2 minutes
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+Power
+
+
+
+Nordic Data API - Replit
