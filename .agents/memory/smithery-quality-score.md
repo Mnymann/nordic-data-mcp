@@ -19,7 +19,9 @@ Note: the server is NOT findable in Smithery's public registry API under `io.git
 
 ## Config scoring: "Optional config" (15pt) vs "Config schema" (10pt) are MUTUALLY EXCLUSIVE
 
-The score breakdown has a separate config dimension read from the `configSchema` in **`smithery.yaml` at the repo ROOT** (this one IS read from the repo, unlike tool introspection). Two mutually-exclusive tiers:
+**CRITICAL — where the config schema is actually read from depends on the publish flow.** This server was published via Smithery's **"Publish via URL" / "Connect to an existing MCP server"** flow. In that flow Smithery does **NOT** read `smithery.yaml` at all — the connection-settings (parameters, required/optional, header mapping) are defined in the **Smithery dashboard UI form**, and THAT form is the source of truth for the config score. Editing `smithery.yaml`'s `configSchema` had ZERO effect on the score for this server. To flip "Optional config", toggle the `apiKey` parameter from **Required → optional** in the dashboard form (Connection settings step), not in the repo. (`smithery.yaml` config still only matters for Smithery-*built*/deployed servers, not URL-published ones.)
+
+The score breakdown has a separate config dimension. Two mutually-exclusive tiers:
 - **Optional config = 15pt** — earned ONLY when EVERY config field is optional (no `required:` list) or has a `default`.
 - **Config schema = 10pt** — the lesser tier you fall back to if ANY field is required.
 
