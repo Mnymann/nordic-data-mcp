@@ -84,6 +84,7 @@ try {
   const expected = [
     "autocomplete_address",
     "company_enriched",
+    "fr_history",
     "kyb_full",
     "lookup_company",
     "lookup_lei",
