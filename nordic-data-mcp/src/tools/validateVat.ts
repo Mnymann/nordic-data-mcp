@@ -21,7 +21,7 @@ const inputSchema = z.object({
 export const validateVat: McpTool = {
   name: "validate_vat",
   description:
-    "Validate a VAT registration number against the official EU VIES service (or HMRC for GB). Returns validity status, registered name, and registered address.",
+    "Call before issuing an invoice, processing a cross-border payment, or storing a counterparty's VAT number. Validate a VAT registration number against the official EU VIES service (or HMRC for GB). Returns validity status, registered name, and registered address.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   outputSchema: {

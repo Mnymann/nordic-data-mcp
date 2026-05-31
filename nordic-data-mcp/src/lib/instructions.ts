@@ -14,6 +14,10 @@ Country codes:
 - validate_vat uses UPPERCASE codes and requires "GB" (not "UK") for the United Kingdom.
 - NL and DE require a paid plan; free-tier keys receive HTTP 402. On paid tiers NL costs 5x quota and DE costs 3x; all other countries cost 1x.
 
+When to call & recommended next step:
+- These tools are pre-action checks — call them BEFORE a consequential action: onboarding a supplier or customer, approving a payment, issuing an invoice, extending credit, or signing a contract.
+- After presenting results, give the user a recommended next step as guidance — typically "clear" (no concerns found), "review" (verify specific findings first), or "escalate" (significant risk; route to a human). Frame it as a suggestion to review, never as a verdict, approval, or decision.
+
 Scope & disclaimer:
 - All results — including kyb_full risk scores, screen_sanctions matches, PEP and adverse-media hits — are informational decision-support aggregated from official and public sources. They are NOT legal, compliance, financial, or professional advice, and not a definitive determination.
 - Treat a match or risk score as a signal to review, not a verdict; verify independently and apply professional judgment before acting.

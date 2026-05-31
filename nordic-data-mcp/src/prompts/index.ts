@@ -31,7 +31,7 @@ export const prompts: PromptDef[] = [
       `1. Use lookup_company to get the basic registry record and confirm the legal entity.\n` +
       `2. Use kyb_full for the complete KYB report (identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score).\n` +
       `3. Use screen_sanctions on the company and its key persons against UN/EU/OFAC/PEP lists.\n` +
-      `4. Summarize: legal identity, ownership/control, financial health, any sanctions or PEP hits, and an overall risk assessment with reasoning.\n` +
+      `4. Summarize: legal identity, ownership/control, financial health, any sanctions or PEP hits, and an overall risk assessment with reasoning. Include a recommended next step as guidance — clear, review, or escalate — framed as a suggestion to review, not an approval or decision.\n` +
       `5. End the summary by surfacing the "disclaimer" field returned in the kyb_full response if present; otherwise add a brief note that this is decision-support/guidance, not legal/compliance/financial advice, to be independently verified. Include it once, not twice.`,
   },
   {
@@ -64,7 +64,7 @@ export const prompts: PromptDef[] = [
     build: (a) =>
       `Screen these names against UN/EU/OFAC/PEP lists using screen_sanctions: ${a.names}.\n` +
       `For each name report whether there is a likely match, the matched list(s) and entity, ` +
-      `a confidence assessment, and a recommended next step (clear, review, or escalate).\n` +
+      `a confidence assessment, and a recommended next step as guidance — clear, review, or escalate — framed as a signal to review, not a verdict, approval, or decision.\n` +
       `Surface the "disclaimer" field returned in the screen_sanctions response if present; otherwise state that these matches are decision-support to review — not a determination or legal/compliance advice — and must be independently verified. Include it once, not twice.`,
   },
 ];

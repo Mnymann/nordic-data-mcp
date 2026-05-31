@@ -23,4 +23,10 @@ The disclaimer exists at **two layers** and they are complementary, NOT redundan
 - **Backend data layer:** the Nordic Data API embeds a `disclaimer` field (**English text — Martin's decision May 31, 2026; originally Danish**) in the compliance response objects (`/kyc/full`, `/risk/*`, `/screening/full`, `/sanctions/screen|search|match`). This is the source of truth and travels to ALL consumers (direct API, any app), not just MCP. Plain factual lookups (company data, bankruptcy lists) deliberately have NO disclaimer field.
 - **MCP metadata layer (this repo):** instructions / tool descriptions / prompts shape the AGENT's behaviour so it actually surfaces the disclaimer to the user.
 
+## Agent-native UX: "call-before-action" + recommended next step
+
+Competitor (Kord Agencies) framing was adopted as a differentiator: tool descriptions + server `instructions` + prompts tell the agent to (1) call BEFORE a consequential action (onboard supplier, approve payment, issue invoice, sign contract) and (2) give a recommended next step — **clear / review / escalate**.
+**Why:** more actionable for agents than "here is data".
+**How to apply:** the recommended next step is **agent guidance only — NEVER a fabricated `agent_action`/verdict field injected into the response data.** Two reasons: the MCP is a thin adapter (no scoring/business logic), and a hard verdict would contradict the non-advice disclaimer. Always frame as "a signal to review, not a verdict/approval/decision."
+
 **Rule to prevent two disclaimers reaching the user:** the MCP layer must tell the agent to **surface the response's `disclaimer` field if present, and only author its own if the field is absent — show it once, never stack two.** (Absent case matters because the backend field only goes live after the backend is deployed.) Keep static-doc disclaimers (README, getting-started resource) as-is — those are docs, not agent output, so no double-print risk.
