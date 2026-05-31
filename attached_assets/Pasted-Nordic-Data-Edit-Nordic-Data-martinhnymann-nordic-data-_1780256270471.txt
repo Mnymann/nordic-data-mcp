@@ -1,0 +1,141 @@
+Nordic Data
+Edit
+Nordic Data
+martinhnymann/nordic-data-mcp
+•
+last deployed 4 minutes ago
+Add to toolbox
+
+Overview
+
+Performance
+
+Usage
+
+Integrate
+
+Observability
+
+Logs
+
+Releases
+
+Settings
+Official EU business data for AI agents — 12 countries, 7 tools. Look up companies, validate VAT, run KYB reports, screen sanctions, autocomplete addresses, resolve LEI...
+
+View more
+
+Tools
+11
+
+Resources
+3
+
+Prompts
+3
+lookup_company
+read-only
+Look up basic company data (name, address, status, industry, VAT registration, founding date) from official European business registries. Supports 15 countries: DK (CVR), NO (Brønnøysund), SE (Bolagsverket), FI (YTJ/PRH), IE (CRO), UK (Companies House), FR (INSEE Sirene), DE (Handelsregister), CZ (ARES), PL (KAS+KRS), LV (Uzņēmumu reģistrs), EE (Ariregister), NL (KvK), BE (KBO), LU (RCSL). Tier note: NL and DE use paid upstream registries (KvK and Handelsregister). Free-tier API keys will receive HTTP 402 with error 'upgrade_required' — do NOT retry on 402; surface the upgrade URL from the error message to the user. On paid tiers, NL calls cost 5x quota units and DE calls cost 3x; all other countries cost 1x.
+
+validate_vat
+read-only
+Validate a VAT registration number against the official EU VIES service (or HMRC for GB). Returns validity status, registered name, and registered address.
+
+screen_sanctions
+read-only
+Screen one or more names against UN, EU, OFAC and PEP sanctions lists (768K+ entries via OpenSanctions). Returns match scores with source attribution.
+
+kyb_full
+read-only
+Full Know-Your-Business master report for a company across 15 EU countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Aggregates 9 sections: identity, registered address (geocoded), key persons & directors, financial statements, official filings, LEI + corporate ownership, VAT registration, sanctions + PEP screening, adverse media (GDELT 2.0), and a composite risk score. Single call. Cold cache typically completes in 10-15s; warm cache returns in <100ms. Cached 6h on success, 60s when partial. Partial responses: if any of the 9 sections time out, the report still returns with 'truncated: true' and 'sectionsUnavailable: [{section, reason}]' — caller can retry in 60s for a complete report. Tier note: NL and DE use paid upstream registries — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402. On paid tiers, NL costs 5x quota and DE costs 3x.
+
+autocomplete_address
+read-only
+Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates. Supports 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note: NL and DE require a Starter+ subscription — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402.
+
+lookup_lei
+read-only
+Look up a Legal Entity Identifier (LEI) via GLEIF — the global standard for entity identification. Returns legal name, registered address, status, parent + ultimate parent relationships, and child entities (subsidiaries). Also supports reverse lookup from a national company number to LEI across 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note (reverse mode only): NL and DE use paid upstream registries — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402.
+
+company_enriched
+read-only
+Enriched company data: basic registry data + DAWA-validated address with lat/lng + industry statistics (DST for DK, SSB for NO, etc.) + Wikidata enrichment (website, employees, CEO, ticker, logo, Wikipedia URL). One call, multiple sources. Supports 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note: NL and DE use paid upstream registries — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402. On paid tiers, NL costs 5x quota and DE costs 3x.
+
+fr_history
+read-only
+French company history timeline. Returns one event per change to the company's name, activity (NAF code), status (active/closed), legal form, or social-economy flag, derived from INSEE Sirene 3.11's bitemporal periodesUniteLegale array. Includes 'initial:<field>' events that show the state at company creation (date, name, NAF code, etc.). Input: 9-digit SIREN number. Cost: 1 quota unit; free tier supported (France is not tier-gated, unlike NL and DE). Cache: 24h server-side. Errors: 400 invalid_id_format (not 9 digits), 403 non_diffusible (SIREN exists but is privacy-protected under art. R123-232-1), 404 not_found, 503 upstream_unavailable.
+
+list_endpoints
+read-only
+Discovery meta-tool. Lists ALL available Nordic Data API data endpoints (HTTP method, path, short description) by reading the backend's live OpenAPI spec at runtime — far beyond the curated high-level tools. Use this to discover capabilities the dedicated tools do not cover, then call get_endpoint_schema for parameter details and call_endpoint to execute one. Admin endpoints are never returned. Supports an optional `search` keyword filter. The catalog has 230+ endpoints.
+
+get_endpoint_schema
+read-only
+Discovery meta-tool. Returns the full parameter and response schema for a single Nordic Data API endpoint (path + method), read from the backend's live OpenAPI spec with $refs resolved inline. Use after list_endpoints to learn exactly which parameters an endpoint takes before calling it with call_endpoint. Admin endpoints are rejected.
+
+Show 1 more...
+Homepage
+addonnordic.com
+Published
+May 23, 2026
+Performance
+Tool
+Calls
+No tool calls recorded.
+Total
+0
+Uptime (30d)
+100.0%
+Latency (30d)
+487ms p50
+May 23
+May 24
+May 25
+May 26
+May 27
+May 28
+May 28
+May 29
+May 30
+May 31
+0ms
+2.0s
+4.0s
+6.0s
+8.0s
+Usage
+Integrate
+Integrate this server via the CLI, MCP SDK, or AI SDK. Smithery handles OAuth, token refresh, and session management for you.
+
+Create API key
+Manage Connections
+Configuration for martinhnymann/nordic-data-mcp
+Required parameters
+
+apiKey
+header
+Your personal API key from addonnordic.com. Starts with "ndk_". Free tier gives 100 lookups/day.
+
+CLI
+AI SDK
+TypeScript
+Preview
+1. Install Smithery CLI
+
+
+npm install -g smithery
+2. Create a namespace
+
+
+smithery namespace create {your-namespace}
+3. Use this server
+
+
+# Add this server
+smithery mcp add martinhnymann/nordic-data-mcp --headers '{"apiKey":"your-apiKey"}'
+
+# List available tools
+smithery tool list {connection}
+
+# Call a tool
+smithery tool call {connection} {tool_name} '{"key": "value"}'
