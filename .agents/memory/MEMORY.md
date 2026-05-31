@@ -1,5 +1,3 @@
-- [Server-tenant key rotation](key-rotation.md) — rotate NORDIC_API_KEY in BOTH Replit secret + Railway before revoking old key; verify deployed /mcp with a real tools/call; fingerprint keys (sha256 first 8) to compare without leaking.
-- [HTTP auth boundary](http-auth-discovery-boundary.md) — /mcp/auth serves UNAUTH_METHODS (initialize/tools/list/ping/…) keyless by design for discovery; assert auth on tools/call, NOT initialize.
-- [call_endpoint path-smuggling](call-endpoint-path-smuggling.md) — validate the FINAL substituted path (post encodeURIComponent), reject %25; run security-check after touching path handling.
-- [Mac publish DNS](mac-publish-dns.md) — `mcp-publisher login github` → "no such host" while browser opens github.com = stuck macOS DNS negative cache; flush with dscacheutil+killall mDNSResponder, then retry.
-- [Tools-only registry quality](tools-only-registry-quality.md) — even a tools-only MCP server should implement empty resources/list & prompts/list (+declare caps) or Smithery's quality score dings the -32601s.
+# Memory index
+
+- [Smithery quality score](smithery-quality-score.md) — for a remote/self-hosted MCP server, empty prompts/resources & a repo `icon.svg` earn 0 points; REAL prompts/resources + a server `instructions` string are the lever.

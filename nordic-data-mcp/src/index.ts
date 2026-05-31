@@ -5,11 +5,17 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   ListResourcesRequestSchema,
+  ListResourceTemplatesRequestSchema,
+  ReadResourceRequestSchema,
   ListPromptsRequestSchema,
+  GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { tools } from "./tools/index.js";
 import { ensureApiKeyConfigured } from "./lib/apiClient.js";
 import { dispatchToolCall } from "./lib/dispatcher.js";
+import { INSTRUCTIONS } from "./lib/instructions.js";
+import { listResources, readResource } from "./resources/index.js";
+import { listPrompts, getPrompt } from "./prompts/index.js";
 
 // stdio mode cannot rely on per-request key overrides — fail fast at startup
 // if the operator has not configured NORDIC_API_KEY.
@@ -18,8 +24,8 @@ import { dispatchToolCall } from "./lib/dispatcher.js";
 ensureApiKeyConfigured();
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.5.1" },
-  { capabilities: { tools: {}, resources: {}, prompts: {} } },
+  { name: "nordic-data-mcp", version: "1.5.2" },
+  { capabilities: { tools: {}, resources: {}, prompts: {} }, instructions: INSTRUCTIONS },
 );
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -36,15 +42,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) =>
   dispatchToolCall(request.params.name, request.params.arguments),
 );
 
-// Tools-only server: declare resources/prompts capabilities and answer their
-// list methods with empty arrays so MCP clients get a clean response, not -32601.
+// Documentation resources (static, no upstream calls).
 server.setRequestHandler(ListResourcesRequestSchema, async () => ({
-  resources: [],
+  resources: listResources(),
 }));
+server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => ({
+  resourceTemplates: [],
+}));
+server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+  const r = readResource(request.params.uri);
+  if (!r) throw new Error(`Unknown resource: ${request.params.uri}`);
+  return { contents: [r] };
+});
 
+// Workflow prompts (static templates).
 server.setRequestHandler(ListPromptsRequestSchema, async () => ({
-  prompts: [],
+  prompts: listPrompts(),
 }));
+server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+  const p = getPrompt(request.params.name, request.params.arguments ?? {});
+  if (!p) throw new Error(`Unknown prompt: ${request.params.name}`);
+  return p;
+});
 
 const transport = new StdioServerTransport();
 await server.connect(transport);

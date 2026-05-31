@@ -25,7 +25,10 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   ListResourcesRequestSchema,
+  ListResourceTemplatesRequestSchema,
+  ReadResourceRequestSchema,
   ListPromptsRequestSchema,
+  GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
@@ -36,13 +39,16 @@ import {
   type RequestOptions,
 } from "./lib/requestContext.js";
 import { dispatchToolCall } from "./lib/dispatcher.js";
+import { INSTRUCTIONS } from "./lib/instructions.js";
+import { listResources, readResource } from "./resources/index.js";
+import { listPrompts, getPrompt } from "./prompts/index.js";
 
-const VERSION = "1.5.1";
+const VERSION = "1.5.2";
 
 function buildServer(): Server {
   const server = new Server(
     { name: "nordic-data-mcp", version: VERSION },
-    { capabilities: { tools: {}, resources: {}, prompts: {} } },
+    { capabilities: { tools: {}, resources: {}, prompts: {} }, instructions: INSTRUCTIONS },
   );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -59,16 +65,28 @@ function buildServer(): Server {
     dispatchToolCall(request.params.name, request.params.arguments),
   );
 
-  // This is a tools-only server. We declare resources/prompts capabilities and
-  // answer their list methods with empty arrays so MCP clients (and registries
-  // like Smithery) get a clean, spec-compliant response instead of -32601.
+  // Documentation resources (static, no upstream calls — safe without a key).
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
-    resources: [],
+    resources: listResources(),
   }));
+  server.setRequestHandler(ListResourceTemplatesRequestSchema, async () => ({
+    resourceTemplates: [],
+  }));
+  server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
+    const r = readResource(request.params.uri);
+    if (!r) throw new Error(`Unknown resource: ${request.params.uri}`);
+    return { contents: [r] };
+  });
 
+  // Workflow prompts (static templates — safe without a key).
   server.setRequestHandler(ListPromptsRequestSchema, async () => ({
-    prompts: [],
+    prompts: listPrompts(),
   }));
+  server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+    const p = getPrompt(request.params.name, request.params.arguments ?? {});
+    if (!p) throw new Error(`Unknown prompt: ${request.params.name}`);
+    return p;
+  });
 
   return server;
 }
@@ -193,7 +211,10 @@ const UNAUTH_METHODS = new Set([
   "ping",
   "tools/list",
   "resources/list",
+  "resources/templates/list",
+  "resources/read",
   "prompts/list",
+  "prompts/get",
 ]);
 
 /**
