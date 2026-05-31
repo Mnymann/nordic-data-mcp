@@ -4,6 +4,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ListPromptsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { tools } from "./tools/index.js";
 import { ensureApiKeyConfigured } from "./lib/apiClient.js";
@@ -16,8 +18,8 @@ import { dispatchToolCall } from "./lib/dispatcher.js";
 ensureApiKeyConfigured();
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.5.0" },
-  { capabilities: { tools: {} } },
+  { name: "nordic-data-mcp", version: "1.5.1" },
+  { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -33,6 +35,16 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 server.setRequestHandler(CallToolRequestSchema, async (request) =>
   dispatchToolCall(request.params.name, request.params.arguments),
 );
+
+// Tools-only server: declare resources/prompts capabilities and answer their
+// list methods with empty arrays so MCP clients get a clean response, not -32601.
+server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+  resources: [],
+}));
+
+server.setRequestHandler(ListPromptsRequestSchema, async () => ({
+  prompts: [],
+}));
 
 const transport = new StdioServerTransport();
 await server.connect(transport);

@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] — 2026-05-31
+
+### Added
+- **`resources/list` and `prompts/list` handlers (empty).** This remains a tools-only server, but it now declares the `resources` and `prompts` capabilities and answers their list methods with empty arrays. MCP clients and registries (e.g. Smithery's inspector) previously saw `-32601 Method not found` for these probes; they now get a clean, spec-compliant response. No tool behaviour changes — still 11 tools.
+
 ## [1.5.0] — 2026-05-31
 
 ### Added

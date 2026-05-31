@@ -24,6 +24,8 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ListPromptsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { tools } from "./tools/index.js";
 import { formatError } from "./lib/errors.js";
@@ -35,12 +37,12 @@ import {
 } from "./lib/requestContext.js";
 import { dispatchToolCall } from "./lib/dispatcher.js";
 
-const VERSION = "1.5.0";
+const VERSION = "1.5.1";
 
 function buildServer(): Server {
   const server = new Server(
     { name: "nordic-data-mcp", version: VERSION },
-    { capabilities: { tools: {} } },
+    { capabilities: { tools: {}, resources: {}, prompts: {} } },
   );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -56,6 +58,17 @@ function buildServer(): Server {
   server.setRequestHandler(CallToolRequestSchema, async (request) =>
     dispatchToolCall(request.params.name, request.params.arguments),
   );
+
+  // This is a tools-only server. We declare resources/prompts capabilities and
+  // answer their list methods with empty arrays so MCP clients (and registries
+  // like Smithery) get a clean, spec-compliant response instead of -32601.
+  server.setRequestHandler(ListResourcesRequestSchema, async () => ({
+    resources: [],
+  }));
+
+  server.setRequestHandler(ListPromptsRequestSchema, async () => ({
+    prompts: [],
+  }));
 
   return server;
 }
