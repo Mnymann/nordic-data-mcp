@@ -32,7 +32,7 @@ export const prompts: PromptDef[] = [
       `2. Use kyb_full for the complete KYB report (identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score).\n` +
       `3. Use screen_sanctions on the company and its key persons against UN/EU/OFAC/PEP lists.\n` +
       `4. Summarize: legal identity, ownership/control, financial health, any sanctions or PEP hits, and an overall risk assessment with reasoning.\n` +
-      `5. End the summary with a clear note that this is informational decision-support and guidance, NOT legal, compliance, or financial advice — findings are signals to review and must be independently verified before any decision.`,
+      `5. End the summary by surfacing the "disclaimer" field returned in the kyb_full response if present; otherwise add a brief note that this is decision-support/guidance, not legal/compliance/financial advice, to be independently verified. Include it once, not twice.`,
   },
   {
     name: "vat_check",
@@ -65,7 +65,7 @@ export const prompts: PromptDef[] = [
       `Screen these names against UN/EU/OFAC/PEP lists using screen_sanctions: ${a.names}.\n` +
       `For each name report whether there is a likely match, the matched list(s) and entity, ` +
       `a confidence assessment, and a recommended next step (clear, review, or escalate).\n` +
-      `State clearly that these matches are informational decision-support to review, not a definitive determination or legal/compliance advice, and should be independently verified before acting.`,
+      `Surface the "disclaimer" field returned in the screen_sanctions response if present; otherwise state that these matches are decision-support to review — not a determination or legal/compliance advice — and must be independently verified. Include it once, not twice.`,
   },
 ];
 

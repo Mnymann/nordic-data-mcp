@@ -1,0 +1,91 @@
+Det er meget vigtigt at KYB og ligende ikke opfattes som reele rådgivning, men derimod som vejledende og sparring. Det skal også fremgår af dokumenter som Terms og ligende.
+
+8 minutes ago
+
+2 actions
+Vigtigt punkt — og det er klogt at få det på plads juridisk. Lad mig først se, hvad der allerede findes i koden (om svarene fra KYB/AML/sanktioner overhovedet bærer et forbehold i dag), og om der ligger Terms/juridiske dokumenter i projektet.
+
+
+3 actions
+--type tsx fejlede, så lad mig køre disclaimer-søgningen rent og samtidig læse de præcise svar-objekter, så mine ændringer rammer rigtigt.
+
+
+4 actions
+There's already a precedent — eudr.ts uses a Danish disclaimer field. I'll follow that pattern and add disclaimers to the compliance endpoints (KYB, AML/screening, risk, sanctions). Let me read the exact types/objects first.
+
+
+6 actions
+Jeg har alt jeg behøver. Jeg laver et fælles disclaimer-modul og tilføjer feltet til de fire compliance-endpoints (KYB, AML/screening, risk, sanktioner), så forbeholdet følger med selve dataene ud til enhver app — også dem Claude Code bygger.
+
+
+8 actions
+Now I'll make all the edits in parallel — imports plus the disclaimer field on each compliance response.
+
+
+10 actions
+Let me verify the TypeScript compiles cleanly with these changes.
+
+
+2 actions
+Typecheck-fejlene er alle forudeksisterende (adverse.ts, euGrid.ts, kyc.ts linje 149/663, nlProperty.ts osv.) og rører ikke mine ændringer — ingen fejl peger på disclaimer-feltet. Lad mig bekræfte at koden faktisk bundler (det er esbuild-bygget der kører i produktion):
+
+
+2 actions
+Build passes and the changes are sound. Let me run a code review on the changes and prepare the commit message. Let me read the relevant skills first.
+
+
+5 actions
+Architect found two real consistency gaps — /sanctions/search and /sanctions/match should also carry the screening disclaimer. Let me read those response objects and fix them.
+
+
+8 actions
+Build passes with all six endpoints covered. Let me update memory and write the commit message.
+
+
+5 actions
+Færdig. Her er hvad jeg har gjort — og teksten til dine dokumenter.
+
+Hvad jeg har bygget ind i API'et
+Jeg har sørget for, at forbeholdet nu følger med selve dataene ud — så enhver app (også dem Claude Code bygger) automatisk får det med, ikke kun din hjemmeside. Hvert "vurderings"-svar har nu et disclaimer-felt på dansk:
+
+KYB (/kyc/full) og risiko (/risk/no/:orgnr): "Vejledende værktøj — ikke rådgivning…"
+AML/screening (/screening/full), sanktioner (/sanctions/screen, /sanctions/search, /sanctions/match): "Vejledende screening — ikke rådgivning. Navnematch kan give falske positive og negative…"
+Rene faktuelle opslag (fx listen over nye konkurser, almindelige firmaopslag) har bevidst ikke fået forbeholdet — de er ren registerdata, ikke en vurdering.
+
+⚠️ Vigtigt: Det går først live på api.addonnordic.dk, når du deployer projektet. Sig til, så hjælper jeg med det — eller jeg kan verificere live bagefter.
+
+ℹ️ MCP-serveren (Railway) sender svarene videre, så forbeholdet kommer automatisk med i tool-resultaterne. Men selve tool-beskrivelserne ligger i et andet repo — vil du have det til at fremgå dér også, skal Claude Code (eller jeg, hvis du giver adgang) rette dem separat.
+
+Tekst til Terms og prissiden (klar til at indsætte)
+Kort forbehold (til prissiden / footer / under compliance-features):
+
+Nordic Data leverer vejledende beslutningsstøtte og sparring — ikke juridisk, regnskabsmæssig eller compliance-rådgivning. Resultater af KYB-, AML-, sanktions- og risikoopslag er automatisk genereret fra offentlige kilder og skal verificeres af en kvalificeret fagperson, før der træffes beslutninger.
+
+Afsnit til Terms of Service (fx "Ansvarsfraskrivelse / Brug af data"):
+
+Vejledende karakter — ikke rådgivning. Tjenestens output, herunder KYB-rapporter, AML- og sanktionsscreening, PEP- og adverse media-resultater samt risikoscorer, udgør udelukkende vejledende beslutningsstøtte og sparring. Det er ikke juridisk, regnskabsmæssig, skattemæssig eller anden professionel rådgivning, og det skal ikke opfattes eller anvendes som sådan.
+
+Kilder og nøjagtighed. Data hentes automatisk fra offentlige registre og tredjepartskilder og kan være ufuldstændige, forsinkede eller fejlbehæftede. Navnematch mod sanktions-, PEP- og adverse media-lister kan give både falske positive og falske negative resultater.
+
+Kundens ansvar. Kunden er eneansvarlig for at verificere resultaterne hos relevante myndigheder eller en kvalificeret fagperson, før der træffes beslutninger (herunder KYC/AML-beslutninger, kreditgivning eller indgåelse af aftaler). Brug af tjenesten erstatter ikke kundens egne lovpligtige due diligence-forpligtelser.
+
+Intet ansvar. Addon Nordic fraskriver sig ethvert ansvar for beslutninger truffet på baggrund af tjenestens output, i det omfang gældende lov tillader det.
+
+Vil du have, at jeg også laver en engelsk version (relevant hvis du sælger til ikke-danske Shopify-merchants), eller at jeg hjælper dig med at deploye ændringerne, så forbeholdet går live?
+
+
+Checkpoint made
+just now
+
+Worked for 7 minutes
+
+Scroll to latest
+
+Make, test, iterate…
+
+
+Power
+
+
+
+Nordic Data API - Replit
