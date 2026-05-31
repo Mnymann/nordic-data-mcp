@@ -1,0 +1,56 @@
+Last login: Thu May 28 07:34:57 on ttys032
+martinnymann@MacBookPro ~ % cd /Users/martinnymann/nordic-data-mcp && git pull
+remote: Enumerating objects: 93, done.
+remote: Counting objects: 100% (93/93), done.
+remote: Compressing objects: 100% (46/46), done.
+remote: Total 75 (delta 43), reused 59 (delta 27), pack-reused 0 (from 0)
+Unpacking objects: 100% (75/75), 40.34 KiB | 509.00 KiB/s, done.
+From https://github.com/Mnymann/nordic-data-mcp
+   b9f6287..ba4070d  main       -> origin/main
+Updating b9f6287..ba4070d
+Fast-forward
+ .agents/memory/MEMORY.md                           |   3 +
+ .agents/memory/call-endpoint-path-smuggling.md     |  32 ++
+ .agents/memory/http-auth-discovery-boundary.md     |  23 +
+ .agents/memory/key-rotation.md                     |  33 ++
+ .replit                                            |   6 +-
+ README.md                                          | 194 +++++++
+ ...nogle-steder-eller-er-det-fin_1780223811560.txt |  94 ++++
+ ...e-Prompt-2-opdateret-med-alt-_1780221198189.txt |  76 +++
+ ...s-empty-so-I-cannot-determine_1779621083639.txt |  26 +
+ ...8-11-on-ttys000-martinnymann-_1779618295956.txt | 197 +++++++
+ ...irekte-Jeg-k-rer-smoke-testen_1780220638620.txt |  40 ++
+ ...dedicated-tenant-non-admin-AP_1780219342377.txt |  72 +++
+ nordic-data-mcp/CHANGELOG.md                       |  22 +
+ nordic-data-mcp/package.json                       |   3 +-
+ nordic-data-mcp/scripts/security-check.mjs         | 158 ++++++
+ nordic-data-mcp/scripts/smoke-test-http.sh         |  22 +-
+ nordic-data-mcp/scripts/smoke-test.mjs             |   4 +
+ nordic-data-mcp/server.json                        |   4 +-
+ nordic-data-mcp/src/http.ts                        |   2 +-
+ nordic-data-mcp/src/index.ts                       |   2 +-
+ nordic-data-mcp/src/lib/apiClient.ts               |  13 +-
+ nordic-data-mcp/src/lib/specClient.ts              | 581 +++++++++++++++++++++
+ nordic-data-mcp/src/tools/callEndpoint.ts          |  45 ++
+ nordic-data-mcp/src/tools/getEndpointSchema.ts     |  40 ++
+ nordic-data-mcp/src/tools/index.ts                 |  11 +
+ nordic-data-mcp/src/tools/listEndpoints.ts         |  44 ++
+ replit.md                                          |   9 +-
+ 27 files changed, 1742 insertions(+), 14 deletions(-)
+ create mode 100644 .agents/memory/MEMORY.md
+ create mode 100644 .agents/memory/call-endpoint-path-smuggling.md
+ create mode 100644 .agents/memory/http-auth-discovery-boundary.md
+ create mode 100644 .agents/memory/key-rotation.md
+ create mode 100644 README.md
+ create mode 100644 attached_assets/Pasted-B-r-vi-gemme-nedenst-ende-nogle-steder-eller-er-det-fin_1780223811560.txt
+ create mode 100644 attached_assets/Pasted-Her-er-den-endelige-ferdige-Prompt-2-opdateret-med-alt-_1780221198189.txt
+ create mode 100644 attached_assets/Pasted-I-notice-the-user-prompt-is-empty-so-I-cannot-determine_1779621083639.txt
+ create mode 100644 attached_assets/Pasted-Last-login-Sun-May-24-12-08-11-on-ttys000-martinnymann-_1779618295956.txt
+ create mode 100644 attached_assets/Pasted-Martin-opdaterede-n-glen-direkte-Jeg-k-rer-smoke-testen_1780220638620.txt
+ create mode 100644 attached_assets/Pasted-Martin-wants-me-to-mint-a-dedicated-tenant-non-admin-AP_1780219342377.txt
+ create mode 100644 nordic-data-mcp/scripts/security-check.mjs
+ create mode 100644 nordic-data-mcp/src/lib/specClient.ts
+ create mode 100644 nordic-data-mcp/src/tools/callEndpoint.ts
+ create mode 100644 nordic-data-mcp/src/tools/getEndpointSchema.ts
+ create mode 100644 nordic-data-mcp/src/tools/listEndpoints.ts
+martinnymann@MacBookPro nordic-data-mcp % 
