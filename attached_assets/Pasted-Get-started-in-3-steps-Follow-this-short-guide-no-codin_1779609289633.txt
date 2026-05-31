@@ -24,7 +24,7 @@ Copy
 npx -y nordic-data-mcp
 
 # Set your key (generated automatically on this site)
-export NORDIC_API_KEY=ndk_XTzY73anx9tmK08V5UHZJuxzVMO501aKhBnRAmvqakQ
+export NORDIC_API_KEY=REDACTED_API_KEY
 Your NORDIC_API_KEY is generated automatically when you create an account. Run the commands in Terminal (Mac) or PowerShell (Windows) — requires Node.js installed.
 
 That's it. Your agent can look up CVR data right now.
@@ -64,7 +64,7 @@ Copy
     "nordic-data": {
       "command": "npx",
       "args": ["-y", "nordic-data-mcp"],
-      "env": { "NORDIC_API_KEY": "ndk_XTzY73anx9tmK08V5UHZJuxzVMO501aKhBnRAmvqakQ" }
+      "env": { "NORDIC_API_KEY": "REDACTED_API_KEY" }
     }
   }
 }

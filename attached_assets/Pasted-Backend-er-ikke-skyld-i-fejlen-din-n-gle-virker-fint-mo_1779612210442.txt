@@ -12,7 +12,7 @@ Find fejlen — kør på din Mac:
 tail -100 ~/Library/Logs/Claude/mcp-server-nordic-data.log
 # 2. Hvis loggen ikke findes / ikke har noget, kør MCP-serveren manuelt
 # og send en testkommando — så ser du fejlen direkte i terminalen:
-NORDIC_API_KEY="ndk_XTzY73anx9tmK08V5UHZJuxzVMO501aKhBnRAmvqakQ" \
+NORDIC_API_KEY="REDACTED_API_KEY" \
   npx -y nordic-data-mcp
 # 3. Tjek om npx har en stale cache med en gammel version
 npx clear-npx-cache 2>/dev/null || rm -rf ~/.npm/_npx
