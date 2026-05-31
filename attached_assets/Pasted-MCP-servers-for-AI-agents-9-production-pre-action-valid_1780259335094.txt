@@ -1,0 +1,175 @@
+MCP servers for AI agents
+9 production pre-action validators. Agents call these before taking consequential actions — verifying counterparties, VAT numbers, tenders, HS codes, URLs, data payloads, model routing decisions, quantum POC viability, and document integrity. HTTP transport. No install required.
+
+9
+servers
+22
+tools
+328
+sanctions lists
+27+
+VAT jurisdictions
+Counterparty · KYC
+Bizfile MCP — Counterparty Validator
+Call before approving a payment, onboarding a supplier, or signing a contract. Returns KYC confidence HIGH/MEDIUM/LOW, AI risk score 0-100, company officers, and sanctions screen across 328 lists.
+
+endpoint: https://bizfile-mcp-production.up.railway.app
+tool	tier	what it returns
+validate_counterparty	free · 20/month	Registry lookup, active status, KYC confidence, AI risk score, officers list
+validate_counterparty_lite	free · 20/month	Fast registry-only check, no AI scoring — company status, registration number, address. Low token cost, sub-second response.
+screen_counterparty	paid	Screens company + all officers against 328 sanctions lists. BLOCK/EDD/PROCEED verdict.
+Free — 20 calls/month
+Pro — $299/month
+Enterprise — $999/month
+{"type":"sse","url":"https://bizfile-mcp-production.up.railway.app/sse"}
+Smithery Badge
+Tax · VAT
+VAT Validator MCP
+Call before issuing an invoice, processing a cross-border payment, or storing a VAT number. Validates EU, UK, and AU VAT numbers in real time against official government registries.
+
+endpoint: https://vat-validator-mcp-production.up.railway.app
+tool	tier	what it returns
+validate_vat	free · 20/month	EU VIES validation — valid flag, company name, address
+validate_uk_vat	free · 20/month	HMRC real-time validation — valid flag, business name
+get_vat_rates	free · 20/month	Current VAT rates for any country
+batch_validate	paid	Validate up to 50 VAT numbers in one call
+analyse_vat_risk	free · 20/month	AI fraud risk scoring — CLEAR/REVIEW/BLOCK verdict, risk score 0-100, fraud signals, agent_action field
+compare_invoice_details	free · 20/month	Cross-checks invoice VAT details against live registry — MATCH/MISMATCH verdict, field-level detail, agent_action
+Free — 20 calls/month
+Pro — $39/month
+Enterprise — $199/month
+{"type":"sse","url":"https://vat-validator-mcp-production.up.railway.app/sse"}
+Procurement · Tenders
+Tender MCP
+Call when an agent needs to find relevant government contracts or evaluate a specific tender opportunity. Searches UK, EU, and US government procurement databases simultaneously.
+
+endpoint: https://tender-mcp-production.up.railway.app
+tool	tier	what it returns
+search_tenders	free · 10/month	Keyword search across UK Contracts Finder, EU TED, SAM.gov — title, value, deadline, link
+get_tender_intelligence	paid	AI analysis of a specific tender — fit score, win factors, risk flags, recommended approach
+Free — 10 calls/month
+Pro — $199/month
+Enterprise — $499/month
+{"type":"sse","url":"https://tender-mcp-production.up.railway.app/sse"}
+Security · URL
+URL Safety Validator MCP
+Call before your agent fetches, visits, or forwards any URL from an untrusted source — emails, scraped pages, documents, API responses. Returns a single SAFE/SUSPICIOUS/DANGEROUS verdict with AI trust score.
+
+endpoint: https://url-safety-validator-mcp-production.up.railway.app
+tool	tier	what it returns
+check_url	free · 10/month	SAFE/SUSPICIOUS/DANGEROUS verdict, AI trust score 0-100, threat categories, SSL status, domain age, redirect chain flag. Cross-checks Google Web Risk + Google Safe Browsing + AI analysis.
+Free — 10 calls/month
+Pro — $9/month · buy →
+Enterprise — $29/month · buy →
+{"type":"sse","url":"https://url-safety-validator-mcp-production.up.railway.app/sse"}
+Compliance · Privacy
+Data Compliance Classifier MCP
+Call before storing, transmitting, or processing any data payload. Classifies PII, detects applicable regulations (GDPR, HIPAA, CCPA, PCI-DSS), checks credential breach exposure, and returns a SAFE_TO_PROCESS/ESCALATE/DO_NOT_STORE verdict.
+
+endpoint: https://data-compliance-mcp-production.up.railway.app
+tool	tier	what it returns
+validate_data_safety	free · 20/month	PII classification, jurisdiction detection, breach check, compliance verdict
+get_safety_report	paid	Batch up to 50 payloads + audit report + AbuseIPDB threat intelligence
+Free — 20 calls/month
+Pro — $49/month · buy →
+Enterprise — $199/month · buy →
+{"type":"sse","url":"https://data-compliance-mcp-production.up.railway.app/sse"}
+AI · Cost
+Local Model Suitability MCP
+Call before routing a task to an API model. Determines whether the task can be handled by a local Ollama model — reducing cost and latency for simple tasks while reserving API calls for tasks that need them.
+
+endpoint: https://local-model-suitability-mcp-production.up.railway.app
+tool	tier	what it returns
+check_local_viability	free · 20/month	LOCAL/API/CONFIDENTIAL verdict, recommended Ollama model, estimated cost saving, confidence score
+Free — 20 calls/month
+Pro — $99/month
+Enterprise — $299/month
+{"type":"sse","url":"https://local-model-suitability-mcp-production.up.railway.app/sse"}
+Trade · Customs
+HS Code Classifier MCP
+Call before completing any customs declaration, shipping manifest, or duty calculation. Classifies product descriptions to official HS codes using government tariff schedules (USITC, Singapore Customs, CBSA, AU Border Force, WCO) with AI-assisted reasoning.
+
+endpoint: https://hs-code-classifier-mcp-server-production.up.railway.app
+tool	tier	what it returns
+hs_classify_product	free · 10/month	HS code, WCO 6-digit parent, official source, tariff version, AI classification reasoning, agent_action field
+hs_validate_code	paid	Validates supplier-provided HS code — VALID/INVALID/MISMATCH/OUTDATED verdict, product match score, mismatch reason, correct code suggestion
+Free — 10 calls/month
+Pro — $49/month · buy →
+Enterprise — $199/month · buy →
+{"type":"sse","url":"https://hs-code-classifier-mcp-server-production.up.railway.app/sse"}
+Research · Quantum
+Quantum Suitability Validator MCP
+Call before your agent escalates a quantum computing initiative to a human committee, allocates POC budget, or routes to a quantum specialist. Refusal-first AI triage engine screens against expert decision rules — QUBO failure patterns, penalty dominance, hype language detection.
+
+endpoint: https://quantum-suitability-validator-mcp-production.up.railway.app
+tool	tier	what it returns
+quantum_assess_problem	free · 5/month	7-verdict system (RECOMMENDED_NOW through NOT_QUANTUM_AMENABLE), suitability score, confidence score, problem class, dominant blockers, hype flags, agent_action field
+quantum_readiness_report	paid	Full auditable report: QUBO/Ising/variational formulation guidance, hardware family fit (D-Wave/IBM/IonQ), error budget assessment, classical baseline benchmark, validation plan
+Free — 5 calls/month
+Pro — $199/month · buy →
+Enterprise — $499/month · buy →
+{"type":"sse","url":"https://quantum-suitability-validator-mcp-production.up.railway.app/sse"}
+Smithery Badge
+Documents · Compliance
+Document Integrity Validator MCP
+Checks any document against named international standards before your agent acts on it. Free 10 calls/month.
+
+endpoint: https://document-integrity-validator-mcp-production.up.railway.app/mcp
+tool	tier	what it returns
+check_document	free · 10/month	Checks a single document against its international standard — PROCEED/VERIFY_MANUALLY/HOLD/REFER_TO_HUMAN verdict, flags, confidence score
+check_document_package	paid	Checks 2-20 related documents and cross-checks for consistency conflicts — weights, party names, reference numbers, dates, commodity descriptions, port references
+Free — 10 calls/month
+Pro — $29/month · buy →
+Enterprise — $199/month · buy →
+{"type":"streamable-http","url":"https://document-integrity-validator-mcp-production.up.railway.app/mcp"}
+Smithery Badge
+Registry listings — where agents discover these servers
+Bizfile MCP
+Anthropic Registry
+Smithery
+npm
+VAT Validator MCP
+Anthropic Registry
+Smithery
+npm
+Tender MCP
+Anthropic Registry
+Smithery
+npm
+URL Safety Validator MCP
+Anthropic Registry
+Smithery
+npm
+Data Compliance Classifier MCP
+Anthropic Registry
+Smithery
+npm
+Local Model Suitability MCP
+Anthropic Registry
+Smithery
+npm
+HS Code Classifier MCP
+Anthropic Registry
+Smithery
+npm
+Quantum Suitability Validator MCP
+Anthropic Registry
+Smithery
+npm
+Document Integrity Validator MCP
+Anthropic Registry
+Smithery
+npm
+All services are provided for informational purposes only. Results do not constitute legal, tax, or compliance advice. Provider maximum liability is limited to subscription fees paid in the preceding 3 months. We do not log or store your query content or data payloads. By using any service you agree to the Terms of Service.  ·  Kord Agencies Pte Ltd, Singapore  ·  ojas@kordagencies.com
+
+kordagencies · Singapore
+bizfile-mcp
+vat-validator-mcp
+tender-mcp
+url-safety-validator-mcp
+data-compliance-mcp
+local-model-suitability-mcp
+hs-code-classifier-mcp
+quantum-suitability-validator-mcp
+document-integrity-validator-mcp
+terms
