@@ -15,7 +15,7 @@ const inputSchema = z.object({
 export const listEndpoints: McpTool = {
   name: "list_endpoints",
   description:
-    "Discovery meta-tool. Lists ALL available Nordic Data API data endpoints (HTTP method, path, short description) by reading the backend's live OpenAPI spec at runtime — far beyond the curated high-level tools. Use this to discover capabilities the dedicated tools do not cover, then call get_endpoint_schema for parameter details and call_endpoint to execute one. Admin endpoints are never returned. Supports an optional `search` keyword filter. The catalog has 230+ endpoints.",
+    "Discovery meta-tool. Lists ALL available Nordic Data API data endpoints (HTTP method, path, short description) by reading the backend's live OpenAPI spec at runtime — far beyond the curated high-level tools. Use this to discover capabilities the dedicated tools do not cover, then call get_endpoint_schema for parameter details and call_endpoint to execute one. Only read-only operations are listed (GET/HEAD plus the POST screening queries); admin and state-changing endpoints are never returned. Supports an optional `search` keyword filter. The catalog has 230+ endpoints.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   annotations: {

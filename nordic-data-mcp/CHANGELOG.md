@@ -4,6 +4,17 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.4] — 2026-08-03
+
+Addresses the four items from the Anthropic MCP Directory review (2026-07-31).
+
+### Changed
+- **Discovery surface is now strictly read-only** (review item 1). `call_endpoint` only accepts GET/HEAD, plus POST to a fixed allowlist of three screening endpoints (`/api/sanctions/screen`, `/api/adverse/screen`, `/api/peps/nl/screen`) that are pure queries using POST solely to carry a large request body. All state-changing operations (watch-list management, webhook registration, DELETE/PUT/PATCH) are refused with a clear `read_only` error. `list_endpoints` no longer lists write operations, and `get_endpoint_schema` refuses them. `call_endpoint` is now annotated `readOnlyHint: true` / `idempotentHint: true`, matching the listing's declared read-only capability.
+- **Tool descriptions cleaned of assistant presentation instructions** (review item 4). `screen_sanctions` and `kyb_full` descriptions now state only what the tool does, when to use it, and what it returns — the disclaimer remains as a factual note and continues to travel in the response payload's `disclaimer` field. `lookup_company`'s 402 note was reworded the same way. Agent workflow guidance lives where it belongs: the server-level `instructions` and the three workflow prompts.
+
+### Notes
+- Review items 2 (declared tool list) and 3 (country-coverage copy) are directory-submission metadata, not server code; the submission is updated to list all 11 live tools and 15-country coverage with the NL/DE paid-tier note.
+
 ## [1.5.3] — 2026-05-31
 
 ### Added

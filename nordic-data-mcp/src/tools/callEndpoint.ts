@@ -9,7 +9,7 @@ const inputSchema = z.object({
     .min(1)
     .default("GET")
     .describe(
-      "HTTP method to use, e.g. GET or POST. Must be a method the endpoint actually supports (see get_endpoint_schema). Defaults to GET.",
+      "HTTP method to use. Read-only methods only: GET or HEAD, plus POST solely for the allowlisted screening query endpoints (/api/sanctions/screen, /api/adverse/screen, /api/peps/nl/screen). Defaults to GET.",
     ),
   path: z
     .string()
@@ -28,14 +28,14 @@ const inputSchema = z.object({
 export const callEndpoint: McpTool = {
   name: "call_endpoint",
   description:
-    "Discovery meta-tool. Executes a real HTTP request against the Nordic Data API for any non-admin endpoint discovered via list_endpoints, and returns the response. Authenticates with the same scoped API key as the curated tools. Only HTTP methods declared in the spec for the given path are permitted; /admin endpoints are always refused. Use list_endpoints and get_endpoint_schema first to find the correct path, method, and parameters.",
+    "Discovery meta-tool. Executes a read-only HTTP request against the Nordic Data API for any data endpoint discovered via list_endpoints, and returns the response. Authenticates with the same scoped API key as the curated tools. Strictly read-only: only GET/HEAD requests are permitted, plus POST to three allowlisted screening endpoints (/api/sanctions/screen, /api/adverse/screen, /api/peps/nl/screen) that are pure queries using POST only to carry a large request body. All state-changing operations (watch lists, webhooks, DELETE/PUT/PATCH) and all /admin endpoints are refused. Use list_endpoints and get_endpoint_schema first to find the correct path, method, and parameters.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   annotations: {
     title: "Call API Endpoint",
-    readOnlyHint: false,
+    readOnlyHint: true,
     destructiveHint: false,
-    idempotentHint: false,
+    idempotentHint: true,
     openWorldHint: true,
   },
   handler: async (args) => {

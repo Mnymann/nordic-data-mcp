@@ -8,7 +8,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives A
 Look up companies, validate VAT numbers, run KYB reports, screen against sanctions lists, autocomplete addresses, and resolve LEI ownership — all from inside your AI assistant.
 
 ```
-DK · NO · SE · FI · IE · UK · FR · DE · CZ · PL · LV · EE
+DK · NO · SE · FI · IE · UK · FR · DE · CZ · PL · LV · EE · NL · BE · LU
 ```
 
 > NL and DE require a Starter+ subscription (free-tier API keys receive HTTP 402 `upgrade_required`). On paid tiers, NL calls cost 5x quota units and DE calls cost 3x; all other countries cost 1x.
@@ -71,7 +71,7 @@ ChatGPT supports remote MCP servers as **custom connectors**. No API key needed 
 
 1. ChatGPT → **Settings** → **Connectors** → **Add custom connector**
 2. URL: `https://nordic-data-mcp-production.up.railway.app/mcp`
-3. Done — all 7 tools are available immediately.
+3. Done — all 11 tools are available immediately.
 
 > Custom connectors require a ChatGPT Pro, Business, Team, or Enterprise plan.
 
@@ -96,6 +96,10 @@ Same hosted endpoint, no local install:
 | `autocomplete_address` | Address autocomplete via DAWA (DK), Kartverket (NO), BAN (FR), MML (FI), Nominatim (others) |
 | `lookup_lei` | GLEIF Legal Entity Identifier lookup — forward, reverse, and parent/children relationships |
 | `company_enriched` | Company data + geocoded address + industry stats + Wikidata (website, employees, CEO, ticker, logo) |
+| `fr_history` | French company history timeline (name, activity, status, legal-form changes) from INSEE Sirene bitemporal data |
+| `list_endpoints` | Discovery: list all read-only data endpoints in the underlying API (230+), with optional keyword filter |
+| `get_endpoint_schema` | Discovery: full parameter + response schema for one endpoint, before calling it |
+| `call_endpoint` | Discovery: execute a read-only request (GET/HEAD, plus three allowlisted POST screening queries) against any discovered endpoint |
 
 ### Example agent prompts
 
@@ -132,6 +136,9 @@ Same hosted endpoint, no local install:
 | PL | NIP / REGON / KRS | NIP=10, REGON=9/14, KRS=10 |
 | LV | Reģistrācijas nr. | 11 digits |
 | EE | Registrikood | 8 digits |
+| NL | KvK-nummer | 8 digits |
+| BE | BCE/KBO | 10 digits |
+| LU | RCSL | `B` + digits |
 
 For `validate_vat`, country codes are **uppercase** and cover the broader EU plus GB (use `GB`, not `UK` — HMRC requires GB).
 
@@ -161,7 +168,20 @@ NORDIC_API_KEY=sk_... npm run start:http   # listens on :$PORT (default 3000)
 
 Endpoints:
 - `GET /healthz` — health check (returns version + status)
-- `ALL /mcp` — MCP Streamable HTTP endpoint (session-based via `Mcp-Session-Id` header)
+- `ALL /mcp` — **public** MCP endpoint. No key required; all upstream calls are billed to the server's own `NORDIC_API_KEY` (freemium / discovery). Per-IP rate-limited.
+- `ALL /mcp/auth` — **authenticated** MCP endpoint. Requires `Authorization: Bearer ndk_...` on every request; each call is billed to that customer's own key + quota.
+
+Both are session-based via the `Mcp-Session-Id` header.
+
+### Connecting a remote client
+
+This server uses **static API-key authentication, not OAuth.** How you connect depends on your client:
+
+- **Header-capable clients** (Claude Code, Cursor, Smithery, Claude.ai / ChatGPT custom connectors): point them at `…/mcp/auth` and supply your key as `Authorization: Bearer ndk_...`. Each request is billed to your own tenant + quota.
+- **Generic / auto-discovery clients that only know "URL + OAuth":** point them at the public `…/mcp` (no key). Otherwise such clients attempt OAuth Dynamic Client Registration (`POST /register`) and fail — this server has no OAuth endpoints by design and answers them with a clear JSON `oauth_not_supported` error (not a sign-in flow).
+- **Local clients:** prefer the stdio package — `npx -y nordic-data-mcp` with `NORDIC_API_KEY` set (see Quick start above).
+
+> Full OAuth 2.1 (so arbitrary external clients can self-onboard with their own key) is a planned Phase-2 item, not yet implemented.
 
 A `railway.toml` is included for one-click deploy on [Railway](https://railway.app):
 1. New Project → Deploy from GitHub repo → select `Mnymann/nordic-data-mcp`
@@ -176,7 +196,7 @@ A `railway.toml` is included for one-click deploy on [Railway](https://railway.a
 - **Thin adapter.** No business logic, no caching, no transformations. Each tool maps 1:1 to a Nordic Data API endpoint.
 - **No PII in logs.** Request and response bodies are never logged.
 - **API key required.** The process refuses to start without `NORDIC_API_KEY`.
-- **Rate limiting** and **caching** are handled upstream.
+- **Rate limiting.** The backend enforces per-key quotas; the HTTP transport additionally applies a per-IP limit on the **public** `/mcp` endpoint as defense-in-depth (tunable via `PUBLIC_RATE_LIMIT` / `PUBLIC_RATE_WINDOW_MS`). **Caching** is handled upstream.
 - Inputs are validated with [zod](https://zod.dev) before any HTTP call.
 
 ---
@@ -186,6 +206,12 @@ A `railway.toml` is included for one-click deploy on [Railway](https://railway.a
 Issues and PRs welcome at [github.com/Mnymann/nordic-data-mcp](https://github.com/Mnymann/nordic-data-mcp).
 
 Please **do not** include API keys, request bodies, or response payloads in bug reports.
+
+---
+
+## Disclaimer
+
+Nordic Data returns **informational decision-support** aggregated from official and public sources. It is **not** legal, compliance, financial, or professional advice, and not a definitive determination. KYB reports, sanctions/PEP matches, adverse-media hits, and risk scores are **signals to review, not verdicts** — verify independently and apply your own professional judgment before acting. Use of the service is subject to the [AddonNordic Terms](https://addonnordic.com).
 
 ---
 

@@ -11,6 +11,10 @@
  *    filtered out of the spec and call_endpoint refuses them outright.
  *  - The API key is never echoed into any return value, error, or log.
  *  - call_endpoint only permits HTTP methods the spec declares for a path.
+ *  - The discovery surface is READ-ONLY: only GET/HEAD operations plus a
+ *    fixed allowlist of POST screening queries (pure reads that use POST to
+ *    carry a large request body) are listed and callable. State-changing
+ *    endpoints (watch lists, webhooks, any DELETE/PUT/PATCH) are refused.
  *
  * Spec fetching is cached for 5 minutes so new endpoints appear without a
  * redeploy while not hammering the backend. If the spec is unreachable we
@@ -28,7 +32,7 @@ const CANONICAL_BASE = (
   process.env.NORDIC_CANONICAL_BASE_URL?.trim() || "https://api.addonnordic.dk"
 ).replace(/\/$/, "");
 
-const USER_AGENT = "nordic-data-mcp/1.5.0";
+const USER_AGENT = "nordic-data-mcp/1.5.4";
 const SPEC_PATH = "/openapi.json";
 const SPEC_TTL_MS = 5 * 60 * 1000;
 
@@ -101,6 +105,36 @@ function canonicalizeForPolicy(path: string): string {
 function isAdminPath(path: string): boolean {
   const c = canonicalizeForPolicy(path);
   return c === "/admin" || c.startsWith("/admin/");
+}
+
+/**
+ * READ-ONLY POLICY: the MCP server is declared read-only, so the discovery
+ * tools must never list or execute a state-changing operation. GET/HEAD are
+ * always allowed. POST is allowed only for the screening endpoints below,
+ * which are pure queries that use POST solely to carry a large request body
+ * (up to 1000 names) — they write nothing upstream. Everything else
+ * (watch-list management, webhook registration, DELETE/PUT/PATCH) is refused
+ * even though the spec declares it.
+ */
+const READONLY_POST_PATHS = new Set([
+  "/api/sanctions/screen",
+  "/api/adverse/screen",
+  "/api/peps/nl/screen",
+]);
+
+export function isReadOnlyOperation(method: string, path: string): boolean {
+  const m = method.trim().toUpperCase();
+  if (m === "GET" || m === "HEAD") return true;
+  if (m === "POST") return READONLY_POST_PATHS.has(canonicalizeForPolicy(path));
+  return false;
+}
+
+function readOnlyRefusal(method: string, path: string): NordicApiError {
+  return new NordicApiError({
+    status: 405,
+    code: "read_only",
+    message: `${method.toUpperCase()} ${stripPath(path)} is not permitted: the discovery tools are read-only. Allowed: GET/HEAD requests, plus POST to ${[...READONLY_POST_PATHS].join(", ")} (screening queries).`,
+  });
 }
 
 /**
@@ -349,6 +383,7 @@ export function listDataEndpoints(
     if (isDashboardPath(path)) continue; // DISCOVERY: dashboard routes are operational, not data
     for (const [method, op] of Object.entries(ops)) {
       if (!HTTP_METHODS.has(method.toLowerCase())) continue;
+      if (!isReadOnlyOperation(method, path)) continue; // READ-ONLY: hide write ops
       const summary = (op.summary || op.description || "").toString().trim();
       out.push({
         method: method.toUpperCase(),
@@ -393,6 +428,7 @@ export function getEndpointSchema(
     });
   }
   const m = method.trim().toLowerCase();
+  if (!isReadOnlyOperation(m, clean)) throw readOnlyRefusal(m, clean);
 
   let templatePath = clean;
   let ops = spec.paths[clean];
@@ -464,6 +500,11 @@ export async function callEndpoint(input: CallEndpointInput): Promise<unknown> {
       code: "forbidden",
       message: "Access to /admin endpoints is not permitted via the discovery tools.",
     });
+  }
+
+  // READ-ONLY: refuse state-changing operations before any spec lookup.
+  if (!isReadOnlyOperation(method, cleanPath)) {
+    throw readOnlyRefusal(method, cleanPath);
   }
 
   const { spec } = await getSpec();

@@ -8,7 +8,7 @@ A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives A
 Look up companies, validate VAT numbers, run KYB reports, screen against sanctions lists, autocomplete addresses, and resolve LEI ownership — all from inside your AI assistant.
 
 ```
-DK · NO · SE · FI · IE · UK · FR · DE · CZ · PL · LV · EE
+DK · NO · SE · FI · IE · UK · FR · DE · CZ · PL · LV · EE · NL · BE · LU
 ```
 
 > NL and DE require a Starter+ subscription (free-tier API keys receive HTTP 402 `upgrade_required`). On paid tiers, NL calls cost 5x quota units and DE calls cost 3x; all other countries cost 1x.
@@ -71,7 +71,7 @@ ChatGPT supports remote MCP servers as **custom connectors**. No API key needed 
 
 1. ChatGPT → **Settings** → **Connectors** → **Add custom connector**
 2. URL: `https://nordic-data-mcp-production.up.railway.app/mcp`
-3. Done — all 7 tools are available immediately.
+3. Done — all 11 tools are available immediately.
 
 > Custom connectors require a ChatGPT Pro, Business, Team, or Enterprise plan.
 
@@ -96,6 +96,10 @@ Same hosted endpoint, no local install:
 | `autocomplete_address` | Address autocomplete via DAWA (DK), Kartverket (NO), BAN (FR), MML (FI), Nominatim (others) |
 | `lookup_lei` | GLEIF Legal Entity Identifier lookup — forward, reverse, and parent/children relationships |
 | `company_enriched` | Company data + geocoded address + industry stats + Wikidata (website, employees, CEO, ticker, logo) |
+| `fr_history` | French company history timeline (name, activity, status, legal-form changes) from INSEE Sirene bitemporal data |
+| `list_endpoints` | Discovery: list all read-only data endpoints in the underlying API (230+), with optional keyword filter |
+| `get_endpoint_schema` | Discovery: full parameter + response schema for one endpoint, before calling it |
+| `call_endpoint` | Discovery: execute a read-only request (GET/HEAD, plus three allowlisted POST screening queries) against any discovered endpoint |
 
 ### Example agent prompts
 
@@ -132,6 +136,9 @@ Same hosted endpoint, no local install:
 | PL | NIP / REGON / KRS | NIP=10, REGON=9/14, KRS=10 |
 | LV | Reģistrācijas nr. | 11 digits |
 | EE | Registrikood | 8 digits |
+| NL | KvK-nummer | 8 digits |
+| BE | BCE/KBO | 10 digits |
+| LU | RCSL | `B` + digits |
 
 For `validate_vat`, country codes are **uppercase** and cover the broader EU plus GB (use `GB`, not `UK` — HMRC requires GB).
 
