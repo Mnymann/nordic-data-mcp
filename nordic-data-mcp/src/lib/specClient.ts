@@ -32,7 +32,7 @@ const CANONICAL_BASE = (
   process.env.NORDIC_CANONICAL_BASE_URL?.trim() || "https://api.addonnordic.dk"
 ).replace(/\/$/, "");
 
-const USER_AGENT = "nordic-data-mcp/1.5.4";
+const USER_AGENT = "nordic-data-mcp/1.5.5";
 const SPEC_PATH = "/openapi.json";
 const SPEC_TTL_MS = 5 * 60 * 1000;
 

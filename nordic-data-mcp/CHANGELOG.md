@@ -4,6 +4,11 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.5] — 2026-08-04
+
+### Fixed
+- **`structuredContent` now returned for all tools that declare an `outputSchema`** (the 8 curated tools). The MCP spec requires a tool with an output schema to return structured results; spec-enforcing clients rejected every successful call with "has an output schema but did not return structured content". The dispatcher previously returned only a text-serialized JSON block. It now returns both: `structuredContent` (the raw result object) alongside the human-readable text content. Non-object results are wrapped as `{ result }`, which still validates (all output schemas are `additionalProperties: true` with no required fields). Error results are unchanged. This bug made `validate_vat` (and the other 7 schema-declaring tools) unusable from strict MCP clients regardless of backend health.
+
 ## [1.5.4] — 2026-08-03
 
 Addresses the four items from the Anthropic MCP Directory review (2026-07-31).

@@ -64,9 +64,22 @@ export async function dispatchToolCall(
 
   try {
     const result = await tool.handler(args);
-    return {
+    const response: CallToolResult = {
       content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
     };
+    // MCP spec: a tool that declares an outputSchema MUST return
+    // structuredContent on success — strict clients reject the result
+    // otherwise ("has an output schema but did not return structured
+    // content"). structuredContent must be an object; the rare non-object
+    // result is wrapped, which still validates (all our output schemas are
+    // additionalProperties: true with no required fields).
+    if (tool.outputSchema) {
+      response.structuredContent =
+        result && typeof result === "object" && !Array.isArray(result)
+          ? (result as Record<string, unknown>)
+          : { result };
+    }
+    return response;
   } catch (err) {
     const content: ToolContent[] = [
       { type: "text", text: `Error: ${formatError(err)}` },
