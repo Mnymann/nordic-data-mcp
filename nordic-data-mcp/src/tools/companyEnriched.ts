@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { apiGet } from "../lib/apiClient.js";
-import { SUPPORTED_COUNTRIES } from "../lib/countries.js";
+import { ENRICHED_COUNTRIES } from "../lib/countries.js";
 import type { McpTool } from "../types.js";
 
 const inputSchema = z.object({
   country: z
-    .enum(SUPPORTED_COUNTRIES)
-    .describe("ISO 3166-1 alpha-2 country code, lowercase."),
+    .enum(ENRICHED_COUNTRIES)
+    .describe("ISO 3166-1 alpha-2 country code, lowercase. Only dk, no, se and fi are supported."),
   id: z
     .string()
     .min(1)
@@ -17,7 +17,7 @@ const inputSchema = z.object({
 export const companyEnriched: McpTool = {
   name: "company_enriched",
   description:
-    "Enriched company data: basic registry data + DAWA-validated address with lat/lng + industry statistics (DST for DK, SSB for NO, etc.) + Wikidata enrichment (website, employees, CEO, ticker, logo, Wikipedia URL). One call, multiple sources. Supports 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note: NL and DE use paid upstream registries — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402. On paid tiers, NL costs 5x quota and DE costs 3x.",
+    "Company registry data plus national industry statistics in one call. Returns `company` (same shape as lookup_company) and `industryStats` — a time series from the national statistics office for the company's industry code (currently Danmarks Statistik for DK); `industryStats.available` is false when no statistics exist. Supports 4 countries: DK, NO, SE, FI. For other countries use lookup_company (basic registry data) or kyb_full (full due-diligence report).",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   // Matches the live response shape (verified 2026-09-15). Every property is
