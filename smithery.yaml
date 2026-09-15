@@ -21,8 +21,9 @@ description: >
   NL=5x, DE=3x quota cost on paid tiers, all others 1x.
   Backed by official registries (Erhvervsstyrelsen, Brønnøysund, Bolagsverket,
   PRH, CRO, Companies House, INSEE, Handelsregister, ARES, KRS, UR, RIK),
-  VIES + HMRC for VAT, OpenSanctions for UN/EU/OFAC/PEP screening, GLEIF
-  for LEI, and DAWA / Kartverket / BAN / MML / Nominatim for addresses. Get
+  VIES for EU VAT, OpenSanctions for UN/EU/OFAC/PEP screening, GLEIF
+  for LEI, and DAWA / Kartverket / BAN / Nominatim for addresses (DK, NO,
+  SE, FI, FR). Get
   a free API key (100 lookups/day) at https://addonnordic.com.
 
 startCommand:

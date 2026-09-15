@@ -1,5 +1,10 @@
 import { tools } from "../tools/index.js";
-import { SUPPORTED_COUNTRIES, VAT_COUNTRIES } from "../lib/countries.js";
+import {
+  ADDRESS_COUNTRIES,
+  ENRICHED_COUNTRIES,
+  SUPPORTED_COUNTRIES,
+  VAT_COUNTRIES,
+} from "../lib/countries.js";
 
 /**
  * Static documentation resources exposed over MCP `resources/list` and
@@ -42,22 +47,26 @@ function countriesDoc(): string {
   const rows = SUPPORTED_COUNTRIES.map((c) => {
     const name = COUNTRY_NAMES[c] ?? c.toUpperCase();
     const note = COUNTRY_NOTES[c] ?? "1x quota";
-    return `| \`${c}\` | ${name} | ${note} |`;
+    const enriched = (ENRICHED_COUNTRIES as readonly string[]).includes(c) ? "yes" : "—";
+    const address = (ADDRESS_COUNTRIES as readonly string[]).includes(c) ? "yes" : "—";
+    return `| \`${c}\` | ${name} | ${enriched} | ${address} | ${note} |`;
   }).join("\n");
 
   return `# Supported countries
 
-## Company-data tools (15 countries — use lowercase ISO 3166-1 alpha-2 codes)
+## Company-data tools (use lowercase ISO 3166-1 alpha-2 codes)
 
-| Code | Country | Notes |
-|------|---------|-------|
+\`lookup_company\`, \`kyb_full\` and \`lookup_lei\` (reverse mode) cover all 15 countries below. \`company_enriched\` and \`autocomplete_address\` cover only the countries marked "yes".
+
+| Code | Country | \`company_enriched\` | \`autocomplete_address\` | Notes |
+|------|---------|------|------|-------|
 ${rows}
 
 NL and DE are tier-gated by the backend: free-tier keys receive HTTP 402 \`upgrade_required\`. All countries except NL (5x) and DE (3x) cost 1x quota.
 
-## VAT validation (\`validate_vat\`) — broader EU + GB, use UPPERCASE codes
+## VAT validation (\`validate_vat\`) — 27 EU member states, use UPPERCASE VIES codes
 
-Use **GB**, not UK, for the United Kingdom (HMRC requirement).
+Use **EL**, not GR, for Greece. The United Kingdom (GB) and Norway (NO) are not supported.
 
 ${VAT_COUNTRIES.join(", ")}
 `;
@@ -84,7 +93,8 @@ function gettingStartedDoc(): string {
 2. Provide the key as your personal credential; usage is billed to your account.
 3. Country codes:
    - Company tools use lowercase ISO codes (e.g. \`dk\`, \`se\`, \`fr\`).
-   - \`validate_vat\` uses UPPERCASE codes and requires \`GB\` (not \`UK\`) for the United Kingdom.
+   - \`validate_vat\` uses UPPERCASE VIES codes for the 27 EU member states (\`EL\` for Greece); the United Kingdom and Norway are not supported.
+   - \`company_enriched\` covers DK, NO, SE, FI; \`autocomplete_address\` covers DK, NO, SE, FI, FR.
 4. NL and DE require a paid plan (free-tier keys get HTTP 402). NL costs 5x quota, DE 3x, all others 1x.
 
 See the \`nordic://countries\` and \`nordic://tools\` resources for the full country list and tool catalog.
@@ -100,7 +110,7 @@ export const resources: ResourceDef[] = [
     uri: "nordic://countries",
     name: "Supported countries",
     description:
-      "Country coverage for company tools (lowercase) and VAT validation (uppercase + GB), including tier-gating and quota cost.",
+      "Per-tool country coverage for company tools (lowercase) and VAT validation (uppercase VIES codes), including tier-gating and quota cost.",
     mimeType: "text/markdown",
     build: countriesDoc,
   },

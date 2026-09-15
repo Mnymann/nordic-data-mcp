@@ -97,12 +97,12 @@ All commands are run from `nordic-data-mcp/` and use `npm`, not `pnpm`. The pack
 7 MCP tools exposed to AI agents:
 
 1. `lookup_company` — basic company data from official registries (12 countries)
-2. `validate_vat` — VIES (EU) + HMRC (GB) VAT validation
+2. `validate_vat` — VIES VAT validation, 27 EU member states (EL for Greece; no GB/NO)
 3. `screen_sanctions` — bulk screen up to 1000 names against UN/EU/OFAC/PEP (OpenSanctions)
 4. `kyb_full` — master KYB report (identity + persons + financials + LEI + VAT + sanctions + adverse media + risk score)
-5. `autocomplete_address` — authoritative address autocomplete per country (DAWA, Kartverket, BAN, MML, Nominatim)
+5. `autocomplete_address` — address autocomplete for DK, NO, SE, FI, FR (DAWA, Kartverket, BAN, Nominatim)
 6. `lookup_lei` — GLEIF forward + reverse + parent/children
-7. `company_enriched` — registry + geocoded address + industry stats + Wikidata
+7. `company_enriched` — registry data + national industry stats (DK, NO, SE, FI)
 
 Countries (lowercase, company tools): `dk no se fi ie uk fr de cz pl lv ee nl be lu` (15). NL and DE are tier-gated by backend (Starter+ required); free-tier keys receive HTTP 402 `upgrade_required`. NL=5x, DE=3x cost multiplier, all others 1x.
 
@@ -115,7 +115,7 @@ Countries (lowercase, company tools): `dk no se fi ie uk fr de cz pl lv ee nl be
 
 ## Gotchas
 
-- **Use `GB`, not `UK`, for `validate_vat`** — HMRC requires the GB code. The 12 company-data countries use `uk` (lowercase) but VAT uses uppercase + `GB`.
+- **`validate_vat` takes uppercase VIES codes for the 27 EU member states** — `EL` for Greece, and GB/NO are rejected by the backend (verified 2026-09-15). Company tools use lowercase codes. Per-tool country sets live in `src/lib/countries.ts`; never widen one without a live check.
 - **Don't use `console.log` in `src/index.ts`** — stdout is the MCP transport. Use `console.error` (which goes to stderr).
 - **The package is NOT part of the pnpm workspace.** Don't add `nordic-data-mcp` to `pnpm-workspace.yaml`. Use npm inside the folder.
 - **`npm install` in `nordic-data-mcp/`** — running it from the repo root will trigger the workspace `preinstall` hook that rejects npm.

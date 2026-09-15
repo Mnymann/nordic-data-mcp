@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/nordic-data-mcp.svg)](https://www.npmjs.com/package/nordic-data-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives AI agents (Claude, Cursor, Claude Code, ChatGPT, Copilot, etc.) direct access to **official European business data** across **15 EU countries**.
+A [Model Context Protocol](https://modelcontextprotocol.io/) server that gives AI agents (Claude, Cursor, Claude Code, ChatGPT, Copilot, etc.) direct access to **official European business data** across **15 European countries**.
 
 Look up companies, validate VAT numbers, run KYB reports, screen against sanctions lists, autocomplete addresses, and resolve LEI ownership — all from inside your AI assistant.
 
@@ -90,12 +90,12 @@ Same hosted endpoint, no local install:
 | Tool | What it does |
 |---|---|
 | `lookup_company` | Basic company data from official registries (CVR, Brønnøysund, Bolagsverket, Companies House, INSEE, etc.) |
-| `validate_vat` | Validate a VAT number against VIES (EU) or HMRC (GB) |
+| `validate_vat` | Validate a VAT number for the 27 EU member states against VIES |
 | `screen_sanctions` | Bulk screen up to 1000 names against UN/EU/OFAC/PEP lists (OpenSanctions, 768K+ entries) |
 | `kyb_full` | Master Know-Your-Business report — identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score |
-| `autocomplete_address` | Address autocomplete via DAWA (DK), Kartverket (NO), BAN (FR), MML (FI), Nominatim (others) |
+| `autocomplete_address` | Address autocomplete with coordinates for DK (DAWA), NO (Kartverket), FR (BAN), SE and FI (OpenStreetMap Nominatim) |
 | `lookup_lei` | GLEIF Legal Entity Identifier lookup — forward, reverse, and parent/children relationships |
-| `company_enriched` | Company data + geocoded address + industry stats + Wikidata (website, employees, CEO, ticker, logo) |
+| `company_enriched` | Company registry data + national industry statistics in one call (DK, NO, SE, FI) |
 | `fr_history` | French company history timeline (name, activity, status, legal-form changes) from INSEE Sirene bitemporal data |
 | `list_endpoints` | Discovery: list all read-only data endpoints in the underlying API (230+), with optional keyword filter |
 | `get_endpoint_schema` | Discovery: full parameter + response schema for one endpoint, before calling it |
@@ -140,7 +140,9 @@ Same hosted endpoint, no local install:
 | BE | BCE/KBO | 10 digits |
 | LU | RCSL | `B` + digits |
 
-For `validate_vat`, country codes are **uppercase** and cover the broader EU plus GB (use `GB`, not `UK` — HMRC requires GB).
+The table above applies to `lookup_company`, `kyb_full` and `lookup_lei` (reverse mode). `company_enriched` covers DK, NO, SE and FI; `autocomplete_address` covers DK, NO, SE, FI and FR.
+
+For `validate_vat`, country codes are **uppercase** VIES codes for the 27 EU member states — use `EL` (not `GR`) for Greece. The United Kingdom and Norway are not supported.
 
 ---
 

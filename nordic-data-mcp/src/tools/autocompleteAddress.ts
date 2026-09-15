@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { apiGet } from "../lib/apiClient.js";
-import { SUPPORTED_COUNTRIES } from "../lib/countries.js";
+import { ADDRESS_COUNTRIES } from "../lib/countries.js";
 import type { McpTool } from "../types.js";
 
 const inputSchema = z.object({
   country: z
-    .enum(SUPPORTED_COUNTRIES)
-    .describe("ISO 3166-1 alpha-2 country code, lowercase."),
+    .enum(ADDRESS_COUNTRIES)
+    .describe("ISO 3166-1 alpha-2 country code, lowercase. Only dk, no, se, fi and fr are supported."),
   query: z
     .string()
     .min(2)
@@ -19,7 +19,7 @@ const inputSchema = z.object({
 export const autocompleteAddress: McpTool = {
   name: "autocomplete_address",
   description:
-    "Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates. Supports 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note: NL and DE require a Starter+ subscription — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402.",
+    "Address autocomplete with coordinates. Sources: DAWA (DK, official address register), Kartverket/Geonorge (NO, official), BAN (FR, official Base Adresse Nationale), and OpenStreetMap Nominatim (SE, FI). Returns ranked address suggestions with lat/lng and a match confidence. Supports 5 countries: DK, NO, SE, FI, FR.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   // Matches the live response shape (verified 2026-09-15). Every property is
@@ -47,7 +47,7 @@ export const autocompleteAddress: McpTool = {
               description: "WGS-84 {lat, lng}.",
             },
             confidence: { type: ["number", "null"], description: "Match confidence 0-1." },
-            source: { type: ["string", "null"], description: "DAWA / Kartverket / BAN / MML / Nominatim." },
+            source: { type: ["string", "null"], description: "DAWA / Geonorge / BAN / Nominatim." },
           },
         },
       },

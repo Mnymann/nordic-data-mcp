@@ -4,6 +4,19 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Tools no longer offer countries the API rejects.** A live audit against `api.addonnordic.dk` (2026-09-15) found three tools advertising coverage that returned errors. Each tool's `country` enum and description now list only verified countries, so an agent cannot pick one that fails:
+  - `company_enriched` — narrowed from 15 countries to **DK, NO, SE, FI** (the rest returned HTTP 400 `invalid_country`). The description no longer promises Wikidata or a geocoded address; the API returns `company` + `industryStats`.
+  - `autocomplete_address` — narrowed from 15 countries to **DK, NO, SE, FI, FR** (the rest returned 404). Source list corrected: FI is served by Nominatim, not MML.
+  - `validate_vat` — removed **GB** and **NO** (HTTP 400 `invalid_country_code`), and replaced **GR** with **EL**, the VIES code for Greece (GR was rejected). The enum is now exactly the 27 EU member states.
+- `defaultCountry` (header, query or `NORDIC_DEFAULT_COUNTRY`) is only injected into a tool that covers that country, instead of silently producing an upstream error.
+- Server instructions, the `nordic://countries` and `nordic://getting-started` resources, the `vat_check` prompt, README and Smithery description now state per-tool coverage.
+
+### Added
+- `test/countryCoverage.test.ts` pins each tool's advertised countries to the verified set.
+
 ## [1.5.6] — 2026-09-15
 
 ### Fixed

@@ -41,13 +41,13 @@ export const prompts: PromptDef[] = [
       { name: "vat_number", description: "VAT number to validate", required: true },
       {
         name: "country",
-        description: "UPPERCASE country code; use GB (not UK) for the United Kingdom",
+        description: "UPPERCASE EU member-state code (VIES); use EL for Greece. UK and Norway are not supported",
         required: true,
       },
     ],
     build: (a) =>
       `Validate VAT number "${a.vat_number}" for country "${a.country}" using validate_vat ` +
-      `(remember: use GB, not UK, for the United Kingdom). Report whether it is valid, and the ` +
+      `(EU member states only; use EL, not GR, for Greece). Report whether it is valid, and the ` +
       `registered company name and address if available.`,
   },
   {

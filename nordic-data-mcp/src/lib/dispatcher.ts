@@ -2,27 +2,32 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { tools } from "../tools/index.js";
 import { formatError, NordicApiError } from "./errors.js";
 import { getRequestOptions } from "./requestContext.js";
-import { SUPPORTED_COUNTRIES } from "./countries.js";
+import {
+  ADDRESS_COUNTRIES,
+  ENRICHED_COUNTRIES,
+  SUPPORTED_COUNTRIES,
+} from "./countries.js";
 
 /**
- * Tools whose `country` argument uses the 12-country lowercase set
- * (`SUPPORTED_COUNTRIES`). When a request scope sets `defaultCountry`
- * and the agent omits `country`, the dispatcher injects the default
- * into args BEFORE the tool's Zod schema validates them.
+ * Tools whose `country` argument is a lowercase country code, mapped to the
+ * countries that tool accepts. When a request scope sets `defaultCountry`
+ * and the agent omits `country`, the dispatcher injects the default into
+ * args BEFORE the tool's Zod schema validates them — but only if that tool
+ * supports the country (e.g. `defaultCountry: uk` is not injected into
+ * `autocomplete_address`, which has no UK coverage).
  *
- * `validate_vat` is intentionally NOT in this set — it uses a different
- * country list (VAT_COUNTRIES, uppercase, includes GB/EU-only entries),
- * and silently injecting a lowercase code there would create cryptic
- * validation failures.
+ * `validate_vat` is intentionally NOT in this map — it uses a different
+ * country list (VAT_COUNTRIES, uppercase VIES codes), and silently injecting
+ * a lowercase code there would create cryptic validation failures.
  *
  * `screen_sanctions` takes no country argument at all.
  */
-const LOWERCASE_COUNTRY_TOOLS = new Set<string>([
-  "lookup_company",
-  "kyb_full",
-  "autocomplete_address",
-  "company_enriched",
-  "lookup_lei",
+const LOWERCASE_COUNTRY_TOOLS = new Map<string, readonly string[]>([
+  ["lookup_company", SUPPORTED_COUNTRIES],
+  ["kyb_full", SUPPORTED_COUNTRIES],
+  ["autocomplete_address", ADDRESS_COUNTRIES],
+  ["company_enriched", ENRICHED_COUNTRIES],
+  ["lookup_lei", SUPPORTED_COUNTRIES],
 ]);
 
 type ToolContent = { type: "text"; text: string };
@@ -33,10 +38,8 @@ function maybeInjectCountry(
   defaultCountry: string | undefined,
 ): unknown {
   if (!defaultCountry) return args;
-  if (!LOWERCASE_COUNTRY_TOOLS.has(toolName)) return args;
-  if (!(SUPPORTED_COUNTRIES as readonly string[]).includes(defaultCountry)) {
-    return args;
-  }
+  const allowed = LOWERCASE_COUNTRY_TOOLS.get(toolName);
+  if (!allowed || !allowed.includes(defaultCountry)) return args;
   if (!args || typeof args !== "object" || Array.isArray(args)) return args;
   if ("country" in (args as Record<string, unknown>)) return args;
   return { ...(args as Record<string, unknown>), country: defaultCountry };
