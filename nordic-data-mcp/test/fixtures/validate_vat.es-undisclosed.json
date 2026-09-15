@@ -1,0 +1,17 @@
+{
+  "tool": "validate_vat",
+  "args": {
+    "country": "ES",
+    "vat_number": "A28015865"
+  },
+  "note": "VIES returns name/address null for Spain",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "valid": true,
+    "vatNumber": "ESA28015865",
+    "countryCode": "ES",
+    "name": null,
+    "address": null,
+    "source": "VIES"
+  }
+}

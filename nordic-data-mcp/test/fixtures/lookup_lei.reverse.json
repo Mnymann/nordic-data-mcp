@@ -1,0 +1,44 @@
+{
+  "tool": "lookup_lei",
+  "args": {
+    "mode": "reverse",
+    "country": "dk",
+    "id": "24256790"
+  },
+  "capturedAt": "2026-09-15",
+  "response": {
+    "country": "dk",
+    "id": "24256790",
+    "found": true,
+    "count": 1,
+    "records": [
+      {
+        "lei": "549300DAQ1CVT6CXN342",
+        "legalName": "NOVO NORDISK A/S",
+        "status": "ACTIVE",
+        "jurisdiction": "DK",
+        "registeredAs": "24256790",
+        "legalForm": "ZRPO",
+        "category": "GENERAL",
+        "legalAddress": {
+          "country": "DK",
+          "city": "Bagsværd",
+          "postalCode": "2880",
+          "lines": [
+            "Novo Alle 1"
+          ]
+        },
+        "registration": {
+          "initial": "2013-09-10T10:41:00Z",
+          "lastUpdate": "2025-12-22T14:18:00Z",
+          "status": "ISSUED",
+          "nextRenewal": "2027-02-07T12:31:00Z",
+          "managingLou": "549300O897ZC5H7CY412"
+        }
+      }
+    ],
+    "matchedAs": "24256790",
+    "source": "GLEIF",
+    "fetchedAt": "2026-09-15T17:25:06.409Z"
+  }
+}

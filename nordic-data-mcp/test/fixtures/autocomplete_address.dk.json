@@ -1,0 +1,44 @@
+{
+  "tool": "autocomplete_address",
+  "args": {
+    "country": "dk",
+    "query": "Rådhuspladsen 1"
+  },
+  "capturedAt": "2026-09-15",
+  "response": {
+    "results": [
+      {
+        "id": "60916fb0-af5f-4046-b3c8-4fd95c405291",
+        "displayName": "Rådhuspladsen 12, 1. 1, 8362 Hørning",
+        "street": "Rådhuspladsen",
+        "number": "12",
+        "streetLetter": "",
+        "postalCode": "8362",
+        "city": "Hørning",
+        "municipality": "0746",
+        "source": "DAWA",
+        "confidence": 1,
+        "coordinates": {
+          "lat": 56.08550026,
+          "lng": 10.03525964
+        }
+      },
+      {
+        "id": "3bfe8a4c-3607-4ce5-b7f8-6224904ca547",
+        "displayName": "Rådhuspladsen 16, 1. 1, 8362 Hørning",
+        "street": "Rådhuspladsen",
+        "number": "16",
+        "streetLetter": "",
+        "postalCode": "8362",
+        "city": "Hørning",
+        "municipality": "0746",
+        "source": "DAWA",
+        "confidence": 1,
+        "coordinates": {
+          "lat": 56.08523942,
+          "lng": 10.03511904
+        }
+      }
+    ]
+  }
+}

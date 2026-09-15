@@ -22,26 +22,32 @@ export const autocompleteAddress: McpTool = {
     "Address autocomplete using each country's authoritative register: DAWA (DK), Kartverket (NO), BAN (FR official), MML (FI), and Nominatim (others). Returns ranked address suggestions with coordinates. Supports 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note: NL and DE require a Starter+ subscription — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  // Matches the live response shape (verified 2026-09-15). Every property is
+  // nullable: a strict client rejects the whole result if one field breaks
+  // the schema.
   outputSchema: {
     type: "object",
     additionalProperties: true,
     properties: {
-      suggestions: {
-        type: "array",
+      results: {
+        type: ["array", "null"],
         description: "Ranked address candidates, best match first.",
         items: {
           type: "object",
           additionalProperties: true,
           properties: {
-            text: { type: "string", description: "Formatted address suitable for display." },
-            street: { type: "string" },
-            house_number: { type: "string" },
-            postcode: { type: "string" },
-            city: { type: "string" },
-            country: { type: "string", description: "ISO 3166-1 alpha-2 code." },
-            lat: { type: "number", description: "Latitude (WGS-84)." },
-            lon: { type: "number", description: "Longitude (WGS-84)." },
-            source: { type: "string", description: "DAWA / Kartverket / BAN / MML / Nominatim." },
+            displayName: { type: ["string", "null"], description: "Formatted address suitable for display." },
+            street: { type: ["string", "null"] },
+            number: { type: ["string", "null"], description: "House number." },
+            postalCode: { type: ["string", "null"] },
+            city: { type: ["string", "null"] },
+            coordinates: {
+              type: ["object", "null"],
+              additionalProperties: true,
+              description: "WGS-84 {lat, lng}.",
+            },
+            confidence: { type: ["number", "null"], description: "Match confidence 0-1." },
+            source: { type: ["string", "null"], description: "DAWA / Kartverket / BAN / MML / Nominatim." },
           },
         },
       },

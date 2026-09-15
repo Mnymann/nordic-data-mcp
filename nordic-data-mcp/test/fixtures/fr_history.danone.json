@@ -1,0 +1,84 @@
+{
+  "tool": "fr_history",
+  "args": {
+    "siren": "552032534"
+  },
+  "note": "sigle, endDate and from are null",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "siren": "552032534",
+    "dateCreation": "1955-01-01",
+    "categorieEntreprise": "GE",
+    "sigle": null,
+    "periodCount": 8,
+    "count": 9,
+    "events": [
+      {
+        "date": "1955-01-01",
+        "endDate": "1989-12-31",
+        "type": "initial:name",
+        "from": null,
+        "to": "BOUSSOIS SOUCHON NEUVESEL GE"
+      },
+      {
+        "date": "1955-01-01",
+        "endDate": "1989-12-31",
+        "type": "initial:status",
+        "from": null,
+        "to": "A"
+      },
+      {
+        "date": "1955-01-01",
+        "endDate": "1989-12-31",
+        "type": "initial:legal_form",
+        "from": null,
+        "to": "5599"
+      },
+      {
+        "date": "1990-01-01",
+        "endDate": "1993-12-31",
+        "type": "name",
+        "from": "BOUSSOIS SOUCHON NEUVESEL GE",
+        "to": "BSN"
+      },
+      {
+        "date": "1994-01-01",
+        "endDate": "2003-12-24",
+        "type": "name",
+        "from": "BSN",
+        "to": "GROUPE DANONE"
+      },
+      {
+        "date": "2003-12-25",
+        "endDate": "2007-12-31",
+        "type": "activity",
+        "from": null,
+        "to": "74.1J"
+      },
+      {
+        "date": "2008-01-01",
+        "endDate": "2009-04-22",
+        "type": "activity",
+        "from": "74.1J",
+        "to": "70.10Z"
+      },
+      {
+        "date": "2009-04-23",
+        "endDate": "2019-05-15",
+        "type": "name",
+        "from": "GROUPE DANONE",
+        "to": "DANONE"
+      },
+      {
+        "date": "2019-05-16",
+        "endDate": "2025-08-18",
+        "type": "ess_flag",
+        "from": null,
+        "to": "N"
+      }
+    ],
+    "source": "api.insee.fr",
+    "sourceNote": "Derived from Sirene 3.11 periodesUniteLegale (bitemporal)",
+    "fetchedAt": "2026-09-15T17:25:16.972Z"
+  }
+}

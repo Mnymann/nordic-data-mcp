@@ -1,0 +1,15 @@
+{
+  "tool": "validate_vat",
+  "args": {
+    "country": "DE",
+    "vat_number": "000000000"
+  },
+  "note": "invalid number: name/address keys absent",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "valid": false,
+    "vatNumber": "DE000000000",
+    "countryCode": "DE",
+    "source": "VIES"
+  }
+}

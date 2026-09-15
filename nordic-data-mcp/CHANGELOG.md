@@ -4,6 +4,19 @@ All notable changes to `nordic-data-mcp` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.6] — 2026-09-15
+
+### Fixed
+- **Strict MCP clients rejected valid results when the API returned `null` or a country-specific shape.** Since 1.5.5 every curated tool returns `structuredContent`, and a spec-enforcing client rejects the *whole* result if one field breaks the declared `outputSchema`. Reported from production: `validate_vat` for German number `DE143454214` failed with "Structured content does not match the tool's output schema: data/name must be string, data/address must be string", because VIES does not disclose trader name/address for DE, ES and other member states. A live audit of all 7 schema-declaring tools against `api.addonnordic.dk` found the same failure class in two more tools:
+  - `validate_vat` — `name`/`address` are `null` for DE and ES.
+  - `lookup_company` — `address` is a string (not an object) for FR, CZ, PL, LV and EE; `founded` is `null` for BE.
+  - `lookup_lei` with `include_relationships=true` — `relationships.children` is a paginated object, not an array; failed for every LEI.
+- **Output schemas now describe the real response fields.** Several schemas declared field names the API never returns (e.g. `validate_vat` `vat_number`/`checked_at`, `company_enriched` `registry`/`wikidata`, `autocomplete_address` `suggestions`, `lookup_lei` `legal_name`, `screen_sanctions` `matches`). They are rewritten from live responses. `screen_sanctions` now documents the per-name decision fields (`matched`, `classification`, `flaggedCount`, `requiresManualReview`) and states that `count`/`topScore` are candidate metrics, not a match.
+- **Every declared property now accepts `null`**, no field is required, and unknown fields remain allowed.
+
+### Added
+- `npm test`: regression suite replaying 15 captured live responses (including the DE/ES null VIES case) through a real SDK Server + Client pair, so the client performs the same output-schema validation that failed in production. A structural test fails if any declared property does not accept `null`.
+
 ## [1.5.5] — 2026-08-04
 
 ### Fixed

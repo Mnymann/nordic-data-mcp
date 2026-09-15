@@ -1,0 +1,17 @@
+{
+  "tool": "validate_vat",
+  "args": {
+    "country": "DE",
+    "vat_number": "143454214"
+  },
+  "note": "VIES returns name/address null for Germany — the 2026-09-15 bug",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "valid": true,
+    "vatNumber": "DE143454214",
+    "countryCode": "DE",
+    "name": null,
+    "address": null,
+    "source": "VIES"
+  }
+}

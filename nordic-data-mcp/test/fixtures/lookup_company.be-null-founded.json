@@ -1,0 +1,28 @@
+{
+  "tool": "lookup_company",
+  "args": {
+    "country": "be",
+    "id": "0417497106"
+  },
+  "note": "BE (VIES-backed) returns founded null",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "id": "0417497106",
+    "country": "be",
+    "name": "NV Anheuser-Busch InBev",
+    "status": "active",
+    "address": {
+      "street": "Brouwerijplein 1",
+      "city": "Leuven",
+      "zip": "3000"
+    },
+    "industry": {
+      "code": "",
+      "description": ""
+    },
+    "vatRegistered": true,
+    "founded": null,
+    "source": "vies (ec.europa.eu)",
+    "fetchedAt": "2026-09-15T17:24:49.470Z"
+  }
+}

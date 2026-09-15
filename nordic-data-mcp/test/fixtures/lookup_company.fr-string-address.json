@@ -1,0 +1,37 @@
+{
+  "tool": "lookup_company",
+  "args": {
+    "country": "fr",
+    "id": "552032534"
+  },
+  "note": "FR registry returns address as a string",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "orgNumber": "552032534",
+    "siret": "55203253400703",
+    "name": "DANONE",
+    "tradingName": null,
+    "legalForm": "5599",
+    "legalFormLabel": "SA à conseil d'administration (s.a.i.)",
+    "status": "active",
+    "naceCode": "70.10Z",
+    "sector": "M",
+    "employeeRange": "42",
+    "employeeYear": "2023",
+    "sizeCategory": "GE",
+    "registrationDate": "1955-01-01",
+    "lastUpdated": "2026-09-15T11:45:44",
+    "establishments": 19,
+    "activeEstablishments": 3,
+    "address": "59-61 RUE LA FAYETTE 75009 PARIS, 75009, PARIS",
+    "postalCode": "75009",
+    "city": "PARIS",
+    "department": "75",
+    "region": "11",
+    "country": "France",
+    "lat": 48.8763540066087,
+    "lon": 2.34353640229216,
+    "source": "recherche-entreprises.api.gouv.fr",
+    "fetchedAt": "2026-09-15T17:24:47.901Z"
+  }
+}

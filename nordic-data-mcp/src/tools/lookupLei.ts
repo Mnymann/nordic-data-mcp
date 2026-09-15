@@ -53,33 +53,52 @@ export const lookupLei: McpTool = {
     "Look up a Legal Entity Identifier (LEI) via GLEIF — the global standard for entity identification. Returns legal name, registered address, status, parent + ultimate parent relationships, and child entities (subsidiaries). Also supports reverse lookup from a national company number to LEI across 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note (reverse mode only): NL and DE use paid upstream registries — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  // Matches the live response shapes (verified 2026-09-15). mode='lei' returns
+  // a single record; mode='reverse' returns {found, count, records}. Every
+  // property is nullable: a strict client rejects the whole result if one
+  // field breaks the schema.
   outputSchema: {
     type: "object",
     additionalProperties: true,
     properties: {
-      lei: { type: "string", description: "20-character ISO 17442 identifier." },
-      legal_name: { type: "string" },
-      status: { type: "string", description: "ISSUED / LAPSED / RETIRED / etc." },
+      lei: { type: ["string", "null"], description: "20-character ISO 17442 identifier (mode='lei')." },
+      legalName: { type: ["string", "null"], description: "Registered legal name (mode='lei')." },
+      status: { type: ["string", "null"], description: "Entity status, e.g. ACTIVE / INACTIVE." },
+      jurisdiction: { type: ["string", "null"] },
+      registeredAs: { type: ["string", "null"], description: "National registry identifier." },
+      legalForm: { type: ["string", "null"], description: "ISO 20275 entity legal form code." },
+      legalAddress: { type: ["object", "null"], additionalProperties: true },
       registration: {
-        type: "object",
+        type: ["object", "null"],
         additionalProperties: true,
-        description: "GLEIF registration metadata (initial date, last update, status).",
+        description: "GLEIF registration metadata (initial, lastUpdate, status ISSUED/LAPSED/..., nextRenewal).",
       },
-      legal_address: { type: "object", additionalProperties: true },
-      headquarters_address: { type: "object", additionalProperties: true },
+      found: { type: ["boolean", "null"], description: "mode='reverse': whether any LEI exists for the national ID." },
+      count: { type: ["integer", "null"], description: "mode='reverse': number of LEI records found." },
+      records: {
+        type: ["array", "null"],
+        items: { type: "object", additionalProperties: true },
+        description: "mode='reverse': matching LEI records (same shape as a mode='lei' result).",
+      },
       relationships: {
-        type: "object",
+        type: ["object", "null"],
         additionalProperties: true,
         description: "Only present when include_relationships=true.",
         properties: {
-          parent: { type: "object", additionalProperties: true, description: "Direct parent LEI record or null." },
+          parent: {
+            type: ["object", "null"],
+            additionalProperties: true,
+            description: "{directParent, ultimateParent, isUltimate}; directParent/ultimateParent are null for a top-level entity.",
+          },
           children: {
-            type: "array",
-            items: { type: "object", additionalProperties: true },
-            description: "Known subsidiary LEI records.",
+            type: ["object", "null"],
+            additionalProperties: true,
+            description: "Paginated subsidiaries: {total, page, totalPages, children: [LEI records]}.",
           },
         },
       },
+      source: { type: ["string", "null"] },
+      fetchedAt: { type: ["string", "null"] },
     },
   },
   annotations: { title: "Look Up LEI", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },

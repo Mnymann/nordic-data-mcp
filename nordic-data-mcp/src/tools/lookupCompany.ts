@@ -22,31 +22,37 @@ export const lookupCompany: McpTool = {
     "Call before onboarding a supplier or customer to confirm the legal entity exists and is active. Look up basic company data (name, address, status, industry, VAT registration, founding date) from official European business registries. Supports 15 countries: DK (CVR), NO (Brønnøysund), SE (Bolagsverket), FI (YTJ/PRH), IE (CRO), UK (Companies House), FR (INSEE Sirene), DE (Handelsregister), CZ (ARES), PL (KAS+KRS), LV (Uzņēmumu reģistrs), EE (Ariregister), NL (KvK), BE (KBO), LU (RCSL). Tier note: NL and DE use paid upstream registries (KvK and Handelsregister). Free-tier API keys will receive HTTP 402 with error 'upgrade_required' — do NOT retry on 402; the error message includes an upgrade URL. On paid tiers, NL calls cost 5x quota units and DE calls cost 3x; all other countries cost 1x.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  // Shape varies by country registry (verified live 2026-09-15): address is an
+  // object for DK/NO/SE/FI/UK/BE but a single string for FR/CZ/PL/LV/EE, and
+  // any field may be null. Every property is nullable so one registry quirk
+  // never makes a strict client reject the whole result.
   outputSchema: {
     type: "object",
     additionalProperties: true,
     properties: {
-      country: { type: "string", description: "ISO 3166-1 alpha-2 country code (lowercase)." },
-      id: { type: "string", description: "National company identifier as supplied." },
-      name: { type: "string", description: "Registered legal name." },
-      status: { type: "string", description: "Registry status, e.g. active, dissolved, bankrupt." },
+      country: { type: ["string", "null"], description: "Country code or name as returned by the source registry." },
+      id: { type: ["string", "null"], description: "National company identifier." },
+      name: { type: ["string", "null"], description: "Registered legal name." },
+      status: { type: ["string", "null"], description: "Registry status, e.g. active, dissolved, bankrupt." },
       address: {
-        type: "object",
+        type: ["object", "string", "null"],
         additionalProperties: true,
-        description: "Registered address as returned by the source registry.",
+        description: "Registered address: an object ({street, city, zip}) or a single formatted string, depending on the registry.",
       },
       industry: {
-        type: "object",
+        type: ["object", "null"],
         additionalProperties: true,
-        description: "Industry classification (NACE / national code + label).",
+        description: "Industry classification ({code, description}; NACE or national code).",
       },
-      vat: {
-        type: "object",
+      legalForm: {
+        type: ["object", "string", "null"],
         additionalProperties: true,
-        description: "VAT registration metadata (number, registered flag).",
+        description: "Legal form: an object ({code, description}) or a string, depending on the registry.",
       },
-      founded: { type: "string", description: "ISO-8601 founding date." },
-      source: { type: "string", description: "Upstream registry name (CVR, Brønnøysund, etc.)." },
+      vatRegistered: { type: ["boolean", "null"], description: "Whether the company is VAT-registered, where the registry reports it." },
+      founded: { type: ["string", "null"], description: "ISO-8601 founding date, if known." },
+      source: { type: ["string", "null"], description: "Upstream registry name (CVR, Brønnøysund, etc.)." },
+      fetchedAt: { type: ["string", "null"], description: "ISO-8601 timestamp when the data was fetched upstream." },
     },
   },
   annotations: { title: "Look Up Company", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },

@@ -33,45 +33,55 @@ export const screenSanctions: McpTool = {
     "Screen one or more person or company names against UN, EU, OFAC and PEP sanctions lists (768K+ entries via OpenSanctions). Typical use: counterparty checks before onboarding or processing a payment. Returns per-name match lists with fuzzy match scores, source-list attribution and risk topics, plus a 'disclaimer' field. Matches are informational decision-support from public sources, not legal or compliance advice — a match indicates a potential hit that requires verification, not a confirmed listing.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  // Matches the live response shape (verified 2026-09-15). Every property is
+  // nullable (e.g. topScore is null when a name has no hits): a strict client
+  // rejects the whole result if one field breaks the schema.
   outputSchema: {
     type: "object",
     additionalProperties: true,
     properties: {
+      total: { type: ["integer", "null"], description: "Number of names screened." },
+      matched: { type: ["integer", "null"], description: "Number of names with matched=true." },
       results: {
-        type: "array",
+        type: ["array", "null"],
         description: "One entry per input name, in submission order.",
         items: {
           type: "object",
           additionalProperties: true,
           properties: {
-            query: { type: "string", description: "The original input name." },
-            matches: {
-              type: "array",
-              description: "Matched sanctioned / PEP entities, ranked by score descending.",
+            query: { type: ["string", "null"], description: "The original input name." },
+            matched: { type: ["boolean", "null"], description: "The screening outcome for this name: true only if at least one hit is classified as a match." },
+            classification: { type: ["string", "null"], description: "Outcome for this name: none / potential_match / confirmed." },
+            requiresManualReview: { type: ["boolean", "null"], description: "True when hits need human verification." },
+            flaggedCount: { type: ["integer", "null"], description: "Number of hits classified as a match." },
+            count: { type: ["integer", "null"], description: "Number of fuzzy candidates returned, including unflagged low-confidence ones — not a match count." },
+            topScore: { type: ["number", "null"], description: "Highest fuzzy score among candidates; null when there are none. A high score alone is not a match — see classification." },
+            hits: {
+              type: ["array", "null"],
+              description: "Fuzzy candidates, each with its own classification ('none' = not flagged).",
               items: {
                 type: "object",
                 additionalProperties: true,
                 properties: {
-                  score: { type: "number", description: "Fuzzy match score 0-1." },
-                  name: { type: "string", description: "Matched entity name." },
-                  schema: { type: "string", description: "OpenSanctions schema, e.g. Person, Company." },
-                  datasets: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "Source lists (UN, EU, OFAC, PEP, ...).",
-                  },
-                  topics: {
-                    type: "array",
-                    items: { type: "string" },
-                    description: "Risk topics tagged on the entity.",
-                  },
+                  name: { type: ["string", "null"], description: "Listed entity name." },
+                  type: { type: ["string", "null"], description: "individual / entity." },
+                  source: { type: ["string", "null"], description: "Source list (UN, EU FSF, US OFAC SDN, OpenSanctions PEPs)." },
+                  score: { type: ["number", "null"], description: "Fuzzy match score 0-1." },
+                  classification: { type: ["string", "null"], description: "none / potential_match / confirmed." },
+                  programs: { type: ["array", "null"], items: { type: "string" }, description: "Sanctions programmes." },
+                  countries: { type: ["array", "null"], items: { type: "string" } },
                 },
               },
             },
           },
         },
       },
-      checked_at: { type: "string", description: "ISO-8601 timestamp of the screening." },
+      sourcesUnavailable: {
+        type: ["array", "null"],
+        description: "Lists that could not be checked on this call; non-empty means the screening is incomplete.",
+      },
+      indexUpdated: { type: ["object", "null"], additionalProperties: true, description: "ISO-8601 last refresh per source list." },
+      disclaimer: { type: ["string", "null"] },
     },
   },
   annotations: { title: "Screen Sanctions and PEP Lists", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },

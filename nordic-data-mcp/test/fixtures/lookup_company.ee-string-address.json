@@ -1,0 +1,21 @@
+{
+  "tool": "lookup_company",
+  "args": {
+    "country": "ee",
+    "id": "10421629"
+  },
+  "note": "EE registry returns address as a string",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "country": "ee",
+    "reg_code": "10421629",
+    "name": "Eesti Energia AS",
+    "status": "active",
+    "legal_form": "Aktsiaselts",
+    "address": "Harju maakond, Tallinn, Kesklinna linnaosa, Lelle tn 22",
+    "registered_date": "1998-03-31",
+    "terminated_date": null,
+    "vat_number": "EE100366327",
+    "source_url": "https://ariregister.rik.ee/est/company/10421629"
+  }
+}
