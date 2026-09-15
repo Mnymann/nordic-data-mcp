@@ -1,0 +1,37 @@
+{
+  "tool": "lookup_company",
+  "args": {
+    "country": "dk",
+    "id": "24256790"
+  },
+  "capturedAt": "2026-09-15",
+  "response": {
+    "id": "24256790",
+    "country": "dk",
+    "name": "NOVO NORDISK A/S",
+    "status": "active",
+    "address": {
+      "street": "Novo Alle 1",
+      "city": "Bagsværd",
+      "zip": "2880"
+    },
+    "industry": {
+      "code": "212000",
+      "description": ""
+    },
+    "vatRegistered": true,
+    "founded": "1931-11-28",
+    "source": "graphql.datafordeler.dk/CVR",
+    "fetchedAt": "2026-09-15T17:24:36.563Z",
+    "legalForm": {
+      "code": "60",
+      "description": "Aktieselskab"
+    },
+    "contact": {
+      "phone": "44448888",
+      "email": null,
+      "website": null
+    },
+    "marketingProtection": false
+  }
+}

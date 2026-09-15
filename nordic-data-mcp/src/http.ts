@@ -43,7 +43,7 @@ import { INSTRUCTIONS } from "./lib/instructions.js";
 import { listResources, readResource } from "./resources/index.js";
 import { listPrompts, getPrompt } from "./prompts/index.js";
 
-const VERSION = "1.5.5";
+const VERSION = "1.5.6";
 
 function buildServer(): Server {
   const server = new Server(

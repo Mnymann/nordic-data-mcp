@@ -1,0 +1,16 @@
+{
+  "tool": "validate_vat",
+  "args": {
+    "country": "DK",
+    "vat_number": "29403473"
+  },
+  "capturedAt": "2026-09-15",
+  "response": {
+    "valid": true,
+    "vatNumber": "DK29403473",
+    "countryCode": "DK",
+    "name": "Visma e-conomic A/S",
+    "address": "Gærtorvet 3\n1799 København V\n",
+    "source": "VIES"
+  }
+}

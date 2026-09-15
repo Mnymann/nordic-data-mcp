@@ -20,41 +20,30 @@ export const companyEnriched: McpTool = {
     "Enriched company data: basic registry data + DAWA-validated address with lat/lng + industry statistics (DST for DK, SSB for NO, etc.) + Wikidata enrichment (website, employees, CEO, ticker, logo, Wikipedia URL). One call, multiple sources. Supports 15 countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU). Tier note: NL and DE use paid upstream registries — free-tier API keys receive HTTP 402 'upgrade_required'; do NOT retry on 402. On paid tiers, NL costs 5x quota and DE costs 3x.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  // Matches the live response shape (verified 2026-09-15). Every property is
+  // nullable: a strict client rejects the whole result if one field breaks
+  // the schema.
   outputSchema: {
     type: "object",
     additionalProperties: true,
     properties: {
-      registry: {
-        type: "object",
+      company: {
+        type: ["object", "null"],
         additionalProperties: true,
-        description: "Same shape as lookup_company output.",
+        description: "Registry data — same shape as lookup_company output.",
       },
-      address: {
-        type: "object",
-        additionalProperties: true,
-        description: "DAWA-validated address with lat/lng (or country equivalent).",
-        properties: {
-          formatted: { type: "string" },
-          lat: { type: "number" },
-          lon: { type: "number" },
-        },
-      },
-      industry_stats: {
-        type: "object",
+      industryStats: {
+        type: ["object", "null"],
         additionalProperties: true,
         description: "National industry statistics (DST for DK, SSB for NO, etc.).",
-      },
-      wikidata: {
-        type: "object",
-        additionalProperties: true,
-        description: "Public profile from Wikidata.",
         properties: {
-          website: { type: "string" },
-          employees: { type: "number" },
-          ceo: { type: "string" },
-          ticker: { type: "string" },
-          logo: { type: "string", description: "URL to company logo." },
-          wikipedia: { type: "string", description: "URL to English Wikipedia article." },
+          available: { type: ["boolean", "null"], description: "False when no statistics exist for the company's industry code." },
+          data: {
+            type: ["array", "null"],
+            items: { type: "object", additionalProperties: true },
+            description: "Time series of {year, value, unit} rows.",
+          },
+          source: { type: ["string", "null"] },
         },
       },
     },

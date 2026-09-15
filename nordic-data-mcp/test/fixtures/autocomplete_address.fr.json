@@ -1,0 +1,49 @@
+{
+  "tool": "autocomplete_address",
+  "args": {
+    "country": "fr",
+    "query": "10 rue de Rivoli"
+  },
+  "capturedAt": "2026-09-15",
+  "response": {
+    "country": "fr",
+    "query": "10 rue de Rivoli",
+    "count": 8,
+    "results": [
+      {
+        "id": "59350_7519_00010",
+        "displayName": "10 Rue de Rivoli 59800 Lille",
+        "street": "Rue de Rivoli",
+        "number": "10",
+        "postalCode": "59800",
+        "city": "Lille",
+        "municipality": "59350",
+        "source": "BAN",
+        "confidence": 0.9815290909090909,
+        "context": "59, Nord, Hauts-de-France",
+        "score": 0.9815290909090909,
+        "coordinates": {
+          "lat": 50.634201,
+          "lng": 3.092367
+        }
+      },
+      {
+        "id": "06088_5495_00010",
+        "displayName": "10 Rue de Rivoli 06000 Nice",
+        "street": "Rue de Rivoli",
+        "number": "10",
+        "postalCode": "06000",
+        "city": "Nice",
+        "municipality": "06088",
+        "source": "BAN",
+        "confidence": 0.9762727272727273,
+        "context": "06, Alpes-Maritimes, Provence-Alpes-Côte d'Azur",
+        "score": 0.9762727272727273,
+        "coordinates": {
+          "lat": 43.696943,
+          "lng": 7.258742
+        }
+      }
+    ]
+  }
+}

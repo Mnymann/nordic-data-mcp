@@ -18,17 +18,19 @@ export const frHistory: McpTool = {
     "French company history timeline. Returns one event per change to the company's name, activity (NAF code), status (active/closed), legal form, or social-economy flag, derived from INSEE Sirene 3.11's bitemporal periodesUniteLegale array. Includes 'initial:<field>' events that show the state at company creation (date, name, NAF code, etc.). Input: 9-digit SIREN number. Cost: 1 quota unit; free tier supported (France is not tier-gated, unlike NL and DE). Cache: 24h server-side. Errors: 400 invalid_id_format (not 9 digits), 403 non_diffusible (SIREN exists but is privacy-protected under art. R123-232-1), 404 not_found, 503 upstream_unavailable.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  // Every property is nullable: a strict client rejects the whole result if
+  // one field breaks the schema (e.g. categorieEntreprise for a small company).
   outputSchema: {
     type: "object",
     additionalProperties: true,
     properties: {
-      siren: { type: "string", description: "9-digit SIREN echoed back." },
+      siren: { type: ["string", "null"], description: "9-digit SIREN echoed back." },
       dateCreation: {
-        type: "string",
+        type: ["string", "null"],
         description: "ISO-8601 date the legal entity was created.",
       },
       categorieEntreprise: {
-        type: "string",
+        type: ["string", "null"],
         description: "INSEE company size category: PME, ETI, GE.",
       },
       sigle: {
@@ -36,15 +38,15 @@ export const frHistory: McpTool = {
         description: "Acronym / short name, if any.",
       },
       periodCount: {
-        type: "integer",
+        type: ["integer", "null"],
         description: "Number of bitemporal periods returned by INSEE.",
       },
       count: {
-        type: "integer",
+        type: ["integer", "null"],
         description: "Number of history events derived.",
       },
       events: {
-        type: "array",
+        type: ["array", "null"],
         description:
           "Chronologically ordered events. Each event has 'initial:<field>' type for the baseline period or a plain field name for subsequent changes.",
         items: {
@@ -52,7 +54,7 @@ export const frHistory: McpTool = {
           additionalProperties: true,
           properties: {
             date: {
-              type: "string",
+              type: ["string", "null"],
               description: "ISO-8601 start date of the period.",
             },
             endDate: {
@@ -61,7 +63,7 @@ export const frHistory: McpTool = {
                 "ISO-8601 end date of the period; null for the currently-active period.",
             },
             type: {
-              type: "string",
+              type: ["string", "null"],
               description:
                 "Event type. One of: initial:name, initial:usage_name, initial:activity, initial:status, initial:legal_form, initial:employer_flag, initial:ess_flag, name, usage_name, activity, status, legal_form, employer_flag, ess_flag.",
             },
@@ -79,16 +81,16 @@ export const frHistory: McpTool = {
         },
       },
       source: {
-        type: "string",
+        type: ["string", "null"],
         description: "Upstream data source — 'api.insee.fr'.",
       },
       sourceNote: {
-        type: "string",
+        type: ["string", "null"],
         description:
           "Provenance note describing the upstream API and field set used.",
       },
       fetchedAt: {
-        type: "string",
+        type: ["string", "null"],
         description: "ISO-8601 timestamp when the data was fetched upstream.",
       },
     },

@@ -1,0 +1,121 @@
+{
+  "tool": "screen_sanctions",
+  "args": {
+    "names": [
+      "Maersk",
+      "Vladimir Putin",
+      "Acme Unknown ApS",
+      "Rosneft"
+    ]
+  },
+  "note": "topScore is null for a name with no hits",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "total": 4,
+    "matched": 2,
+    "source": "all_with_peps",
+    "type": "all",
+    "fuzzy": true,
+    "minScore": 0.85,
+    "limit": 5,
+    "candidatesIndexed": 741501,
+    "sourcesUnavailable": [],
+    "indexUpdated": {
+      "un": "2026-09-14T19:29:49.461Z",
+      "eu_fsf": "2026-09-14T19:29:48.645Z",
+      "us_ofac_sdn": "2026-09-14T19:29:48.861Z",
+      "peps": "2026-09-13T19:29:50.385Z"
+    },
+    "elapsedMs": 5444,
+    "results": [
+      {
+        "query": "Vladimir Putin",
+        "matched": true,
+        "classification": "confirmed",
+        "requiresManualReview": false,
+        "count": 5,
+        "flaggedCount": 5,
+        "topScore": 1,
+        "hits": [
+          {
+            "type": "individual",
+            "source": "EU Financial Sanctions Files (FSF)",
+            "sourceKey": "eu_fsf",
+            "id": "Q7747",
+            "reference": "EU-UKR",
+            "name": "Vladimir Vladimirovich PUTIN",
+            "aliases": [
+              "Vladimir Vladimirovich POUTINE",
+              "Vladimir Vladimirovitj PUTIN",
+              "Влади́мир Влади́мирович ПУ́ТИН"
+            ],
+            "birthDate": "1952-10-07",
+            "countries": [
+              "ru"
+            ],
+            "identifiers": [],
+            "programs": [
+              "EU-UKR"
+            ],
+            "listType": null,
+            "listedOn": null,
+            "comments": "UKR - 2022/332 (OJ L53) - 2022-02-25",
+            "score": 1,
+            "classification": "potential_match"
+          }
+        ]
+      },
+      {
+        "query": "Acme Unknown ApS",
+        "matched": false,
+        "classification": "none",
+        "requiresManualReview": false,
+        "count": 0,
+        "flaggedCount": 0,
+        "topScore": null,
+        "hits": []
+      },
+      {
+        "query": "Rosneft",
+        "matched": true,
+        "classification": "confirmed",
+        "requiresManualReview": false,
+        "count": 5,
+        "flaggedCount": 3,
+        "topScore": 1,
+        "hits": [
+          {
+            "type": "entity",
+            "source": "EU Financial Sanctions Files (FSF)",
+            "sourceKey": "eu_fsf",
+            "id": "NK-o4y97LZwewFQrxJAceb4RN",
+            "reference": "EU-UKR",
+            "name": "РН-Аэро",
+            "aliases": [
+              "RN AERO",
+              "ROSNEFT AERO",
+              "Роснефть-Аэро"
+            ],
+            "birthDate": null,
+            "countries": [
+              "ru"
+            ],
+            "identifiers": [
+              "1087746656711",
+              "7705843041"
+            ],
+            "programs": [
+              "EU-UKR"
+            ],
+            "listType": null,
+            "listedOn": null,
+            "comments": "UKR - 2023/571 (OJ L75 I) - 2022-03-15",
+            "score": 1,
+            "classification": "potential_match"
+          }
+        ]
+      }
+    ],
+    "disclaimer": "Guidance screening — not advice. Name matching against sanctions, PEP and adverse media lists can produce both false positives and false negatives. This result is decision support and must be confirmed by a qualified compliance officer before any decision is made."
+  }
+}

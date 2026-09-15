@@ -1,0 +1,82 @@
+{
+  "tool": "lookup_lei",
+  "args": {
+    "mode": "lei",
+    "lei": "549300DAQ1CVT6CXN342",
+    "include_relationships": true
+  },
+  "note": "children is a paginated object; directParent/ultimateParent null for a top-level entity",
+  "capturedAt": "2026-09-15",
+  "response": {
+    "lei": "549300DAQ1CVT6CXN342",
+    "legalName": "NOVO NORDISK A/S",
+    "status": "ACTIVE",
+    "jurisdiction": "DK",
+    "registeredAs": "24256790",
+    "legalForm": "ZRPO",
+    "category": "GENERAL",
+    "legalAddress": {
+      "country": "DK",
+      "city": "Bagsværd",
+      "postalCode": "2880",
+      "lines": [
+        "Novo Alle 1"
+      ]
+    },
+    "registration": {
+      "initial": "2013-09-10T10:41:00Z",
+      "lastUpdate": "2025-12-22T14:18:00Z",
+      "status": "ISSUED",
+      "nextRenewal": "2027-02-07T12:31:00Z",
+      "managingLou": "549300O897ZC5H7CY412"
+    },
+    "source": "GLEIF",
+    "fetchedAt": "2026-09-15T17:25:04.375Z",
+    "relationships": {
+      "parent": {
+        "lei": "549300DAQ1CVT6CXN342",
+        "directParent": null,
+        "ultimateParent": null,
+        "sameAsDirect": false,
+        "isUltimate": true,
+        "source": "GLEIF",
+        "fetchedAt": "2026-09-15T17:25:04.741Z"
+      },
+      "children": {
+        "lei": "549300DAQ1CVT6CXN342",
+        "page": 1,
+        "size": 50,
+        "total": 5,
+        "totalPages": 1,
+        "children": [
+          {
+            "lei": "894500G05T7MXFP5E425",
+            "legalName": "NOVO NORDISK REGION EUROPE A/S",
+            "status": "ACTIVE",
+            "jurisdiction": "DK",
+            "registeredAs": "26236266",
+            "legalForm": "ZRPO",
+            "category": "GENERAL",
+            "legalAddress": {
+              "country": "DK",
+              "city": "Bagsværd",
+              "postalCode": "2880",
+              "lines": [
+                "Novo Alle 1"
+              ]
+            },
+            "registration": {
+              "initial": "2023-06-16T13:24:17Z",
+              "lastUpdate": "2024-06-16T17:02:46Z",
+              "status": "LAPSED",
+              "nextRenewal": "2024-06-16T13:24:18Z",
+              "managingLou": "529900F6BNUR3RJ2WH29"
+            }
+          }
+        ],
+        "source": "GLEIF",
+        "fetchedAt": "2026-09-15T17:25:04.895Z"
+      }
+    }
+  }
+}

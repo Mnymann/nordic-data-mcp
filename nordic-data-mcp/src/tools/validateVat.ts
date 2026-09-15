@@ -24,17 +24,19 @@ export const validateVat: McpTool = {
     "Call before issuing an invoice, processing a cross-border payment, or storing a counterparty's VAT number. Validate a VAT registration number against the official EU VIES service (or HMRC for GB). Returns validity status, registered name, and registered address.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
+  // Every property is nullable: VIES does not disclose trader name/address
+  // for several member states (DE, ES, ...) and returns null, and a strict
+  // client rejects the WHOLE result if one field breaks the schema.
   outputSchema: {
     type: "object",
     additionalProperties: true,
     properties: {
-      country: { type: "string", description: "Country code echoed back (uppercase)." },
-      vat_number: { type: "string", description: "Submitted VAT number (without country prefix)." },
-      valid: { type: "boolean", description: "True if VIES / HMRC confirms the number is registered and active." },
-      name: { type: "string", description: "Registered company name, if disclosed by the source." },
-      address: { type: "string", description: "Registered address, if disclosed." },
-      checked_at: { type: "string", description: "ISO-8601 timestamp of the validation." },
-      source: { type: "string", description: "Either 'VIES' or 'HMRC'." },
+      valid: { type: ["boolean", "null"], description: "True if VIES / HMRC confirms the number is registered and active." },
+      vatNumber: { type: ["string", "null"], description: "Full VAT number including country prefix, e.g. DE143454214." },
+      countryCode: { type: ["string", "null"], description: "Country code (uppercase)." },
+      name: { type: ["string", "null"], description: "Registered company name. null when the member state does not disclose trader details via VIES (e.g. DE, ES) — the number can still be valid." },
+      address: { type: ["string", "null"], description: "Registered address. null when not disclosed by the member state." },
+      source: { type: ["string", "null"], description: "Either 'VIES' or 'HMRC'." },
     },
   },
   annotations: { title: "Validate VAT Number", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
