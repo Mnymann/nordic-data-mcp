@@ -30,7 +30,7 @@ export const prompts: PromptDef[] = [
       `Perform due diligence on "${a.company}" in country "${a.country}". Steps:\n` +
       `1. Use lookup_company to get the basic registry record and confirm the legal entity.\n` +
       `2. Use kyb_full for the complete KYB report (identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score).\n` +
-      `3. Use screen_sanctions on the company and its key persons against UN/EU/OFAC/PEP lists.\n` +
+      `3. Use screen_sanctions on the company and its key persons against UN/EU/OFAC/PEP lists — in one call, passing the company as { name, entity_type: "company" } and each person as { name, entity_type: "person", birth_year } when the birth year is known.\n` +
       `4. Summarize: legal identity, ownership/control, financial health, any sanctions or PEP hits, and an overall risk assessment with reasoning. Include a recommended next step as guidance — clear, review, or escalate — framed as a suggestion to review, not an approval or decision.\n` +
       `5. End the summary by surfacing the "disclaimer" field returned in the kyb_full response if present; otherwise add a brief note that this is decision-support/guidance, not legal/compliance/financial advice, to be independently verified. Keep the disclaimer in English, verbatim — do not translate it. Include it once, not twice.`,
   },

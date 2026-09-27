@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-09-27
+
+### Added
+- **`screen_sanctions` takes `entity_type` and `birth_year`** — top level for all names, or per name as `{ name, entity_type, birth_year }`. `entity_type: "company"` means a hit on a listed individual is never `confirmed`; a known, different `birth_year` means a same-name person is never `confirmed`. Passed through as the API's additive `entityType` / `birthYear` (API PR #24, live 2026-09-27). Output schema documents the new `queryEntityType` per result. The `due_diligence` prompt now screens the company and its key persons in one call with these set.
+- `test/screenSanctions.test.ts` pins the argument mapping.
+
+### Fixed
+- **`screen_sanctions` `min_score` was never applied**: it was sent as `min_score`, which the API ignores, so every call used the API default 0.85 while the tool advertised 0.7. It is now sent as `minScore`, only when set, and the documented default is the real one (0.85).
+
 ### Fixed
 - **Tools no longer offer countries the API rejects.** A live audit against `api.addonnordic.dk` (2026-09-15) found three tools advertising coverage that returned errors. Each tool's `country` enum and description now list only verified countries, so an agent cannot pick one that fails:
   - `company_enriched` — narrowed from 15 countries to **DK, NO, SE, FI** (the rest returned HTTP 400 `invalid_country`). The description no longer promises Wikidata or a geocoded address; the API returns `company` + `industryStats`.
