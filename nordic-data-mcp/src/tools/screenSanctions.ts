@@ -3,22 +3,54 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import { apiPost } from "../lib/apiClient.js";
 import type { McpTool } from "../types.js";
 
+const entityType = z
+  .enum(["company", "person", "auto"])
+  .describe(
+    "What the screened party is. 'company': a hit on a listed individual is never 'confirmed' (a company is not a natural person). 'person': a hit on a listed entity is never 'confirmed'. 'auto' (default): a legal form in the name (A/S, Ltd, GmbH, AB, Oy …) marks it as a company.",
+  );
+const birthYear = z
+  .number()
+  .int()
+  .min(1850)
+  .max(2100)
+  .describe(
+    "Birth year of the screened person, if known. When the listed person's birth year is known and differs, the hit is never 'confirmed' (same name, different person).",
+  );
+
 const inputSchema = z.object({
   names: z
-    .array(z.string().min(1))
+    .array(
+      z.union([
+        z.string().min(1),
+        z.object({
+          name: z.string().min(1),
+          entity_type: entityType.optional(),
+          birth_year: birthYear.optional(),
+        }),
+      ]),
+    )
     .min(1)
     .max(1000)
     .describe(
-      "Array of person or company names to screen. Max 1000 names per call.",
+      "Names to screen, max 1000 per call. Each item is a plain name, or { name, entity_type, birth_year } to say per name whether it is a company or a person (e.g. a company plus its key persons in one call).",
+    ),
+  entity_type: entityType
+    .optional()
+    .describe(
+      "Default entity type for all names that do not set their own: 'company', 'person' or 'auto' (default). Set 'company' when screening a company name — a hit on a listed individual is then never 'confirmed'.",
+    ),
+  birth_year: birthYear
+    .optional()
+    .describe(
+      "Default birth year for all names that do not set their own. Only meaningful when screening one person.",
     ),
   min_score: z
     .number()
     .min(0)
     .max(1)
-    .default(0.7)
     .optional()
     .describe(
-      "Minimum fuzzy match score, 0-1. Default 0.7. Lower values return more (lower-confidence) matches.",
+      "Minimum fuzzy score for a candidate to be returned, 0-1. Default 0.85. Lower values return more low-confidence candidates; only candidates ≥ 0.95 can ever be classified as a match.",
     ),
   fuzzy: z
     .boolean()
@@ -50,6 +82,7 @@ export const screenSanctions: McpTool = {
           additionalProperties: true,
           properties: {
             query: { type: ["string", "null"], description: "The original input name." },
+            queryEntityType: { type: ["string", "null"], description: "How the name was treated: company / person / unknown (from entity_type, or a legal form in the name)." },
             matched: { type: ["boolean", "null"], description: "The screening outcome for this name: true only if at least one hit is classified as a match." },
             classification: { type: ["string", "null"], description: "Outcome for this name: none / potential_match / confirmed." },
             requiresManualReview: { type: ["boolean", "null"], description: "True when hits need human verification." },
@@ -86,7 +119,24 @@ export const screenSanctions: McpTool = {
   },
   annotations: { title: "Screen Sanctions and PEP Lists", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   handler: async (args) => {
-    const parsed = inputSchema.parse(args);
-    return apiPost("/api/sanctions/screen", parsed);
+    const p = inputSchema.parse(args);
+    // The API speaks camelCase; the tool keeps the snake_case style of its
+    // other arguments. (min_score was previously sent as-is and ignored.)
+    const body: Record<string, unknown> = {
+      names: p.names.map((n) =>
+        typeof n === "string"
+          ? n
+          : {
+              name: n.name,
+              ...(n.entity_type && { entityType: n.entity_type }),
+              ...(n.birth_year !== undefined && { birthYear: n.birth_year }),
+            },
+      ),
+    };
+    if (p.entity_type) body.entityType = p.entity_type;
+    if (p.birth_year !== undefined) body.birthYear = p.birth_year;
+    if (p.min_score !== undefined) body.minScore = p.min_score;
+    if (p.fuzzy !== undefined) body.fuzzy = p.fuzzy;
+    return apiPost("/api/sanctions/screen", body);
   },
 };
