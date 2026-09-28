@@ -7,7 +7,7 @@
 export const INSTRUCTIONS = `Nordic Data MCP provides authoritative company, KYB, VAT, sanctions, LEI and address data for 15 European countries (DK, NO, SE, FI, IE, UK, FR, DE, CZ, PL, LV, EE, NL, BE, LU), sourced from official national business registries and EU systems (VIES, OpenSanctions, GLEIF).
 
 Choosing a tool:
-- Prefer the 8 curated tools for common tasks: lookup_company (basic registry data), company_enriched (registry data + national industry statistics; DK, NO, SE, FI), kyb_full (complete due-diligence report: identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score), validate_vat (VIES, 27 EU member states), screen_sanctions (bulk UN/EU/OFAC/PEP), lookup_lei (GLEIF forward/reverse/parent/children), autocomplete_address (DK, NO, SE, FI, FR), and fr_history (French company bitemporal history).
+- Prefer the 8 curated tools for common tasks: lookup_company (basic registry data), company_enriched (registry data + national industry statistics; DK, NO, SE, FI), kyb_full (complete due-diligence report: identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score), validate_vat (VIES, 27 EU member states), screen_sanctions (bulk UN/EU/UK/OFAC/PEP), lookup_lei (GLEIF forward/reverse/parent/children), autocomplete_address (DK, NO, SE, FI, FR), and fr_history (French company bitemporal history).
 - For anything the curated tools do not cover, use the 3 discovery tools: call list_endpoints to find a relevant endpoint, get_endpoint_schema to learn its parameters, then call_endpoint to execute it. Together they reach the entire API (~233 data endpoints) without needing a tool for each.
 
 Country codes:

@@ -91,7 +91,7 @@ Same hosted endpoint, no local install:
 |---|---|
 | `lookup_company` | Basic company data from official registries (CVR, Brønnøysund, Bolagsverket, Companies House, INSEE, etc.) |
 | `validate_vat` | Validate a VAT number for the 27 EU member states against VIES |
-| `screen_sanctions` | Bulk screen up to 1000 names against UN/EU/OFAC/PEP lists (OpenSanctions, 768K+ entries) |
+| `screen_sanctions` | Bulk screen up to 1000 names against UN/EU/UK/OFAC/PEP lists (UK = FCDO UK Sanctions List; 745K+ entries) |
 | `kyb_full` | Master Know-Your-Business report — identity, persons, financials, LEI, VAT, sanctions, adverse media, risk score |
 | `autocomplete_address` | Address autocomplete with coordinates for DK (DAWA), NO (Kartverket), FR (BAN), SE and FI (OpenStreetMap Nominatim) |
 | `lookup_lei` | GLEIF Legal Entity Identifier lookup — forward, reverse, and parent/children relationships |
