@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.1] — 2026-09-28
+
+### Changed
+- **`screen_sanctions` names the UK list.** The API now also screens the UK Sanctions List (FCDO, OpenSanctions `gb_fcdo_sanctions`), the only UK list since 28 Jan 2026 (API PR #27, live 2026-09-28). Tool description, server instructions, prompts and READMEs now say UN/EU/UK/OFAC/PEP. The entry count is corrected to the live 745K+ (was 768K+).
+- Output schema documents `sourcesUsed`: each list the answer was actually screened against, with its publisher's last-updated date.
+
 ## [1.6.0] — 2026-09-27
 
 ### Added

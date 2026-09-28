@@ -62,7 +62,7 @@ const inputSchema = z.object({
 export const screenSanctions: McpTool = {
   name: "screen_sanctions",
   description:
-    "Screen one or more person or company names against UN, EU, OFAC and PEP sanctions lists (768K+ entries via OpenSanctions). Typical use: counterparty checks before onboarding or processing a payment. Returns per-name match lists with fuzzy match scores, source-list attribution and risk topics, plus a 'disclaimer' field. Matches are informational decision-support from public sources, not legal or compliance advice — a match indicates a potential hit that requires verification, not a confirmed listing.",
+    "Screen one or more person or company names against the UN, EU, UK (FCDO UK Sanctions List) and US OFAC sanctions lists plus PEPs (745K+ entries, UN direct and the rest via OpenSanctions). Typical use: counterparty checks before onboarding or processing a payment. Returns per-name match lists with fuzzy match scores, source-list attribution and risk topics, 'sourcesUsed' (each list actually screened, with its publisher's last-updated date), plus a 'disclaimer' field. Matches are informational decision-support from public sources, not legal or compliance advice — a match indicates a potential hit that requires verification, not a confirmed listing.",
   inputSchema,
   jsonSchema: zodToJsonSchema(inputSchema) as Record<string, unknown>,
   // Matches the live response shape (verified 2026-09-15). Every property is
@@ -98,7 +98,7 @@ export const screenSanctions: McpTool = {
                 properties: {
                   name: { type: ["string", "null"], description: "Listed entity name." },
                   type: { type: ["string", "null"], description: "individual / entity." },
-                  source: { type: ["string", "null"], description: "Source list (UN, EU FSF, US OFAC SDN, OpenSanctions PEPs)." },
+                  source: { type: ["string", "null"], description: "Source list (UN, EU FSF, UK Sanctions List (FCDO), US OFAC SDN, OpenSanctions PEPs)." },
                   score: { type: ["number", "null"], description: "Fuzzy match score 0-1." },
                   classification: { type: ["string", "null"], description: "none / potential_match / confirmed." },
                   programs: { type: ["array", "null"], items: { type: "string" }, description: "Sanctions programmes." },
@@ -108,6 +108,11 @@ export const screenSanctions: McpTool = {
             },
           },
         },
+      },
+      sourcesUsed: {
+        type: ["array", "null"],
+        description: "The lists this answer was actually screened against: key (un / eu_fsf / gb_fcdo / us_ofac_sdn / peps), name, publisher, entries, listUpdated (the list's own last change), loadedAt, stale. Quote this, not a fixed list, when stating what was screened.",
+        items: { type: "object", additionalProperties: true },
       },
       sourcesUnavailable: {
         type: ["array", "null"],

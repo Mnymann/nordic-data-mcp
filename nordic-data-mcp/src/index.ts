@@ -24,7 +24,7 @@ import { listPrompts, getPrompt } from "./prompts/index.js";
 ensureApiKeyConfigured();
 
 const server = new Server(
-  { name: "nordic-data-mcp", version: "1.6.0" },
+  { name: "nordic-data-mcp", version: "1.6.1" },
   { capabilities: { tools: {}, resources: {}, prompts: {} }, instructions: INSTRUCTIONS },
 );
 

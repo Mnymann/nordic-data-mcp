@@ -98,7 +98,7 @@ All commands are run from `nordic-data-mcp/` and use `npm`, not `pnpm`. The pack
 
 1. `lookup_company` — basic company data from official registries (12 countries)
 2. `validate_vat` — VIES VAT validation, 27 EU member states (EL for Greece; no GB/NO)
-3. `screen_sanctions` — bulk screen up to 1000 names against UN/EU/OFAC/PEP (OpenSanctions)
+3. `screen_sanctions` — bulk screen up to 1000 names against UN/EU/UK/OFAC/PEP (OpenSanctions)
 4. `kyb_full` — master KYB report (identity + persons + financials + LEI + VAT + sanctions + adverse media + risk score)
 5. `autocomplete_address` — address autocomplete for DK, NO, SE, FI, FR (DAWA, Kartverket, BAN, Nominatim)
 6. `lookup_lei` — GLEIF forward + reverse + parent/children
