@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.2] — 2026-11-10
+
+### Fixed
+- **`validate_vat` (and any tool) no longer reports a bogus 404 when the API has a temporary 5xx.** The client retried every 5xx on a built-in "mirror", the Render host that was shut down 2026-10-02; it answers 404 to everything, so a real "VIES temporarily unavailable for DE" 503 reached the user as `http_404`. The default host is now the canonical `https://api.addonnordic.dk` with no default fallback.
+
 ## [1.6.1] — 2026-09-28
 
 ### Changed

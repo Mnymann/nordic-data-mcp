@@ -9,8 +9,13 @@ import { NordicApiError } from "./errors.js";
  *   NORDIC_API_PRIMARY, NORDIC_API_FALLBACK, NORDIC_API_BASE_URL
  * These are NOT documented in the public README on purpose.
  */
-const DEFAULT_PRIMARY = "https://nordic-data-api-production-b59e.up.railway.app";
-const DEFAULT_FALLBACK = "https://nordic-data-api-1.onrender.com";
+// Canonical host. The old Render mirror (nordic-data-api-1.onrender.com) was
+// shut down 2026-10-02 and now answers 404 to everything — keeping it as the
+// default fallback turned every upstream 5xx (e.g. a VIES outage on
+// /api/vat/validate) into a misleading 404 for the MCP client. No default
+// fallback any more; NORDIC_API_FALLBACK can still add one for testing.
+const DEFAULT_PRIMARY = "https://api.addonnordic.dk";
+const DEFAULT_FALLBACK = "";
 
 function resolveHosts(): string[] {
   const primary = process.env.NORDIC_API_PRIMARY?.trim() || DEFAULT_PRIMARY;
@@ -30,7 +35,7 @@ function resolveHosts(): string[] {
 const HOSTS = resolveHosts();
 const DEFAULT_API_KEY = process.env.NORDIC_API_KEY;
 
-const USER_AGENT = "nordic-data-mcp/1.6.1";
+const USER_AGENT = "nordic-data-mcp/1.6.2";
 
 /**
  * Per-request API key override. Used by the authenticated HTTP endpoint
