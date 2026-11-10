@@ -155,6 +155,17 @@ async function handleMcpRequest(
   const sessionId = req.header("mcp-session-id") ?? undefined;
   let transport = sessionId ? transports.get(sessionId) : undefined;
 
+  // Unknown or expired session: the MCP spec says answer 404, so the client
+  // starts a fresh session instead of getting a confusing 400.
+  if (sessionId && !transport) {
+    res.status(404).json({
+      jsonrpc: "2.0",
+      error: { code: -32001, message: "Session not found or expired. Start a new session." },
+      id: null,
+    });
+    return;
+  }
+
   if (!transport) {
     transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: () => randomUUID(),
@@ -164,18 +175,44 @@ async function handleMcpRequest(
     });
     transport.onclose = () => {
       if (transport!.sessionId) transports.delete(transport!.sessionId);
+      lastSeen.delete(transport!);
     };
     const server = buildServer();
     await server.connect(transport);
   }
 
+  lastSeen.set(transport, Date.now());
   await transport.handleRequest(req, res, req.body);
 }
+
+// ─── Idle session eviction ───────────────────────────────────────────────────
+// Each session holds its own transport + Server instance. Most clients
+// (liveness bots, registry scanners, editors that quit) never send DELETE, so
+// without this the maps only ever grow: RAM went 0.7 → 1.13 GB over 14 days in
+// Nov 2026. Sessions idle longer than SESSION_IDLE_MS are closed; a client
+// that comes back gets 404 and re-initializes.
+const SESSION_IDLE_MS = intEnv(process.env.SESSION_IDLE_MS, 60 * 60_000, 60_000);
+const lastSeen = new WeakMap<StreamableHTTPServerTransport, number>();
+const sessionPools: Map<string, StreamableHTTPServerTransport>[] = [];
+
+setInterval(() => {
+  const cutoff = Date.now() - SESSION_IDLE_MS;
+  for (const pool of sessionPools) {
+    for (const [id, t] of pool) {
+      if ((lastSeen.get(t) ?? 0) < cutoff) {
+        pool.delete(id);
+        lastSeen.delete(t);
+        t.close().catch(() => {});
+      }
+    }
+  }
+}, Math.min(5 * 60_000, SESSION_IDLE_MS / 2)).unref();
 
 // ─── Public, no-auth endpoint ────────────────────────────────────────────────
 // Uses server-side NORDIC_API_KEY (env var). For Anthropic Directory and
 // freemium discovery. Sessions kept separate from /mcp/auth.
 const publicTransports = new Map<string, StreamableHTTPServerTransport>();
+sessionPools.push(publicTransports);
 
 // Per-IP rate limit for the public endpoint. Every upstream call here is billed
 // to the SERVER's own NORDIC_API_KEY, so anonymous abuse is a direct cost
@@ -247,6 +284,7 @@ app.all("/mcp", async (req: Request, res: Response) => {
 // forwarded to upstream as X-API-Key so each customer's tenant + quota
 // are tracked correctly.
 const authTransports = new Map<string, StreamableHTTPServerTransport>();
+sessionPools.push(authTransports);
 
 function extractBearerToken(req: Request): string | null {
   // Accept two formats so we work with all MCP gateways:
